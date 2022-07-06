@@ -1,0 +1,18 @@
+.homeMain {
+  display: flex;
+}
+
+// ---------------------- feed -----------------
+.feed {
+  width: 70vw;
+  border: solid 1px red;
+  padding: 1rem;
+  overflow-y: scroll;
+}
+
+
+// ---------------------- lateral container -----------------
+.lateralUsers {
+  width: 30vw;
+  border: solid 1px red;
+}

@@ -1,0 +1,35 @@
+.title {
+  margin: 3rem 0 1rem;  
+
+}
+
+.post {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+
+  header {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 2.5rem;
+      margin-right: 0.5rem;
+    }
+  }
+
+  hr {
+    opacity: 0.5;
+    margin: 0.5rem 0;
+  }
+
+  section {
+    margin-top: 0.5rem;
+  }
+}
+
+.username {
+  font-size: 1.1rem;
+  color: var(--gray-4);
+}

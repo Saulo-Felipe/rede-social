@@ -1,0 +1,37 @@
+.Main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 100vw;
+  height: 100vh;
+
+}
+
+.loginContainer {
+  background-color: white;
+  height: 75vh;
+  width: 50vw;
+
+  padding: 1rem;
+
+  hr {
+    opacity: 0.5;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  label {
+    margin-top: 1rem;
+    display: block;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    height: 3rem;
+    padding-left: 1rem;
+  }
+} 
