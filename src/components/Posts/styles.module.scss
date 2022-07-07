@@ -13,9 +13,23 @@
     display: flex;
     align-items: center;
 
-    img {
-      height: 2.5rem;
-      margin-right: 0.5rem;
+    .profilePictureContainer {
+      border-radius: 50%;
+
+      height: 3rem;
+      width: 3rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+      margin-right: 0.75rem;
+
+      .profilePicture {
+        //height: 2.5rem;
+        width: 100%;
+      }
     }
   }
 
@@ -26,6 +40,24 @@
 
   section {
     margin-top: 0.5rem;
+  }
+
+  footer {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+
+    div {
+      display: flex;
+      align-items: center;
+      margin-right: 1rem;
+    }
+
+    svg {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
   }
 }
 

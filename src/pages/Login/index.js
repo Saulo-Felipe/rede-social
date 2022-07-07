@@ -1,6 +1,10 @@
+import { FcGoogle } from "react-icons/fc";
+import { signIn } from "next-auth/react";
+
 import styles from './styles.module.scss';
 
 export default function Login() {
+
 
   return (
     <main className={styles.Main}>
@@ -9,17 +13,35 @@ export default function Login() {
 
         <hr />
 
-        <div>Entrar com o Google</div>
+        <div className={styles.authContainer}>
+          <div 
+            className={styles.google}><FcGoogle 
+            onClick={() => signIn("google")}
+          /> Entrar com o Google</div>
+        </div>
 
-        <p>Ou</p>
+        <p><strong>Ou</strong></p>
 
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" placeholder="Email "/>
+        <input id="email" type="email" placeholder="Email "/>
 
         <label htmlFor="password">Senha</label>
-        <input id="password" type="text" placeholder="Digite sua senha de acesso"/>
+        <input id="password" type="password" placeholder="Digite sua senha de acesso"/>
+
+        <button type="button" className={styles.enter}>
+          Entrar
+        </button>
 
       </div>
     </main>
   );
+}
+
+
+export const getServerSideProps = (context) => {
+  return {
+    props: {
+      user: "luis"
+    }
+  }
 }

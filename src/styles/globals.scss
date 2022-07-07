@@ -11,7 +11,7 @@
   --gray-1: #AEB7C3;
   --gray-2: #707070;
   --gray-3: #EAEAEA;
-  --gray-4: #504C4C;
+  --gray-4: #5A5A5A;
   
   --online: #00AB26;
   --offline: #E90000;
@@ -47,4 +47,8 @@ button {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+#main-container {
+  display: flex;
 }

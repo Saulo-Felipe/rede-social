@@ -1,18 +1,23 @@
+import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa"; 
  
 import styles from "./styles.module.scss";
 
 export function Header() {
-  console.log(styles.logotipoImg);
+
   return (
     <header className={styles.Header}>
       <div id={styles.firstContainer}>
 
-        <img
-          src={"/images/temporary-logo.svg"} 
-          className={styles.logotipoImg}
-        />
+        <Link href={"/Home"}>
+          <a>
+            <img
+              src={"/images/temporary-logo.svg"} 
+              className={styles.logotipoImg}
+            />        
+          </a>
+        </Link>
 
         <div className={styles.searchContainer}>
           <BiSearch />
@@ -22,9 +27,13 @@ export function Header() {
       </div>
 
       <div id={styles.secondContainer}>
-        <div>Nome de usuario</div>
+        <Link href={"/Profile"}>
+          <a>
+            <div>Nome de usuario</div>
 
-        <FaUserCircle />
+            <FaUserCircle />
+          </a>
+        </Link>
       </div>
     </header>
   );

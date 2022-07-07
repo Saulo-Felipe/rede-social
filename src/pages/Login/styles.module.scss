@@ -11,9 +11,11 @@
 .loginContainer {
   background-color: white;
   height: 75vh;
-  width: 50vw;
+  width: 45vw;
 
-  padding: 1rem;
+  border-radius: 0.5rem;
+
+  padding: 1.5rem;
 
   hr {
     opacity: 0.5;
@@ -34,4 +36,50 @@
     height: 3rem;
     padding-left: 1rem;
   }
+
+  button {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 0.75rem;
+    background-color: var(--default-blue);
+
+    border: none;
+    border-radius: 0.35rem;
+    color: white;
+
+    transition: all 0.4s;
+  }
+  button:hover {
+    filter: brightness(0.9);
+  }
+
 } 
+
+.authContainer {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+
+  .google {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    border: solid 1px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.438);
+    cursor: pointer;
+    transition: all 150ms;
+
+    color: var(--gray-4);
+
+    svg {
+      font-size: 1.6rem;
+      margin-right: 0.45rem;
+    }
+
+    &:hover {
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.438);
+    }
+  }
+}
