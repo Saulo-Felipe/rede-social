@@ -1,17 +1,19 @@
 import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
- 
+import Image from "next/image";
+
 import styles from "./styles.module.scss";
 
 export function Header(props) {
   const { data, status } = useSession();
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
-  
-  if (status === "authenticated") 
+
+  if (status === "authenticated")
     return (
       <header className={styles.Header}>
         <div id={styles.firstContainer}>
@@ -19,9 +21,10 @@ export function Header(props) {
           <Link href={"/"}>
             <a>
               <img
-                src={"/images/temporary-logo.svg"} 
+                src={"/images/temporary-logo.svg"}
                 className={styles.logotipoImg}
-              />        
+                alt={"profile"}
+              />
             </a>
           </Link>
 
@@ -32,15 +35,17 @@ export function Header(props) {
 
             <input id="search_user" type={"text"} placeholder={"Pesquise um usuário..."} />
           </div>
-        
+
         </div>
 
-        <div 
+        <div
           id={styles.secondContainer}
           onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
-          onFocus={() => console.log("focus")}
-          onBlur={() => console.log("blur") }
         >
+          <div className={styles.menuMobile}>
+            <GiHamburgerMenu />
+          </div>
+
           <div className={styles.userData}>
             <div className={styles.username}>{data?.user.name}</div>
 
@@ -50,7 +55,7 @@ export function Header(props) {
           </div>
 
           {
-            dropdownIsOpen 
+            dropdownIsOpen
             ? <div className={styles.dropdown}>
               <div>
                 <Link href="/Profile">
@@ -61,7 +66,7 @@ export function Header(props) {
             </div>
             :<></>
           }
-        </div>        
+        </div>
       </header>
     );
 

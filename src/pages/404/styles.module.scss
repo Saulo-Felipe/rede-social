@@ -1,0 +1,39 @@
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 100vh;
+
+  button {
+    padding: 0.75rem 2.5rem;
+    background: var(--default-blue);
+    color: white;
+    border: none;
+    transition: all 300ms;
+    margin-top: 1rem;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+}
+
+.title {
+  font-size: 3rem;
+
+  @media (max-width: 901px) {
+    font-size: 2.5rem;
+  }
+}
+
+.icon {
+  font-size: 10rem;
+}
+
+.e404 {
+  color: rgb(184, 0, 0);
+  font-size: 6rem;
+}

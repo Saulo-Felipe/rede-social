@@ -79,6 +79,10 @@
         width: 100%;
       }
     }
+
+    @media (max-width: 901px) {
+      display: none;
+    }
   }
   .dropdown {
     position: absolute;
@@ -102,5 +106,19 @@
         background-color: rgba(0, 0, 34, 0.1);
       }
     }
+
+    @media (max-width: 901px) {
+      display: none;
+    }
+  }
+
+  .menuMobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    height: 100%;
+    color: var(--default-blue);
+    font-size: 2rem;
   }
 }

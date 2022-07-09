@@ -53,6 +53,10 @@
     filter: brightness(0.9);
   }
 
+  @media (max-width: 901px) {
+    width: 100%;
+    height: 100vh;
+  }
 } 
 
 .authContainer {

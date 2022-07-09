@@ -5,7 +5,6 @@ import { SessionProvider } from 'next-auth/react';
 import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }) {
-  console.log(pageProps)
 
   return (
     <SessionProvider session={pageProps.session} >
