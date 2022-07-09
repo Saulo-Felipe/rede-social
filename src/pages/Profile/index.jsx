@@ -1,6 +1,6 @@
 import { IoMdAddCircle } from "react-icons/io";
 import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
-import { Post } from "../../components/Posts/Post";
+import { Post } from "../../components/Post";
 
 import styles from "./styles.module.scss";
 
@@ -14,7 +14,7 @@ export default function Profile() {
             <img src={"/images/profile-test.webp"} alt="profile" />
           </div>
 
-          <div>
+          <div className={styles.userInfo}>
             <div className={styles.username}>Nome de usuário</div>
             <div className={styles.followButton}>
               <button><IoMdAddCircle /> Seguir </button>

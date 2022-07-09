@@ -1,6 +1,6 @@
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 
-import styles from "../styles.module.scss";
+import styles from "./styles.module.scss";
 
 export function Post() {
   return (

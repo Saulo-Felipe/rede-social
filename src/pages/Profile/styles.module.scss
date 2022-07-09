@@ -1,6 +1,10 @@
 .profileContainer {
   width: 70vw;
 
+  @media (max-width: 901px) {
+    width: 100%;
+  }
+
   > header {
     background-color: white;
     
@@ -8,6 +12,10 @@
 
     margin: 1rem 0 0 1rem;
     padding: 1rem;
+
+    @media (max-width: 901px) {
+      margin: 2rem 0 0 0;
+    }
 
     .title {
       display: flex;
@@ -26,6 +34,12 @@
         img {
           width: 100%;
         }
+      }
+
+      .userInfo {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
   
       .username {

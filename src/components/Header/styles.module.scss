@@ -5,6 +5,7 @@
 
   display: flex;
   justify-content: space-between;
+  box-shadow: 0 0 10px #898989;
 }
 
 #firstContainer {
@@ -79,10 +80,6 @@
         width: 100%;
       }
     }
-
-    @media (max-width: 901px) {
-      display: none;
-    }
   }
   .dropdown {
     position: absolute;
@@ -106,10 +103,6 @@
         background-color: rgba(0, 0, 34, 0.1);
       }
     }
-
-    @media (max-width: 901px) {
-      display: none;
-    }
   }
 
   .menuMobile {
@@ -120,5 +113,9 @@
     height: 100%;
     color: var(--default-blue);
     font-size: 2rem;
+  }
+
+  @media (max-width: 901px) {
+    position: unset;
   }
 }

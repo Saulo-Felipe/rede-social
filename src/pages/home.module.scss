@@ -1,11 +1,24 @@
 .homeMain {
   padding: 1rem 0 0 1rem;
+
+  @media (max-width: 901px) {
+    padding: 1rem;
+  }
 }
 
 // ---------------------- feed -----------------
 .feed {
   width: 70vw;
   padding: 1rem;
+
+
+  @media (max-width: 901px) {
+    width: 100%; 
+  }
+}
+
+.postsContent {
+
 }
 
 .postContainer {

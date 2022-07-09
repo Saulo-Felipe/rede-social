@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Posts } from "../components/Posts";
+import { Post } from "../components/Post";
 import { RiImageAddFill } from "react-icons/ri";
 import { BiVideoPlus } from "react-icons/bi";
 
@@ -51,7 +51,14 @@ export default function() {
 
       <div className={styles.feed}>
         <div className={styles.postsContent}>
-          <Posts /> 
+          <h1 className={styles.title}>Últimas postagens</h1>
+
+          <Post />
+          <Post />
+          <Post />
+          <Post />
+          <Post />
+          <Post />
         </div>
       </div>
 

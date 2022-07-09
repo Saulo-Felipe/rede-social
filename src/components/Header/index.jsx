@@ -2,16 +2,26 @@ import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
-import Image from "next/image";
+import { isMobile, isDesktop } from "react-device-detect";
+import { MobileMenu } from "./MobileMenu";
 
 import styles from "./styles.module.scss";
 
-export function Header(props) {
+export function Header() {
   const { data, status } = useSession();
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
+
+  useEffect(() => {
+    console.log("Mudou dropdown");
+  }, [dropdownIsOpen])
+
+  useEffect(() => {
+    console.log("Mudou mobile menu");
+  }, [menuMobileIsOpen])
 
   if (status === "authenticated")
     return (
@@ -40,31 +50,49 @@ export function Header(props) {
 
         <div
           id={styles.secondContainer}
-          onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
         >
-          <div className={styles.menuMobile}>
-            <GiHamburgerMenu />
-          </div>
-
-          <div className={styles.userData}>
-            <div className={styles.username}>{data?.user.name}</div>
-
-            <div className={styles.userPicture}>
-              <img src={data?.user.image} />
-            </div>
-          </div>
-
           {
-            dropdownIsOpen
-            ? <div className={styles.dropdown}>
-              <div>
-                <Link href="/Profile">
-                  <a>Meu Perfil</a>
-                </Link>
-              </div>
-              <div onClick={() => signOut({ callbackUrl: "/Login" })}>Sair</div>
-            </div>
-            :<></>
+            isMobile ? ( // Mobile version
+              <>
+                <div className={styles.menuMobile}>
+                  <GiHamburgerMenu onClick={() => setMenuMobileIsOpen(menuMobileIsOpen == false)}/>
+                </div>
+                {
+                  menuMobileIsOpen
+                  ? (
+                    <MobileMenu
+                      menuMobileIsOpen={menuMobileIsOpen}
+                      setMenuMobileIsOpen={setMenuMobileIsOpen}
+                    />
+                  ) : <></>
+                }
+              </>
+            ) : ( // Desktop version
+              <>
+                <div 
+                  className={styles.userData}
+                  onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
+                >
+                  <div className={styles.username}>{data?.user.name}</div>
+
+                  <div className={styles.userPicture}>
+                    <img src={data?.user.image} />
+                  </div>
+                </div>
+                {
+                  dropdownIsOpen
+                  ? <div className={styles.dropdown}>
+                    <div>
+                      <Link href="/Profile">
+                        <a>Meu Perfil</a>
+                      </Link>
+                    </div>
+                    <div onClick={() => signOut({ callbackUrl: "/Login" })}>Sair</div>
+                  </div>
+                  :<></>
+                }
+              </>
+            )
           }
         </div>
       </header>
