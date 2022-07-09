@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
 export default function handler(req, res) {
-  res.status(200).json({ name: 'sem proteção! OK' })
+  res.status(200).json({ name: 'com proteção! OK' })
 }

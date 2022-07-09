@@ -1,10 +1,13 @@
 import { FcGoogle } from "react-icons/fc";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 
 import styles from './styles.module.scss';
 
 export default function Login() {
 
+  function auth() {
+    signIn("google");
+  }
 
   return (
     <main className={styles.Main}>
@@ -15,9 +18,10 @@ export default function Login() {
 
         <div className={styles.authContainer}>
           <div 
-            className={styles.google}><FcGoogle 
-            onClick={() => signIn("google")}
-          /> Entrar com o Google</div>
+            className={styles.google}
+            onClick={auth}
+          >
+          <FcGoogle /> Entrar com o Google</div>
         </div>
 
         <p><strong>Ou</strong></p>
@@ -35,13 +39,4 @@ export default function Login() {
       </div>
     </main>
   );
-}
-
-
-export const getServerSideProps = (context) => {
-  return {
-    props: {
-      user: "luis"
-    }
-  }
 }
