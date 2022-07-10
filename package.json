@@ -9,13 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "next": "12.2.0",
     "next-auth": "^4.9.0",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
     "react": "18.2.0",
     "react-device-detect": "^2.2.2",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
-    "sass": "^1.53.0"
+    "sass": "^1.53.0",
+    "sequelize": "^6.21.2"
   },
   "devDependencies": {
     "eslint": "8.19.0",
