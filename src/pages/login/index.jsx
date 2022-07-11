@@ -1,7 +1,7 @@
 import { FcGoogle } from "react-icons/fc";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
-import styles from './styles.module.scss';
+import styles from './login.module.scss';
 
 export default function Login() {
 

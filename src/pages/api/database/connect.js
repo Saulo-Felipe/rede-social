@@ -5,8 +5,3 @@ export const sequelize = new Sequelize("bmjqzsun", "bmjqzsun", "TqAEuiIySZ2MjlOj
   host: "kesavan.db.elephantsql.com",
   dialect: "postgres"
 });
-
-
-export default function handler(req, res) {
-  res.status(200).json({ Ok: true })
-};

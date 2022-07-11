@@ -6,7 +6,7 @@ const secret = process.env.SECRET || "secret";
 export default async function middleware(req) {
   const token = await getToken({ req, secret });
 
-  if (req.nextUrl.pathname.startsWith("/Login")) {
+  if (req.nextUrl.pathname.startsWith("/login")) {
     if (token) {
       req.nextUrl.pathname = "/";
       return NextResponse.redirect(req.nextUrl);
@@ -16,11 +16,11 @@ export default async function middleware(req) {
       try {
         return NextResponse.next();
       } catch (error) {
-        req.nextUrl.pathname = "/Login";
+        req.nextUrl.pathname = "/login";
         return NextResponse.redirect(req.nextUrl);
       }
     } else {
-      req.nextUrl.pathname = "/Login";
+      req.nextUrl.pathname = "/login";
       return NextResponse.redirect(req.nextUrl);
     }
   }
@@ -29,5 +29,5 @@ export default async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/', '/Profile', '/Login'],
+  matcher: ['/', '/profile', '/login'],
 }

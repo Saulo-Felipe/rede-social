@@ -1,26 +1,3 @@
-.homeMain {
-  padding: 1rem 0 0 1rem;
-
-  @media (max-width: 901px) {
-    padding: 1rem;
-  }
-}
-
-// ---------------------- feed -----------------
-.feed {
-  width: 70vw;
-  padding: 1rem;
-
-
-  @media (max-width: 901px) {
-    width: 100%; 
-  }
-}
-
-.postsContent {
-
-}
-
 .postContainer {
   background-color: white;
   padding: 1.5rem;
@@ -68,6 +45,11 @@
       color: white;
       padding: 0.5rem 2rem;
       border-radius: 0.1rem;
+
+      &:disabled {
+        background-color: #768fbf;
+        cursor: not-allowed;
+      }
     }
   }
 

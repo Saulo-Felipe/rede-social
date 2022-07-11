@@ -4,8 +4,7 @@ import { MdOutlineClose, MdExitToApp } from "react-icons/md";
 import { AiOutlineHome, AiOutlineMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 
-import styles from "./styles.module.scss";
-import { useState } from "react";
+import styles from "./MobileMenu.module.scss";
 
 export function MobileMenu(props) {
   const { data, status } = useSession();
@@ -38,7 +37,7 @@ export function MobileMenu(props) {
           </div>
 
           <div className={styles.link}>
-            <Link href="/Profile">
+            <Link href="/profile">
               <a><CgProfile /> Meu Perfil</a>
             </Link>
           </div>

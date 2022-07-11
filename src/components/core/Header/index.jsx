@@ -2,12 +2,12 @@ import Link from "next/link";
 import { BiSearch } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signOut } from "next-auth/react";
-import { isMobile, isDesktop } from "react-device-detect";
-import { MobileMenu } from "./MobileMenu";
+import { isMobile } from "react-device-detect";
+import { MobileMenu } from "../MobileMenu";
 
-import styles from "./styles.module.scss";
+import styles from "./Header.module.scss";
 
 export function Header() {
   const { data, status } = useSession();
@@ -15,14 +15,7 @@ export function Header() {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
 
-  useEffect(() => {
-    console.log("Mudou dropdown");
-  }, [dropdownIsOpen])
-
-  useEffect(() => {
-    console.log("Mudou mobile menu");
-  }, [menuMobileIsOpen])
-
+  
   if (status === "authenticated")
     return (
       <header className={styles.Header}>
@@ -83,11 +76,11 @@ export function Header() {
                   dropdownIsOpen
                   ? <div className={styles.dropdown}>
                     <div>
-                      <Link href="/Profile">
+                      <Link href="/profile">
                         <a>Meu Perfil</a>
                       </Link>
                     </div>
-                    <div onClick={() => signOut({ callbackUrl: "/Login" })}>Sair</div>
+                    <div onClick={() => signOut({ callbackUrl: "/login" })}>Sair</div>
                   </div>
                   :<></>
                 }

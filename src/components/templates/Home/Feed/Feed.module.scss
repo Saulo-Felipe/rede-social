@@ -1,0 +1,34 @@
+.feed {
+  width: 70vw;
+  padding: 1rem;
+
+  
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+
+    font-size: 3rem;
+    color: var(--default-blue);
+
+    @keyframes loading {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      50% { transform: rotate(180deg); }
+      75% { transform: rotate(270deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    svg {
+      transition: all 200ms;
+      animation-name: loading;
+      animation-duration: 500ms;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+  }
+
+
+  @media (max-width: 901px) {
+    width: 100%; 
+  }
+}

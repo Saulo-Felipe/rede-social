@@ -5,7 +5,7 @@
 
 .post {
   background-color: white;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 0.5rem;
   margin-top: 2rem;
 
@@ -16,8 +16,8 @@
     .profilePictureContainer {
       border-radius: 50%;
 
-      height: 3rem;
-      width: 3rem;
+      height: 2rem;
+      width: 2rem;
 
       display: flex;
       align-items: center;
@@ -30,6 +30,12 @@
         //height: 2.5rem;
         width: 100%;
       }
+
+    }
+
+    .username {
+      font-size: 1.05rem;
+      color: var(--gray-4);
     }
   }
 
@@ -45,7 +51,7 @@
   footer {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 2rem;
 
     div {
       display: flex;
@@ -59,9 +65,4 @@
     }
 
   }
-}
-
-.username {
-  font-size: 1.1rem;
-  color: var(--gray-4);
 }

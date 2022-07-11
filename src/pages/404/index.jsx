@@ -1,7 +1,7 @@
 import { TbFaceIdError } from "react-icons/tb";
 import Link from "next/link";
 
-import styles from "./styles.module.scss";
+import styles from "./404.module.scss";
 
 
 export default function Custom404() {

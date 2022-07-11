@@ -1,8 +1,8 @@
 import { IoMdAddCircle } from "react-icons/io";
 import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
-import { Post } from "../../components/Post";
+import { Post } from "../../components/utils/Post";
 
-import styles from "./styles.module.scss";
+import styles from "./profile.module.scss";
 
 export default function Profile() {
 
@@ -27,7 +27,7 @@ export default function Profile() {
         <div className={styles.bottomContent}>
           <div className={styles.iconContainer}>
             <AiOutlineUserAdd />
-            200 Seguidores
+            184 Seguidores
           </div>
 
           <div className={styles.iconContainer}>
