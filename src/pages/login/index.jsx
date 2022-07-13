@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import styles from './login.module.scss';
 
 export default function Login() {
-
+  console.log(process.env.NEXT_PUBLIC_SECRET)
   function auth() {
     signIn("google");
   }

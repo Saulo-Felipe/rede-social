@@ -3,15 +3,16 @@ import { sequelize } from "../database/connect";
 export default async function newPost(request, response) {
   try {
     if (request.method === "POST") {
-      const { post, userEmail } = request.body;
+      const { post, userEmail, date } = request.body;
       
       if (post && post.length > 0 && userEmail && userEmail.length > 0) {
 
         await sequelize.query(`
-          INSERT INTO "Post" (content, fk_user_id)
+          INSERT INTO "Post" (content, fk_user_id, created_on)
           VALUES (
             '${post}', 
-            ( select user_id from "User" where email = '${userEmail}' )
+            ( select user_id from "User" where email = '${userEmail}' ),
+            '${date}'
           );        
         `);
 

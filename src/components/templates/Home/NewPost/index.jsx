@@ -17,23 +17,35 @@ export function NewPost({ setAllPosts, allPosts, setIsLoading }) {
       setPostTxt("");
       setIsLoading(true);
 
-      const { data } = await api.post("/newPost", { post: postTxt, userEmail: session.user.email });
+      let date = String(new Date()).split(" ");
+      date = date[2] + "," + date[1] + "," + date[3] + "," + date[4];
 
-      setIsLoading(false);
+      try {
+        const { data } = await api.post("/newPost", { 
+          post: postTxt, 
+          userEmail: session.user.email,
+          date
+        });
   
-      if (data.success) {
-        setAllPosts([
-          {
-            username: session.user.name,
-            user_picture: session.user.image,
-            post: {
-              content: postTxt
-            }
-          },
-          ...allPosts
-        ]);
-
-      } else {
+        setIsLoading(false);
+    
+        if (data.success) {
+          setAllPosts([
+            {
+              username: session.user.name,
+              user_picture: session.user.image,
+              post: {
+                content: postTxt
+              }
+            },
+            ...allPosts
+          ]);
+  
+        } else {
+          alert("Erro ao criar post");
+        }
+      } catch(e) {
+        setIsLoading(false);
         alert("Erro ao criar post");
       }
     }

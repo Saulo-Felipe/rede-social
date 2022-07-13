@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 :root {
@@ -37,7 +38,13 @@ body {
 }
 
 body, input, textarea, select, button {
-  font: 400 1rem "Roboto", sans-serif;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4, h5, h6, strong {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
 }
 
 button {

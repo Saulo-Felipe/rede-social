@@ -1,21 +1,23 @@
 import { IoMdAddCircle } from "react-icons/io";
 import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
 import { Post } from "../../components/utils/Post";
+import { useRouter } from "next/router";
+import { api } from "../../services/api";
 
 import styles from "./profile.module.scss";
 
-export default function Profile() {
+export default function Profile({ user }) {
 
   return ( 
     <div className={styles.profileContainer}>
       <header>
         <div className={styles.title}>
           <div className={styles.imageContainer}>
-            <img src={"/images/profile-test.webp"} alt="profile" />
+            <img src={user.image_url} alt="profile" />
           </div>
 
           <div className={styles.userInfo}>
-            <div className={styles.username}>Nome de usuário</div>
+            <div className={styles.username}>{user.username}</div>
             <div className={styles.followButton}>
               <button><IoMdAddCircle /> Seguir </button>
             </div>
@@ -39,15 +41,33 @@ export default function Profile() {
 
       <section>
         <h2>Publicações de {"<username>"} </h2>
-
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+        
+        <Post 
+            key={1}
+            userName={"post.username"}
+            userPicture={"post.user_picture"}
+            content={"post.post.content"}
+            createdOn={"post.post.created_on"}        
+        />
       </section>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const { data } = await api.post("/verifyUser", {userID: params.userID });
+
+
+  if (data.userExists) {
+    return {
+      props: {
+        user: data.user
+      }
+    }
+  }
+
+  return {
+    notFound: true
+  }
 }

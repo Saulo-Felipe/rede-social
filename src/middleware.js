@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const secret = process.env.SECRET || "secret";
+const secret = process.env.NEXT_PUBLIC_SECRET || "secret";
 
 export default async function middleware(req) {
   const token = await getToken({ req, secret });
@@ -29,5 +29,5 @@ export default async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/', '/profile', '/login'],
+  matcher: ['/', '/profile/:userID*', '/login', '/search/:userName*'],
 }

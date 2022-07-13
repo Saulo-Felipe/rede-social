@@ -3,7 +3,8 @@ import { sequelize } from "../database/connect"
 export default async function getRecentPosts(request, response) {
   try {
     var [result] = await sequelize.query(`
-      SELECT "User".username, "Post".content, "User".image_url FROM "Post"
+      SELECT "User".username, "User".user_id, "Post".created_on, "Post".content, "User".image_url 
+      FROM "Post"
       INNER JOIN "User" ON "User".user_id = "Post".fk_user_id
       ORDER BY post_id DESC;
     `);

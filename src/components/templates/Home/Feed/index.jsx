@@ -17,11 +17,14 @@ export function Feed({ allPosts, setAllPosts, isLoading, setIsLoading }) {
         let posts = [];
   
         for (let i = 0; i < data.posts.length; i++) {
+          let { username, user_id, image_url, content, created_on } = data.posts[i];
           posts.push({
-            username: data.posts[i].username,
-            user_picture: data.posts[i].image_url,
+            username,
+            user_picture: image_url,
+            userID: user_id,
             post: {
-              content: data.posts[i].content,
+              content,
+              created_on,
             }
           });
         }
@@ -48,6 +51,8 @@ export function Feed({ allPosts, setAllPosts, isLoading, setIsLoading }) {
             userName={post.username}
             userPicture={post.user_picture}
             content={post.post.content}
+            createdOn={post.post.created_on}
+            userID={post.userID}
           />
         )
       }

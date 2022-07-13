@@ -24,7 +24,6 @@ export default NextAuth({
         SELECT * FROM "User" WHERE email = '${user.email}';
       `);
 
-      console.log(user);
 
       if (result.length === 0) {
         await sequelize.query(`
@@ -42,5 +41,5 @@ export default NextAuth({
     },
   },
   jwt: { encryption: true },
-  secret: process.env.SECRET,
+  secret: process.env.NEXT_PUBLIC_SECRET,
 });

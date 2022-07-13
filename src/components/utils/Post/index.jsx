@@ -1,8 +1,13 @@
-import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
+import { useState } from "react";
+import Link from "next/link";
 
 import styles from "./Post.module.scss";
 
-export function Post({ userName, userPicture, content }) {
+export function Post({ userID, userName, userPicture, content, createdOn }) {
+  const [like, setLike] = useState(false);
+  const [dislike, setDislike] = useState(false);
+  
   return (
   <div className={styles.post}>
     <header>
@@ -13,7 +18,13 @@ export function Post({ userName, userPicture, content }) {
         />
       </div>
       
-      <div className={styles.username}>{userName}</div>
+      <div className={styles.username}>
+        <Link href={`${process.env.NEXT_PUBLIC_SERVER_URL}/profile/${userID}`}>
+          <a>
+            {userName}
+          </a>
+        </Link>
+      </div>
     </header>
     
     <hr />
@@ -24,13 +35,31 @@ export function Post({ userName, userPicture, content }) {
 
     <footer>
       <div>
-        <AiOutlineLike className={styles.like} />
-        100
+        <div className={styles.like}
+          onMouseEnter={() => like ? null : setLike(true)}
+          onMouseLeave={() => !like ? null : setLike(false)}
+        >
+          {
+            like ? <AiFillLike /> : <AiOutlineLike />
+          }
+          100
+        </div>
+
+        <div 
+          className={styles.dislike}
+          onMouseEnter={() => dislike ? null : setDislike(true)}
+          onMouseLeave={() => !dislike ? null : setDislike(false)}
+        >
+          {
+            dislike ? <AiFillDislike /> : <AiOutlineDislike /> 
+          }
+          
+          87
+        </div>
       </div>
 
-      <div className={styles.dislike}>
-        <AiOutlineDislike />
-        87
+      <div className={styles.publicationDate}>
+        {createdOn.replace(",", "/").replace(",", "/").replace(",", " às " )}
       </div>
     </footer>
   </div>  
