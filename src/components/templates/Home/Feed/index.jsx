@@ -1,6 +1,7 @@
 import { Post } from "../../../utils/Post";
 import { AiOutlineLoading } from "react-icons/ai";
 import { useEffect, useState } from "react"; 
+import { v4 as uuid } from 'uuid';
 
 import styles from "./Feed.module.scss";
 
@@ -8,6 +9,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
   let delayTime = 0;
 
   useEffect(() => {
+    console.log("[Feed] renderizou")
     getRecentPosts(true);
   }, [])
 
@@ -22,12 +24,13 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
 
       <h1 className={styles.title}>Últimas postagens</h1>
       {
-        allPosts.map((post, index) => {
-          delayTime == 5 ? delayTime = 0 : delayTime++
+        allPosts.map((post) => {
+          delayTime == 5 ? delayTime = 0 : delayTime++;
+          console.log("[renderizou post] ");
 
           return (
             <Post
-              key={index}
+              key={post.id}
               data={post}
               time={750*delayTime}
             />

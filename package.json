@@ -19,7 +19,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "sass": "^1.53.0",
-    "sequelize": "^6.21.2"
+    "sequelize": "^6.21.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "8.19.0",

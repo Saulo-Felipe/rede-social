@@ -30,6 +30,7 @@ export function Post({ data, time }) {
 
   useEffect(() => {
     setLoadingLike(true);
+    console.log(`[${content}] Renderizou!`)
 
     setTimeout(async () => {
       const {data} = await api.post("/userLikedPost", { postID: id, userID: fk_user_id });
