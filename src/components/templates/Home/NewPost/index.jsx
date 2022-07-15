@@ -6,46 +6,37 @@ import { useSession } from "next-auth/react";
 
 import styles from "./NewPost.module.scss";
 
-export function NewPost({ setAllPosts, allPosts, setIsLoading }) {
+export function NewPost({ setIsLoading, getRecentPosts }) {
   const [inputIsOpen, setInputIsOpen] = useState(false);
-  const [postTxt, setPostTxt] = useState("");
+  const [postContent, setPostContent] = useState("");
   const {data: session} = useSession();
 
+  function getCurrentDate() {
+    let date = String(new Date()).split(" ");
+    date = date[2] + "," + date[1] + "," + date[3] + "," + date[4];
+    
+    return date;
+  }
 
   async function handlerNewPost() {
-    if (postTxt.length > 0) {
-      setPostTxt("");
+    if (postContent.length > 0) {
+      setPostContent("");
       setIsLoading(true);
+      
+      const { data } = await api.post("/createPost", { 
+        postContent, 
+        userEmail: session.user.email,
+        date: getCurrentDate()
+      });
 
-      let date = String(new Date()).split(" ");
-      date = date[2] + "," + date[1] + "," + date[3] + "," + date[4];
+      setIsLoading(false);
+      setInputIsOpen(false);
 
-      try {
-        const { data } = await api.post("/newPost", { 
-          post: postTxt, 
-          userEmail: session.user.email,
-          date
-        });
   
-        setIsLoading(false);
-    
-        if (data.success) {
-          setAllPosts([
-            {
-              username: session.user.name,
-              user_picture: session.user.image,
-              post: {
-                content: postTxt
-              }
-            },
-            ...allPosts
-          ]);
-  
-        } else {
-          alert("Erro ao criar post");
-        }
-      } catch(e) {
-        setIsLoading(false);
+      if (data.success) {
+        getRecentPosts(true);
+
+      } else {
         alert("Erro ao criar post");
       }
     }
@@ -62,8 +53,8 @@ export function NewPost({ setAllPosts, allPosts, setIsLoading }) {
         ? <textarea 
           type={"text"} 
           placeholder={"Coloque aqui seu texto :)"}
-          value={postTxt}
-          onChange={(e) => setPostTxt(e.target.value)} 
+          value={postContent}
+          onChange={(e) => setPostContent(e.target.value)} 
           onBlur={ ({ target }) => target.value.length === 0 ? setInputIsOpen(false) : "" }
           autoFocus={true}
         /> 
@@ -86,7 +77,7 @@ export function NewPost({ setAllPosts, allPosts, setIsLoading }) {
         </div>
 
         <button
-          disabled={postTxt.length == 0}
+          disabled={postContent.length == 0}
           onClick={handlerNewPost}
         >Publicarr</button>
       </div>

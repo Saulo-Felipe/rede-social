@@ -2,31 +2,30 @@
   width: 70vw;
   padding: 5rem 0 0 0;
 
-  
   .loadingContainer {
+    font-size: 2.5rem;
+  }
+  
+  .loadMorePosts {
     display: flex;
     justify-content: center;
+    margin-top: 3rem;
 
-    font-size: 3rem;
-    color: var(--default-blue);
+    button {
+      border: none;
+      padding: 0.8rem 2.5rem;
+      background: var(--default-blue);
+      color: white;
+      border-radius: 0.2rem;
+      font-size: 0.85rem;
+      transition: all 300ms;
+      font-weight: 500;
 
-    @keyframes loading {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(90deg); }
-      50% { transform: rotate(180deg); }
-      75% { transform: rotate(270deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    svg {
-      transition: all 200ms;
-      animation-name: loading;
-      animation-duration: 500ms;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
+      &:hover {
+        filter: brightness(0.9);
+      }
     }
   }
-
 
   @media (max-width: 901px) {
     width: 100%; 

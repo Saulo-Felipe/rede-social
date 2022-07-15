@@ -100,5 +100,15 @@
     h2 {
       margin-top: 2rem;
     }
+
+    .notHavePosts {
+      margin: 2rem 0 0 0;
+      font-size: 1.5rem;
+      border-left: solid 2px var(--gray-4);
+      padding-left: 1rem;
+      background-color: rgba(255, 255, 255, 0.596);
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
   }
 }

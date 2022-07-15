@@ -27,7 +27,7 @@ export default NextAuth({
 
       if (result.length === 0) {
         await sequelize.query(`
-          INSERT INTO "User" (user_id, username, email, image_url)
+          INSERT INTO "User" (id, username, email, image_url)
           VALUES (
             '${user.id}',
             '${user.name}',

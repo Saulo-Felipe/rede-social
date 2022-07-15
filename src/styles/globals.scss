@@ -61,11 +61,40 @@ a {
 }
 
 #home_main_feed {
-  padding: 1rem 0 0 1rem;
+  padding: 1rem 0 5rem 1rem;
 
   @media (max-width: 901px) {
     padding: 1rem;
   }
 }
 
+.loadingContainer {
+  display: flex;
+  justify-content: center;
 
+  color: var(--default-blue);
+
+  @keyframes loading {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(90deg); }
+    50% { transform: rotate(180deg); }
+    75% { transform: rotate(270deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  svg {
+    transition: all 200ms;
+    animation-name: loading;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+}
+
+.color-red {
+  color: red;
+}
+
+.color-blue {
+  color: var(--default-blue);
+}
