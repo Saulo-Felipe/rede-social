@@ -2,19 +2,17 @@ import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from "reac
 import { CgSpinnerTwo } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-import styles from "./Post.module.scss";
 import { api } from "../../../services/api";
 
+
+import styles from "./Post.module.scss";
+
 export function Post({ data, time }) {
-  const [like, setLike] = useState(false);
-  const [dislike, setDislike] = useState(false);
-  const [likedOrDisliked, setLikedOrDisliked] = useState(0);
   const [loadingLike, setLoadingLike] = useState(true);
-  const { 
+  const {
     id,
-    content, 
-    created_on, 
+    content,
+    created_on,
     fk_user_id,
     image_url,
     dislikes_amount,
@@ -22,39 +20,82 @@ export function Post({ data, time }) {
     username
   } = data;
 
+  const [action, setAction] = useState({
+    isLike: false,
+    isDislike: false,
+    userAction: 0,
+    likeAmount: Number(likes_amount),
+    dislikeAmount: Number(dislikes_amount)
+  });
+
   useEffect(() => {
     setLoadingLike(true);
+
     setTimeout(async () => {
       const {data} = await api.post("/userLikedPost", { postID: id, userID: fk_user_id });
 
       setLoadingLike(false);
-      
+
       if (data.type === "like") {
-        console.log(fk_user_id + " liked " + id);
+        setAction({ ...action, isLike: true, userAction: 1 });
       } else if (data.type === "disliked") {
-        console.log(fk_user_id + " disliked " + id);
-      } else {
-        //console.log("No action for "+id);
-      }      
+        setAction({ ...action, isDislike: true, userAction: 2 });
+      }
+
     }, time);
   }, [])
-  
+
   function handleLike(type) {
-    if (type === "mouseEnter" && (likedOrDisliked == 0 || likedOrDisliked == 2)) {
-      setLike(true);
-    } 
-    else if (likedOrDisliked != 1) {
-      setLike(false);
+    if (type === "mouseEnter") {
+      setAction({ ...action, isLike: true });
+    }
+    else if (action.userAction !== 1) {
+      setAction({ ...action, isLike: false });
     }
   }
 
   function handleDislike(type) {
-    if (type === "mouseEnter" && (likedOrDisliked == 0 || likedOrDisliked == 1)) {
-      setDislike(true);
-    } 
-    else if (likedOrDisliked != 2) {
-      setDislike(false);
+    if (type === "mouseEnter") {
+      setAction({ ...action, isDislike: true });
     }
+    else if (action.userAction != 2) {
+      setAction({ ...action, isDislike: false });
+    }
+  }
+
+  async function handleNewLike() {
+    console.log("New like")
+
+    if (action.userAction == 1) {
+      const { data } = await api.post("/deleteAction", {
+        userID: fk_user_id,
+        postID: id,
+      });
+      
+      if (data.success) {
+        setAction({ ...action, likeAmount: action.likeAmount-1, isLike: false, userAction: 0 });
+      } else {
+        alert("Ocorreu um erro ao remover curtida")
+      }
+
+    } else {
+      const { data } = await api.post(`/newAction`, {
+        userID: fk_user_id,
+        postID: id,
+        action: "Like",
+        deleteOthers: action.userAction == 2
+      });
+
+      if (data.success) {
+        setAction({ ...action , isLike: true, userAction: 1, likeAmount: action.likeAmount+1 })
+      } else {
+        alert("Erro ao adicionar curtida")
+      }
+    }
+  }
+
+  function handleNewDislike() {
+    console.log("New dislike")
   }
 
 
@@ -62,12 +103,12 @@ export function Post({ data, time }) {
     <div className={styles.post}>
       <header>
         <div className={styles.profilePictureContainer}>
-          <img 
+          <img
             className={styles.profilePicture}
-            src={image_url} 
+            src={image_url}
           />
         </div>
-        
+
         <div className={styles.username}>
           <Link href={`${process.env.NEXT_PUBLIC_SERVER_URL}/profile/${fk_user_id}`}>
             <a>
@@ -76,7 +117,7 @@ export function Post({ data, time }) {
           </Link>
         </div>
       </header>
-      
+
       <hr />
 
       <section className={styles.postContainer}>
@@ -88,26 +129,43 @@ export function Post({ data, time }) {
           <div className={styles.like}
             onMouseEnter={() => handleLike("mouseEnter")}
             onMouseLeave={() => handleLike("mouseLeave")}
+            onClick={handleNewLike}
           >
-            { like ? <AiFillLike /> : <AiOutlineLike /> }
-            { 
+            {
               loadingLike
-              ? <div className="loadingContainer color-blue"><CgSpinnerTwo /></div> 
-              : likes_amount 
+              ? (
+                <div style={{ color: "gray" }}>
+                  <AiOutlineLike style={{ color: "gray" }} /> 0
+                </div>
+              ) : (
+                <>
+                  { action.isLike ? <AiFillLike  /> : <AiOutlineLike /> }
+                  { action.likeAmount }
+                  {/* // ? <div className="loadingContainer color-blue"><CgSpinnerTwo /></div>  */}
+                </>
+              )
             }
           </div>
 
-          <div 
+          <div
             className={styles.dislike}
             onMouseEnter={() => handleDislike("mouseEnter")}
             onMouseLeave={() => handleDislike("mouseLeave")}
+            onClick={handleNewDislike}
           >
-            { dislike ? <AiFillDislike /> : <AiOutlineDislike /> }
-            
-            { 
-              loadingLike  
-              ? <div className="loadingContainer color-red"><CgSpinnerTwo /></div> 
-              : dislikes_amount
+            {
+              loadingLike
+              ? (
+                <div style={{ color: "gray" }}>
+                  <AiFillDislike style={{ color: "gray" }} /> 0
+                </div>
+              ) : (
+                <>
+                  { action.isDislike ? <AiFillDislike  /> : <AiOutlineDislike /> }
+                  { action.dislikeAmount }
+                  {/* // ? <div className="loadingContainer color-blue"><CgSpinnerTwo /></div>  */}
+                </>
+              )
             }
           </div>
         </div>
@@ -118,6 +176,6 @@ export function Post({ data, time }) {
           }
         </div>
       </footer>
-    </div>  
+    </div>
   );
 }

@@ -60,7 +60,7 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     
-    div {
+    > div {
       display: flex;
       align-items: center;
       margin-right: 1rem;
@@ -76,6 +76,15 @@
       transition: all 400ms;
       opacity: 0.8;
       cursor: pointer;
+      margin-right: 1rem;
+      
+      display: flex;
+      align-items: center;  
+
+      > div {
+        display: flex;
+        align-items: center;        
+      }
 
       &:hover {
         opacity: 1;
