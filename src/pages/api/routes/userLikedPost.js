@@ -11,7 +11,7 @@ export default async function userLikedPost(request, response) {
   if (result.length !== 0) {
     if (result[0].type == 0)
       return response.json({ success: true, type: "like" });
-    else if (result[0] == 1)
+    else if (result[0].type == 1)
       return response.json({ success: true, type: "dislike" });
   }
 

@@ -1,13 +1,14 @@
 import { IoMdAddCircle } from "react-icons/io";
-import { AiOutlineUserAdd, AiOutlineUsergroupAdd, AiOutlineLoading } from "react-icons/ai";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
+import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
 import { Post } from "../../components/utils/Post";
 import { api } from "../../services/api";
-
-import styles from "./profile.module.scss";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-export default function Profile({ user }) {
+import styles from "./profile.module.scss";
 
+export default function Profile({ user, isMyProfile }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -36,9 +37,14 @@ export default function Profile({ user }) {
 
           <div className={styles.userInfo}>
             <div className={styles.username}>{user.username}</div>
-            <div className={styles.followButton}>
-              <button><IoMdAddCircle /> Seguir </button>
-            </div>
+            {
+              !isMyProfile 
+              ? (
+                <div className={styles.followButton}>
+                  <button><IoMdAddCircle /> Seguir </button>
+                </div>
+              ) : <></>
+            }
           </div>
         </div>
 
@@ -58,10 +64,20 @@ export default function Profile({ user }) {
       </header>
 
       <section>
-        <h2>Publicações de {user.username.split(" ")[0]} </h2>
+
+        <h2>
+        {
+          isMyProfile 
+          ? 'Minhas publicações'
+          : `Publicações de ${user.username.split(" ")[0]}`
+        }
+        </h2>
+
+        <hr />
+
         {
           loading
-            ? <div className={"loadingContainer"}><AiOutlineLoading /></div>
+            ? <div className={"loadingContainer"}><CgSpinnerTwoAlt className={styles.loadingIcon} /></div>
             : <></>
           }
 
@@ -70,10 +86,11 @@ export default function Profile({ user }) {
           ? (
             <div className={styles.notHavePosts}>Nenhuma publicação ainda :(</div>
           ) : (
-            posts.map((post, index) =>
+            posts.map(post =>
               <Post
-                  key={index}
-                  data={post}
+                key={post.id}
+                data={post}
+                currentUserId={user.id}
               />
             )
           )
@@ -87,10 +104,13 @@ export async function getServerSideProps(context) {
   const { params } = context;
   const { data } = await api.post("/getProfile", {userID: params.userID });
 
+  const {user} = await getSession(context);
+
   if (data.userExists) {
     return {
       props: {
-        user: data.user
+        user: data.user,
+        isMyProfile: user.id === data.user.id
       }
     }
   }

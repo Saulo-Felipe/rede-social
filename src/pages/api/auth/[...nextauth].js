@@ -19,12 +19,11 @@ export default NextAuth({
     })
   ],
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account, profile, email, credentials }) {
       const [result] = await sequelize.query(`
         SELECT * FROM "User" WHERE email = '${user.email}';
       `);
-
-
+      
       if (result.length === 0) {
         await sequelize.query(`
           INSERT INTO "User" (id, username, email, image_url)
@@ -39,6 +38,11 @@ export default NextAuth({
 
       return true;
     },
+    async session({ session, user, token }) {
+      session.user.id = token.sub;
+
+      return session;
+    }
   },
   jwt: { encryption: true },
   secret: process.env.NEXT_PUBLIC_SECRET,

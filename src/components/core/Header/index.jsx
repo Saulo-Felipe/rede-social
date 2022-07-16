@@ -76,7 +76,7 @@ export function Header() {
                   dropdownIsOpen
                   ? <div className={styles.dropdown}>
                     <div>
-                      <Link href="/profile">
+                      <Link href={`/profile/${data.user.id}`}>
                         <a>Meu Perfil</a>
                       </Link>
                     </div>

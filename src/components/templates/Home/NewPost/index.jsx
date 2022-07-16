@@ -29,7 +29,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
       
       const { data } = await api.post("/createPost", { 
         postContent, 
-        userEmail: session.user.email,
+        userID: session.user.id,
         date: getCurrentDate()
       });
 
@@ -83,7 +83,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
         <button
           disabled={postContent.length == 0}
           onClick={handlerNewPost}
-        >Publicarr</button>
+        >Publicar</button>
       </div>
     </div>    
   );
