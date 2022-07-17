@@ -1,7 +1,7 @@
 import { sequelize } from "../database/connect";
 
 export default async function getProfile(request, response) {
-  const { userID } = request.body;
+  const { userID, currentUserId } = request.body;
 
   let [user] = await sequelize.query(`
     SELECT id, username, image_url, created_on 
@@ -9,7 +9,7 @@ export default async function getProfile(request, response) {
     WHERE id = '${userID}';
   `);
 
-  if (user.length !== 0) {
+  if (user.length !== 0) { // Get followers and followings
     user = user[0];
 
     const [following] = await sequelize.query(`
@@ -25,10 +25,23 @@ export default async function getProfile(request, response) {
     user.following = following[0].following;
     user.followers = followers[0].followers;
 
-    return response.json({ success: true, userExists: true, user });
+    // Is follower?
+    const [isFollowing] = await sequelize.query(`
+      SELECT id FROM "Follower"
+      WHERE fk_user_id = '${currentUserId}' 
+      AND fk_follower_id = '${userID}'
+    `);
+
+    return response.json({ 
+      success: true, 
+      userExists: true, 
+      user,
+      isFollowing: isFollowing.length !== 0 
+    });
+
+  } else {
+    return response.json({ success: true, userExists: false });
   }
 
-  else 
-    return response.json({ success: true, userExists: false });
 
 }

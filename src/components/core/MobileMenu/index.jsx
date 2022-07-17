@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MdOutlineClose, MdExitToApp } from "react-icons/md";
 import { AiOutlineHome, AiOutlineMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
+import Image from "next/image";
 
 import styles from "./MobileMenu.module.scss";
 
@@ -16,7 +17,12 @@ export function MobileMenu(props) {
         <header>
           <div>
             <div className={styles.imgContainer}>
-              <img src={data?.user.image} />
+              <Image 
+                alt={"user profile"}
+                src={data?.user.image} 
+                width={"100%"}
+                height={"100%"}
+              />
             </div>
 
             <div className={styles.username}>{data?.user.name}</div>

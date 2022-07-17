@@ -34,13 +34,19 @@
 
   margin-top: 1rem;
 
+  .imageContainer {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+
   > div {
     display: flex;
     align-items: center;
-
-    img {
-      height: 2rem;
-    }
 
     > div {
       margin-right: 0.5rem;

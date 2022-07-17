@@ -3,8 +3,6 @@ import { sequelize } from "../database/connect";
 export default async function createPost(request, response) {
   const { postContent, userID, date } = request.body;
 
-  console.log
-
   if (postContent && postContent.length > 0 && userID && userID.length > 0) {
 
     await sequelize.query(`

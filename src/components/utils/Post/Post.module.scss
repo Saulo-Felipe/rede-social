@@ -26,11 +26,9 @@
       overflow: hidden;
       margin-right: 0.75rem;
 
-      .profilePicture {
-        //height: 2.5rem;
-        width: 100%;
+      img {
+        border-radius: 50%;
       }
-
     }
 
     .username {

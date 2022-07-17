@@ -1,4 +1,5 @@
 import { useSession } from 'next-auth/react';
+import Image from "next/image";
 
 import styles from './OnlineUsers.module.scss';
 
@@ -20,7 +21,14 @@ export function OnlineUsers() {
             <div>
               <div>Saulo Felipe</div>
 
-              <img src='/images/temporary-logo.svg' />
+              <div className={styles.imageContainer}>
+                <Image 
+                  alt={"user profile"}
+                  src={"/images/temporary-logo.svg"}
+                  width={"100%"}
+                  height={"100%"} 
+                />
+              </div>
             </div>
 
           </div>

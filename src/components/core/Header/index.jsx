@@ -1,11 +1,18 @@
-import Link from "next/link";
-import { BiSearch } from "react-icons/bi";
-import { GiHamburgerMenu } from "react-icons/gi";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import { MobileMenu } from "../MobileMenu";
+
+import { IoMdExit } from "react-icons/io";
+import { BiSearch } from "react-icons/bi";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { VscSettingsGear } from "react-icons/vsc";
+import { FaUserCircle } from "react-icons/fa";
+
+import Image from "next/image";
+import Link from "next/link";
+
 
 import styles from "./Header.module.scss";
 
@@ -15,7 +22,6 @@ export function Header() {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
 
-  
   if (status === "authenticated")
     return (
       <header className={styles.Header}>
@@ -23,11 +29,15 @@ export function Header() {
 
           <Link href={"/"}>
             <a>
-              <img
-                src={"/images/temporary-logo.svg"}
-                className={styles.logotipoImg}
-                alt={"profile"}
-              />
+              <div className={styles.logoContainer}>
+                <Image
+                  src={"/images/temporary-logo.svg"}
+                  className={styles.logotipoImg}
+                  alt={"profile"}
+                  width={"100%"}
+                  height={"100%"}
+                />                
+              </div>
             </a>
           </Link>
 
@@ -64,26 +74,40 @@ export function Header() {
               <>
                 <div 
                   className={styles.userData}
-                  onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
                 >
+                  <div
+                    className={styles.dropdownContainer}
+                    onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
+                  >
+                    <VscSettingsGear />
+                    {
+                      dropdownIsOpen
+                      ? <div className={styles.dropdown}>
+                        <div>
+                          <Link href={`/profile/${data.user.id}`}>
+                            <a><FaUserCircle /> Meu Perfil</a>
+                          </Link>
+                        </div>
+
+                        <div onClick={() => signOut({ callbackUrl: "/login" })}>
+                          <IoMdExit /> Sair
+                        </div>
+                      </div>
+                      :<></>
+                    }                    
+                  </div>
+
                   <div className={styles.username}>{data?.user.name}</div>
 
                   <div className={styles.userPicture}>
-                    <img src={data?.user.image} />
+                    <Image 
+                      alt={"user"}
+                      src={data?.user.image} 
+                      width={"100%"}
+                      height={"100%"}
+                    />
                   </div>
                 </div>
-                {
-                  dropdownIsOpen
-                  ? <div className={styles.dropdown}>
-                    <div>
-                      <Link href={`/profile/${data.user.id}`}>
-                        <a>Meu Perfil</a>
-                      </Link>
-                    </div>
-                    <div onClick={() => signOut({ callbackUrl: "/login" })}>Sair</div>
-                  </div>
-                  :<></>
-                }
               </>
             )
           }

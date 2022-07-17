@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react";
+import { api } from "../../../services/api";
+
 import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
 import { CgSpinnerTwo } from "react-icons/cg";
-import { useEffect, useState } from "react";
+
 import Link from "next/link";
-import { api } from "../../../services/api";
+import Image from "next/image";
 
 
 import styles from "./Post.module.scss";
@@ -30,6 +33,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
   useEffect(() => {
     setLoadingLike(true);
+    console.log("ID recebido: ", currentUserId)
 
     setTimeout(async () => {
       const {data} = await api.post("/userLikedPost", { postID: id, userID: currentUserId });
@@ -83,7 +87,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         });
 
         const { data } = await api.post("/deleteAction", {
-          userID: fk_user_id,
+          userID: currentUserId,
           postID: id,
           action: "Like"
         });
@@ -112,7 +116,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         });
 
         const { data } = await api.post(`/newAction`, {
-          userID: fk_user_id,
+          userID: currentUserId,
           postID: id,
           action: "Like",
           deleteOthers: oldUserAction == 2
@@ -150,7 +154,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         });
 
         const { data } = await api.post("/deleteAction", {
-          userID: fk_user_id,
+          userID: currentUserId,
           postID: id,
           action: "Dislike"
         });
@@ -179,7 +183,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         })
 
         const { data } = await api.post(`/newAction`, {
-          userID: fk_user_id,
+          userID: currentUserId,
           postID: id,
           action: "Dislike",
           deleteOthers: oldUserAction == 1
@@ -208,9 +212,11 @@ export function Post({ data: postInfo, time, currentUserId }) {
     <div className={styles.post}>
       <header>
         <div className={styles.profilePictureContainer}>
-          <img
-            className={styles.profilePicture}
+          <Image
+            alt={"user profile"}
             src={image_url}
+            width={"100%"}
+            height={"100%"}
           />
         </div>
 

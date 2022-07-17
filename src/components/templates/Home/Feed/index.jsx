@@ -18,8 +18,6 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
 
   const { data: session } = useSession();
 
-  console.log("Session: ", session)
-
   return (
     <div className={styles.feed}>
 

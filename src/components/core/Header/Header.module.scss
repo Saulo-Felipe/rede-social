@@ -1,7 +1,7 @@
 .Header {
   background-color: white;
   width: 100%;
-  padding: 1rem;
+  padding: 0.75rem;
 
   display: flex;
   justify-content: space-between;
@@ -12,13 +12,14 @@
   display: flex;
   align-items: center;
 
-  a {
+  > a {
     margin-right: 1rem;
-    display: flex;
+  }
 
-    img {
-      height: 3rem;
-    }
+  .logoContainer {
+    display: flex;
+    height: 3rem;      
+    width: 3rem;
   }
 
   .searchContainer {
@@ -60,6 +61,24 @@
     display: flex;
     align-items: center;
 
+    .dropdownContainer {
+      margin-right: 1rem;
+      border-radius: 50%;
+      padding: 0.2rem;
+      background-color: var(--gray-3);
+
+      width: 2.5rem;
+      height: 2.5rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        font-size: 1.3rem;
+      }
+    }
+
     .username {
       margin-right: 0.75rem;
       font-size: 1.1rem;
@@ -79,16 +98,16 @@
       justify-content: center;
 
       img {
-        width: 100%;
+        border-radius: 50%;
       }
     }
   }
   .dropdown {
     position: absolute;
     background-color: white;
-    border: solid 1px rgb(0, 0, 0, 0.3);
+    border: solid 1px rgb(0, 0, 0, 0.2);
 
-    right: 0;
+    right: 3rem;
     left: 0;
     top: 106%;
 
@@ -100,6 +119,19 @@
       padding: 0.5rem;
       background-color: rgba(0, 0, 34, 0.05);
       cursor: pointer;
+
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-right: 0.3rem;
+        color: var(--default-blue);
+      }
+
+      a {
+        display: flex;
+        align-items: center;
+      }
 
       &:hover {
         background-color: rgba(0, 0, 34, 0.1);
