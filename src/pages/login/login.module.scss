@@ -6,6 +6,11 @@
   width: 100vw;
   height: 100vh;
 
+  @media (max-width: 991px) {
+    background: white;
+    padding: 1rem;
+  }
+
 }
 
 .loginContainer {
@@ -19,6 +24,7 @@
 
   hr {
     opacity: 0.5;
+    margin-top: 0.5rem;
   }
 
   p {
@@ -55,7 +61,10 @@
 
   @media (max-width: 901px) {
     width: 100%;
-    height: 100vh;
+    height: max-content;
+    padding-bottom: 10rem;
+    border: solid 1px rgb(0, 0, 0, 0.5);
+    margin-top: -8rem;
   }
 } 
 

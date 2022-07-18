@@ -67,8 +67,9 @@ a {
 #home_main_feed {
   padding: 1rem 0 5rem 1rem;
 
-  @media (max-width: 901px) {
+  @media (max-width: 991px) {
     padding: 1rem;
+    width: 100%;
   }
 }
 

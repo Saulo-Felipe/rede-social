@@ -1,0 +1,87 @@
+.Container {
+  width: 70vw;
+
+  @media (max-width: 991px) {
+    width: 100%;
+  }
+
+  #loadingUsers {
+    margin: 3rem 2rem;
+
+    svg {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.user {
+  a {
+    display: flex;
+    align-items: center;    
+  }
+  width: 100%;
+
+  margin-top: 1rem;
+  padding: 1rem;
+
+  border: solid 1px rgb(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+
+  transition: all 300ms;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--background);
+
+    .imgContainer {
+      border: solid 3px var(--background);
+    }
+  }
+
+  @media (max-width: 991px) {
+    background: var(--background);
+    border: solid 1px rgb(0, 0, 0, 0.5);
+    padding: 0.75rem;
+  }
+
+  .imgContainer {
+
+    width: 5rem;
+    height: 5rem;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    display: flex;
+    text-align: center;
+    justify-content: center;
+
+    transition: all 300ms;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+
+  .content {
+    margin-left: 0.75rem;
+
+    .username {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .badgeMyProfile {
+      padding: 0.2rem;
+      border-radius: 0.5rem;
+      width: max-content;
+
+      background: var(--default-blue);
+      color: white;
+
+      font-weight: 500;
+      font-size: 0.8rem;
+
+    }
+  }
+}

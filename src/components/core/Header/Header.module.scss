@@ -36,6 +36,10 @@
       font-size: 1.5rem;
     }
 
+    label {
+      display: flex;
+    }
+
     input {
       height: 100%; 
       background-color: var(--background);

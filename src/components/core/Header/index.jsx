@@ -3,6 +3,7 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import { MobileMenu } from "../MobileMenu";
+import { useRouter } from "next/router";
 
 import { IoMdExit } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
@@ -18,6 +19,7 @@ import styles from "./Header.module.scss";
 
 export function Header() {
   const { data, status } = useSession();
+  const router = useRouter();
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
@@ -46,7 +48,12 @@ export function Header() {
               <BiSearch />
             </label>
 
-            <input id="search_user" type={"text"} placeholder={"Pesquise um usuário..."} />
+            <input 
+              id="search_user" 
+              type={"text"} 
+              placeholder={"Pesquise um usuário..."} 
+              onKeyPress={event => event.key === "Enter" ? router.push(`/search/${event.target.value}`) : null}
+            />
           </div>
 
         </div>

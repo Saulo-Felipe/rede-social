@@ -12,7 +12,7 @@ export function MobileMenu(props) {
   const { setMenuMobileIsOpen } = props;
 
   return (
-    <section className={styles.section}>
+    <section className={styles.section} onClick={() => setMenuMobileIsOpen(false)}>
       <div className={styles.content}>
         <header>
           <div>
@@ -43,7 +43,7 @@ export function MobileMenu(props) {
           </div>
 
           <div className={styles.link}>
-            <Link href="/profile">
+            <Link href={`/profile/${data.user.id}`}>
               <a><CgProfile /> Meu Perfil</a>
             </Link>
           </div>

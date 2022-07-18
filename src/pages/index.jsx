@@ -9,7 +9,6 @@ export default function Home() {
   const [pageIndex, setPageIndex] = useState(0);
 
   async function getRecentPosts(reset) {
-    console.log("[index - Function] getRecentPosts");
     setIsLoading(true);
 
     let { data } = await api.post("/getRecentPosts", { paginationIndex: reset ? 0 : pageIndex });
