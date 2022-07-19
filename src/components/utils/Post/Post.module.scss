@@ -9,7 +9,7 @@
   border-radius: 0.5rem;
   margin-top: 2rem;
 
-  header {
+  > header {
     display: flex;
     align-items: center;
 
@@ -37,12 +37,12 @@
     }
   }
 
-  hr {
+  > hr {
     opacity: 0.2;
     margin: 1rem 0;
   }
 
-  section {
+  > section {
     padding-top: 1rem;
     padding-bottom: 1rem;
     border-left: solid 2px var(--gray-1);
@@ -50,7 +50,7 @@
     margin-bottom: 2rem;
   }
 
-  footer {
+  > footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -102,6 +102,26 @@
     .dislike {
       svg {
         color: red;
+      }
+    }
+
+    .comments {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-left: 0.5rem;
+
+      cursor: pointer;
+
+      svg {
+        font-size: 1.35rem;
+        color: var(--gray-4);
+        margin-right: 0.5rem;
+      }
+
+      &:hover {
+        text-decoration: underline;
       }
     }
 

@@ -49,8 +49,13 @@
       width: calc(100% + 2rem);
       
       &:focus {
-        border: none;
         outline: none;
+      }
+
+      @media (min-width: 991px) {
+        &:focus {
+          width: 400px;
+        }
       }
 
     }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../services/api";
+import { Comments } from "./Comments";
 
-import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
+import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
 import { CgSpinnerTwo } from "react-icons/cg";
 
 import Link from "next/link";
@@ -12,6 +13,8 @@ import styles from "./Post.module.scss";
 
 export function Post({ data: postInfo, time, currentUserId }) {
   const [loadingLike, setLoadingLike] = useState(true);
+  const [showComments, setShowComments] = useState(false);
+
   const {
     id,
     content,
@@ -277,6 +280,10 @@ export function Post({ data: postInfo, time, currentUserId }) {
               )
             }
           </div>
+
+          <div className={styles.comments} onClick={() => setShowComments(showComments == false)}>
+            <AiOutlineComment /> Comentários
+          </div>
         </div>
 
         <div className={styles.publicationDate}>
@@ -285,6 +292,13 @@ export function Post({ data: postInfo, time, currentUserId }) {
           }
         </div>
       </footer>
+
+      {
+        showComments
+        ? <Comments postID={id} />
+        : <></>
+      }
+      
     </div>
   );
 }
