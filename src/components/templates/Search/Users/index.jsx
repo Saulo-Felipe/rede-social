@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../../services/api";
 import { useSession } from "next-auth/react";
+import { BiUnlink } from "react-icons/bi";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +32,7 @@ export function Users({ searchQuery }) {
   }, [searchQuery]);
 
   return (
-    <div className={styles.Container} >
+    <div className={styles.Container}>
       {
         loading 
         ? (
@@ -42,6 +43,9 @@ export function Users({ searchQuery }) {
       }
 
       {
+        users.length === 0
+        ? <div className={styles.notHaveUsers}><BiUnlink /> Nenhum resultado encontrado</div>
+        :
         users.map(user =>
           <div className={styles.user} key={user.id}>
             <Link href={`/profile/${user.id}`}>

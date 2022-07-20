@@ -14,6 +14,7 @@ import styles from "./Post.module.scss";
 export function Post({ data: postInfo, time, currentUserId }) {
   const [loadingLike, setLoadingLike] = useState(true);
   const [showComments, setShowComments] = useState(false);
+  const [commentsAmount, setCommentsAmount] = useState(null);
 
   const {
     id,
@@ -282,7 +283,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
           </div>
 
           <div className={styles.comments} onClick={() => setShowComments(showComments == false)}>
-            <AiOutlineComment /> Comentários
+            <AiOutlineComment /> Comentários { commentsAmount == null ? "" : "("+commentsAmount+")" }
           </div>
         </div>
 
@@ -295,7 +296,10 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
       {
         showComments
-        ? <Comments postID={id} />
+        ? <Comments 
+            setCommentsAmount={setCommentsAmount} 
+            postID={id} 
+          />
         : <></>
       }
       

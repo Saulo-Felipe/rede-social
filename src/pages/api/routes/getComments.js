@@ -15,6 +15,7 @@ export default async function getComments(request, response) {
 			FROM "Comment" 
 			INNER JOIN "User" ON "User".id = "Comment".fk_user_id
 			WHERE fk_post_id = ${postID}
+			ORDER BY "commentID" DESC
 		`);
 
 		return response.json({ success: true, comments });

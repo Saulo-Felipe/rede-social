@@ -3,15 +3,21 @@ import { api } from "../../../../services/api";
 import { ImSpinner } from "react-icons/im";
 import Image from "next/image";
 import Link from "next/link";
+import { BiMessageAltX } from "react-icons/bi";
+import { IoMdAddCircle } from "react-icons/io";
+import { useSession } from "next-auth/react";
 
 import styles from "./Comments.module.scss";
 
 
-export function Comments({ postID }) {
+export function Comments({ postID, setCommentsAmount }) {
 	const [allComments, setAllComments] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [newCommentLoading, setNewCommentLoading] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const { data: session } = useSession();
 
-	console.log("id recebido: ", postID)
+
 
 	async function getComments() {
 		console.log("atualizando comentários");
@@ -20,6 +26,7 @@ export function Comments({ postID }) {
 		const { data } = await api.post("/getComments", { postID });
 
 		setIsLoading(false);
+		setCommentsAmount(data.comments.length);
 
 		if (data.success) {
 			console.log("success")
@@ -28,6 +35,26 @@ export function Comments({ postID }) {
 		} else {
 			alert("Erro ao buscar comentários");
 		}
+	}
+
+	async function handleAddComment() {
+		setNewComment("");
+		setNewCommentLoading(true);
+
+		const { data } = await api.post("/newComment", { 
+			postID, 
+			userID: session.user.id, 
+			content: newComment
+		});
+
+		setNewCommentLoading(false);
+
+		if (data.success) {
+			getComments();
+		} else {
+			alert("Erro ao adicionar comentário");
+		}
+
 	}
 
 	useEffect(() => {
@@ -41,10 +68,27 @@ export function Comments({ postID }) {
 			<hr />
 
 			<div className={styles.content}>
+	      <div className={styles.newCommentContainer}>
+	        <input 
+	          type="text" 
+	          value={newComment}
+	          placeholder={"Diga algo sobre essa publicação"}
+	          onChange={({target}) => setNewComment(target.value)}
+	        />
+
+	        <button 
+	        	disabled={newComment.length == 0}
+	        	onClick={handleAddComment}
+	        	className={newCommentLoading ? "loadingContainer" : ""}
+	        ><IoMdAddCircle /></button>
+	      </div>
 				{
 					isLoading ? <div id={styles.loading} className="loadingContainer"><ImSpinner /></div> : <></>
 				}
 				{
+					allComments.length == 0 
+					? <div className={styles.notHaveComments}><BiMessageAltX/> Nenhum comentário disponível</div>
+					:
 					allComments.map((comment) => 
 						<div key={comment.commentID} className={styles.comment}>
 

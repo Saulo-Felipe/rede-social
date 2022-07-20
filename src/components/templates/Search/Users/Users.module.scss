@@ -1,6 +1,18 @@
 .Container {
   width: 70vw;
 
+  .notHaveUsers {
+    margin-top: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+
+    user-select: none;
+
+    color: var(--gray-2);
+  }
+
   @media (max-width: 991px) {
     width: 100%;
   }

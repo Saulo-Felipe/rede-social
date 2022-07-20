@@ -9,10 +9,62 @@
 	.content {
 		padding-top: 1rem;
 
+		.newCommentContainer {
+			margin-bottom: 1rem;
+			display: flex;
+			padding: 0.5rem;
+			border: solid 1px var(--gray-1);
+			border-radius: 0.3rem;
+
+			button {
+				background-color: var(--default-blue);
+				color: white;
+				font-size: 1.5rem;
+				display: flex;
+				border: none;
+				border-radius: 50%;
+				padding: 0.25rem;
+
+				&:disabled {
+					opacity: 0.5;
+					cursor: default;
+				}
+
+				&:hover {
+
+				}
+
+			}
+
+			input {
+				font-size: 0.8rem;
+				width: 100%;
+				border: none;
+				padding-left: 10px;
+
+				&:focus {
+					outline: none;
+				}
+			}
+		}
+
+		.notHaveComments {
+			text-align: center;
+			color: var(--gray-2);
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			svg {
+				font-size: 1.5rem
+			}
+		}
+
 		.comment {
 			padding: 0.5rem;
 			border-radius: 0.5rem;
-
+			margin-top: 1rem;
 			border: solid 1px rgb(0, 0, 0, 0.2);
 
 			header {
