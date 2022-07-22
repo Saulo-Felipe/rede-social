@@ -49,7 +49,9 @@ export function MobileMenu(props) {
           </div>
 
           <div className={styles.link}>
+            <Link href={"/chat"}>
               <a><AiOutlineMessage /> Mensagens</a>
+            </Link>
           </div>
 
           <div

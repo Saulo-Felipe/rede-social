@@ -5,6 +5,12 @@
 
 }
 
+#__next {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 :root {
   --default-blue: #2F5BAC;
   --background: #F0F2F5;
@@ -62,6 +68,7 @@ a {
 
 #main-container {
   display: flex;
+  height: inherit;
 }
 
 #home_main_feed {

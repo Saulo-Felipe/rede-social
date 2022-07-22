@@ -27,7 +27,3 @@ export default async function middleware(req) {
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: ['/', '/profile/:userID*', '/login', '/search/:userName*'],
-}

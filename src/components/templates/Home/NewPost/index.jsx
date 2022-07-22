@@ -1,7 +1,7 @@
 import { RiImageAddFill } from "react-icons/ri";
 import { BiVideoPlus } from "react-icons/bi";
 import { api } from "../../../../services/api";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 import styles from "./NewPost.module.scss";
@@ -17,10 +17,6 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
     
     return date;
   }
-
-  useEffect(() => {
-    console.log("[NewPost] renderizou");
-  }, [])
 
   async function handlerNewPost() {
     if (postContent.length > 0) {
