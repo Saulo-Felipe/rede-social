@@ -21,7 +21,8 @@ export default function Login() {
             className={styles.google}
             onClick={auth}
           >
-          <FcGoogle /> Entrar com o Google</div>
+            <FcGoogle /> Entrar com o Google
+          </div>
         </div>
 
         <p><strong>Ou</strong></p>

@@ -144,7 +144,9 @@ section.content {
 
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+
+    overflow: auto;
+    flex-direction: column-reverse;
 
     .myMessage {
       align-self: flex-end;

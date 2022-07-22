@@ -2,16 +2,16 @@ import { sequelize } from "../database/connect";
 
 export default async function createPost(request, response) {
   try {
-    const { postContent, userID, date } = request.body;
+    const { postContent: content, userId: userId, date: createdOn } = request.body;
 
-    if (postContent && postContent.length > 0 && userID && userID.length > 0) {
+    if (content && content.length > 0 && userId && userId.length > 0) {
 
       await sequelize.query(`
         INSERT INTO "Post" (content, fk_user_id, created_on)
         VALUES (
           '${postContent}',
-          '${userID}',
-          '${date}'
+          '${userId}',
+          '${createdOn}'
         );
       `);
 

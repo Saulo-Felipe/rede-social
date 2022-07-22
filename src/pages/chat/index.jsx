@@ -7,77 +7,24 @@ import { isMobile } from "react-device-detect";
 import { SocketClient } from "../../components/utils/socketClient";
 
 import styles from "./chat.module.scss";
-import { api } from "../../services/api";
 
 
 export default function Chat() {
   const { data: session } = useSession();
   const [newMessage, setNewMessage] = useState("");
-  const [allMessages, setAllMessages] = useState([
-    {
-      isMy: false,
-      content: "olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaolaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1olaaa teste 1aa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaaa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaaa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaaa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: true,
-      content: "olaaa teste 3",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: false,
-      content: "olaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaaolaaa teste 2",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    },
-    {
-      isMy: false,
-      content: "olaaa teste 5",
-      horario: "12:21",
-      userPicture: session?.user?.image
-    }
-  ]);
-  const sectionRef = useRef(null);
+  const [allMessages, setAllMessages] = useState([]);
   const [mobileOptionsIsOpen, setMobileOptionsIsOpen] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
+
+  const socketRef = useRef(null);
+  const sectionRef = useRef(null);
 
 
   useEffect(() => {
     if (sectionRef.current !== null)
       sectionRef.current.scrollTo(0, 9999);
-  }, [])
+  }, []);
+
 
   function handleChangeTextArea(element) {
     let count = 1;
@@ -86,22 +33,45 @@ export default function Chat() {
     }
 
     element.style.height = count*1.5+"rem";
+    sectionRef.current.scrollTo(0, 9999);
 
     setNewMessage(element.value);
   }
 
   async function handleNewMessage() {
     if (newMessage.length > 0) {
-      console.log("new message")
+      if (socketRef.current) {
+        let date = new Date();
+        const newMessageObj = {
+          googleID: session.user.id,
+          message: newMessage,
+          createdOn: date.getHours() + ":" + date.getMinutes(),
+          userPicture: session.user.image
+        }
+
+        socketRef.current.emit("new-message", newMessageObj);
+
+        setAllMessages([{...newMessageObj, isMy: true}, ...allMessages]);
+        setNewMessage("");
+
+        setTimeout(() => sectionRef.current.scrollTo(0, 9999), 50);
+
+      } else {
+        alert("[error] O Websocket não foi iniciado");
+      }
     }
   }
+
 
   return (
     <main className={styles.chat}>
       <SocketClient 
-        onlineUsers={onlineUsers}
-        setOnlineUsers={setOnlineUsers} 
         user={session?.user} 
+        setOnlineUsers={setOnlineUsers}
+        onlineUsers={onlineUsers}
+        allMessages={allMessages}
+        setAllMessages={setAllMessages}
+        socketRef={socketRef}
       />
 
       <section
@@ -123,7 +93,8 @@ export default function Chat() {
 
           {
             onlineUsers.map(user => {
-              console.log("render: ", user)
+              // console. log("renderizei: ", user);
+
               return <div key={user.id} className={styles.aUser}>
                 <div className={styles.imageContainer}>
                   <Image
@@ -141,8 +112,7 @@ export default function Chat() {
 
                 <div className={styles.username}>{user.username.split(" ")[0] ?? ""}</div>
               </div>
-            }
-            )
+            })
           }
         </div>
 
@@ -175,7 +145,7 @@ export default function Chat() {
                 <div key={index} className={styles.myMessage}>
                   <div>
                     <div className={styles.msgTxt}>
-                      {item.content}
+                      {item.message}
                     </div>
 
                     <div className={styles.imageContainer}>
@@ -187,25 +157,25 @@ export default function Chat() {
                     </div>
                   </div>
 
-                  <small className={styles.date}>{item.horario}</small>
+                  <small className={styles.date}>{item.createdOn}</small>
                 </div>
               ) : (
                 <div key={index} className={styles.otherMessage}>
                   <div>
                     <div className={styles.imageContainer}>
                       <Image
-                        src={session?.user.image || "/hpsp"}
+                        src={item.userPicture}
                         width={"100%"}
                         height={"100%"}
                       />
                     </div>
 
                     <div className={styles.msgTxt}>
-                      {item.content}
+                      {item.message}
                     </div>
                   </div>
 
-                  <small className={styles.date}>{item.horario}</small>
+                  <small className={styles.date}>{item.createdOn}</small>
                 </div>
               )
             )

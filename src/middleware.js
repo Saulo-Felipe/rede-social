@@ -9,21 +9,20 @@ export default async function middleware(req) {
   if (req.nextUrl.pathname.startsWith("/login")) {
     if (token) {
       req.nextUrl.pathname = "/";
-      return NextResponse.redirect(req.nextUrl);
+      NextResponse.redirect(req.nextUrl);
+      return;
     }
   } else {
     if (token) {
-      try {
-        return NextResponse.next();
-      } catch (error) {
-        req.nextUrl.pathname = "/login";
-        return NextResponse.redirect(req.nextUrl);
-      }
+      NextResponse.next();
+      return;
     } else {
       req.nextUrl.pathname = "/login";
-      return NextResponse.redirect(req.nextUrl);
+      NextResponse.redirect(req.nextUrl);
+      return;
     }
   }
-
-  return NextResponse.next();
+  
+  NextResponse.next();
+  return;
 }
