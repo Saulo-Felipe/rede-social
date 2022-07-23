@@ -12,7 +12,6 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
   let delayTime = 0;
 
   useEffect(() => {
-    console.log("[Feed] renderizou")
     getRecentPosts(true);
   }, [])
 

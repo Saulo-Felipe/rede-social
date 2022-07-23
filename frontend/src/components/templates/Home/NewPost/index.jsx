@@ -23,10 +23,10 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
       setPostContent("");
       setIsLoading(true);
       
-      const { data } = await api.post("/createPost", { 
+      const { data } = await api.put("/posts/create", { 
         postContent, 
         userID: session.user.id,
-        date: getCurrentDate()
+        createdOn: getCurrentDate()
       });
 
       setIsLoading(false);

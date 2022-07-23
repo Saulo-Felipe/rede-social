@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/routes`
+  baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`
 });
 
 export const apiSocket = axios.create({
