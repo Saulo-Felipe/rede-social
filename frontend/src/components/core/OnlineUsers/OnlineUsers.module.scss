@@ -1,0 +1,62 @@
+.container {
+  background-color: white;
+
+  border-radius: 0.5rem;
+
+  margin: 1rem;
+  padding: 1rem;
+
+  height: 100vh;
+  width: 30vw;
+
+  hr {
+    opacity: 0.5;
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 901px) {
+    display: none;
+  }
+}
+
+.user {
+  width: 100%;
+  
+  background-color: var(--gray-3);
+
+  border-radius: 1rem;
+
+  padding: 0.5rem;
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 1rem;
+
+  .imageContainer {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    > div {
+      margin-right: 0.5rem;
+      font-weight: 500;
+    }
+  }
+  span {
+    height: 0.7rem;
+    width: 0.7rem;
+    border-radius: 50%;
+    background-color: var(--online);
+  }
+}
