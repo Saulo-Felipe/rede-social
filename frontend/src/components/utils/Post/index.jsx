@@ -40,7 +40,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
     console.log("ID recebido: ", currentUserId)
 
     setTimeout(async () => {
-      const {data} = await api.post("/userLikedPost", { postID: id, userID: currentUserId });
+      const {data} = await api.get(`/posts/user-liked-post/${id}/${currentUserId}`);
 
       setLoadingLike(false);
 
@@ -90,7 +90,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
           dislikeAmount: action.dislikeAmount
         });
 
-        const { data } = await api.post("/deleteAction", {
+        const { data } = await api.post(`/posts/delete-action`, {
           userID: currentUserId,
           postID: id,
           action: "Like"
@@ -119,7 +119,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
           dislikeAmount: oldUserAction == 2 ? action.dislikeAmount-1 : action.dislikeAmount
         });
 
-        const { data } = await api.post(`/newAction`, {
+        const { data } = await api.put("/posts/new-action", {
           userID: currentUserId,
           postID: id,
           action: "Like",
@@ -157,7 +157,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
           dislikeAmount: action.dislikeAmount-1 
         });
 
-        const { data } = await api.post("/deleteAction", {
+        const { data } = await api.post(`/posts/delete-action`, {
           userID: currentUserId,
           postID: id,
           action: "Dislike"
@@ -186,7 +186,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
           dislikeAmount: action.dislikeAmount+1
         })
 
-        const { data } = await api.post(`/newAction`, {
+        const { data } = await api.put("/posts/new-action", {
           userID: currentUserId,
           postID: id,
           action: "Dislike",
@@ -225,7 +225,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         </div>
 
         <div className={styles.username}>
-          <Link href={`${process.env.NEXT_PUBLIC_SERVER_URL}/profile/${fk_user_id}`}>
+          <Link href={`/profile/${fk_user_id}`}>
             <a>
               {username}
             </a>

@@ -1,6 +1,8 @@
 import { Express } from "express-serve-static-core";
-import { post } from "../routes/post";
+import { posts } from "../routes/post";
+import { user } from "../routes/user";
 
 export function useRoutes(app: Express) {
-  app.use("/posts", post);
+  app.use("/posts", posts);
+  app.use("/user", user);
 }

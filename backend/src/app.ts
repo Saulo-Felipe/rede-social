@@ -5,8 +5,11 @@ import cors from "cors";
 const app = express();
 
 // Global Middlewares
+
+app.use(express.json());
+
 app.use(cors({
-  origin: "https://3000-saulofelipe-umasimplesr-6jq7xidslxi.ws-us54.gitpod.io",
+  origin: "https://3000-saulofelipe-redesocial-69ox3rp2t3r.ws-us54.gitpod.io",
   //optionsSuccessStatus: 200
 }));
 

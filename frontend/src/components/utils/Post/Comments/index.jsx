@@ -23,14 +23,14 @@ export function Comments({ postID, setCommentsAmount }) {
 		console.log("atualizando comentários");
 		setIsLoading(true);
 
-		const { data } = await api.post("/getComments", { postID });
+		const { data } = await api.get(`/posts/comments/${postID}`);
 
 		setIsLoading(false);
-		setCommentsAmount(data.comments.length);
 
 		if (data.success) {
 			console.log("success")
 
+			setCommentsAmount(data.comments.length);
 			setAllComments(data.comments)
 		} else {
 			alert("Erro ao buscar comentários");
@@ -41,7 +41,7 @@ export function Comments({ postID, setCommentsAmount }) {
 		setNewComment("");
 		setNewCommentLoading(true);
 
-		const { data } = await api.post("/newComment", { 
+		const { data } = await api.put("/posts/new-comment", { 
 			postID, 
 			userID: session.user.id, 
 			content: newComment

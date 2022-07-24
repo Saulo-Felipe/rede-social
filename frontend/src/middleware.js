@@ -13,12 +13,11 @@ export default async function middleware(req) {
     }
   } else {
     if (token) {
-      NextResponse.next();
-      return;
+      return NextResponse.next();
     } else {
       req.nextUrl.pathname = "/login";
       NextResponse.redirect(req.nextUrl);
-      return;
+      
     }
   }
   

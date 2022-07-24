@@ -37,7 +37,12 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
       console.log("follow");
 
       setLoadingAction(true);
-      const { data } = await api.post("/follow", { userID: session.user.id, followerID: user.id })
+
+      const { data } = await api.post("/user/new-follow", { 
+        userID: session.user.id, 
+        followerID: user.id 
+      });
+      
       setLoadingAction(false);
 
       if (data.success) {

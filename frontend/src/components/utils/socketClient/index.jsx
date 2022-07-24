@@ -42,7 +42,7 @@ export function SocketClient({ setOnlineUsers, onlineUsers, user, setAllMessages
 
   useEffect(() => {
     if (user) {
-      const socket = socketClient.connect(process.env.NEXT_PUBLIC_SERVER_URL, {
+      const socket = socketClient.connect(process.env.NEXT_PUBLIC_CLIENT_URL, {
         path: "/api/socket/socketio"
       });
 
