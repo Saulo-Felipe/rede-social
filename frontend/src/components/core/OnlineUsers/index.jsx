@@ -1,16 +1,17 @@
 import { useSession } from 'next-auth/react';
-import Image from "next/image";
 import { isMobile } from "react-device-detect";
 import { useRouter } from "next/router";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { GiTank } from "react-icons/gi";
+import Image from "next/image";
+import { useSocket } from '../../../hooks/useSocket';
 
 import styles from './OnlineUsers.module.scss';
-import Link from 'next/link';
 
 export function OnlineUsers() {
   const { status } = useSession();
   const { pathname } = useRouter();
+  
 
   if (status === "authenticated" && !isMobile && pathname !== "/chat")
     return (

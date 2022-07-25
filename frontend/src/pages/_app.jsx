@@ -1,6 +1,7 @@
 import { Header } from '../components/core/Header';
 import { OnlineUsers } from '../components/core/OnlineUsers';
 import { SessionProvider } from 'next-auth/react';
+import { SocketProvider } from '../hooks/useSocket';
 
 import '../styles/globals.scss'
 
@@ -8,13 +9,15 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <SessionProvider session={pageProps.session} >
-      <Header />
+      <SocketProvider>
+        <Header />
 
-      <div id={"main-container"}>
-        <OnlineUsers />
+        <div id={"main-container"}>
+          <OnlineUsers />
 
-        <Component {...pageProps} />
-      </div>
+          <Component {...pageProps} />
+        </div>
+      </SocketProvider>
     </SessionProvider>
   );
 }
