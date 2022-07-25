@@ -11,9 +11,9 @@ function MyApp({ Component, pageProps }) {
       <Header />
 
       <div id={"main-container"}>
-        <Component {...pageProps} />
-
         <OnlineUsers />
+
+        <Component {...pageProps} />
       </div>
     </SessionProvider>
   );

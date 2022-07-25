@@ -2,11 +2,16 @@
   background-color: white;
   padding: 1.5rem;
 
+  line-break: anywhere;
+
   border-radius: 0.5rem;
 
+  > h2 {
+    font-size: 1.2rem;
+  }
+  
   hr {
     margin: 1rem 0 1.5rem 0;
-    opacity: 0.3;
   }
 
   input {
@@ -16,8 +21,6 @@
     width: 100%;;
     border-radius: 0.25rem;
     transition: all 0.5s;
-    font-size: 1.1rem;
-
   }
 
   textarea {
@@ -28,7 +31,6 @@
     border-radius: 0.25rem;
     transition: all 0.5s;
     min-height: 12rem;
-    font-size: 1.1rem;
   }
 
   .allIcons {

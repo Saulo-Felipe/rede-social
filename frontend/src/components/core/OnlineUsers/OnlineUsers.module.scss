@@ -1,62 +1,123 @@
+.globalDivision {
+  margin: 0 1rem;
+}
+
 .container {
   background-color: white;
 
   border-radius: 0.5rem;
 
-  margin: 1rem;
-  padding: 1rem;
+  padding: 1.5rem;
 
   height: 100vh;
   width: 30vw;
 
-  hr {
-    opacity: 0.5;
-    margin-top: 0.5rem;
+  h2 {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+
+    svg {
+      font-size: 1.5rem;
+      color: var(--default-blue);
+      margin-right: 0.5rem;
+    }
   }
 
-  @media (max-width: 901px) {
+  .game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 300ms;
+    cursor: pointer;
+
+    height: 70px;
+    width: 100%;
+
+    background-image: url("/images/multiplayer-game-logo.jpeg");
+    background-repeat: no-repeat;
+    background-size: 200%;
+    background-position: center;
+
+    .gameTitle {
+      color: white;
+      background-color: rgb(0, 0, 0, 0.5);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+
+    }
+
+    &:hover {
+      background-size: 250%;
+    }
+  }
+
+  hr {
+    margin: 1rem 0 1.5rem 0;
+  }
+
+  @media (max-width: 991px) {
     display: none;
   }
 }
 
-.user {
-  width: 100%;
-  
-  background-color: var(--gray-3);
+.users {
+  height: 40%;
+  overflow-y: auto;
+  margin-bottom: 1rem;
 
-  border-radius: 1rem;
-
-  padding: 0.5rem;
-  
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  margin-top: 1rem;
-
-  .imageContainer {
-    height: 2rem;
-    width: 2rem;
-    border-radius: 50%;
-
-    img {
-      border-radius: 50%;
-    }
+  &::-webkit-scrollbar-track {
+      background-color: #F4F4F4;
+  }
+  &::-webkit-scrollbar {
+      width: 6px;
+      background: #F4F4F4;
+  }
+  &::-webkit-scrollbar-thumb {
+      background: #dad7d7;
   }
 
-  > div {
+  .user {
+    width: 98%;
+    
+    background-color: var(--gray-3);
+  
+    border-radius: 0.5rem;
+  
+    padding: 0.5rem;
+    
     display: flex;
     align-items: center;
-
+    justify-content: space-between;
+  
+    margin-bottom: 1rem;
+  
+    .imageContainer {
+      height: 2rem;
+      width: 2rem;
+      border-radius: 50%;
+  
+      img {
+        border-radius: 50%;
+      }
+    }
+  
     > div {
-      margin-right: 0.5rem;
-      font-weight: 500;
+      display: flex;
+      align-items: center;
+  
+      > div {
+        margin-right: 0.5rem;
+        font-weight: 400;
+      }
+    }
+    span {
+      height: 0.7rem;
+      width: 0.7rem;
+      border-radius: 50%;
+      background-color: var(--online);
     }
   }
-  span {
-    height: 0.7rem;
-    width: 0.7rem;
-    border-radius: 50%;
-    background-color: var(--online);
-  }
 }
+

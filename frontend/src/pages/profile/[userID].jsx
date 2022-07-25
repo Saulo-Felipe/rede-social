@@ -20,8 +20,9 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
   useEffect(() => {
     (async() => {
       setLoading(true);
+      console.log("renderizou posts");
 
-      const { data } = await api.post("/userPosts", {userID: user.id});
+      const { data } = await api.get(`/user/posts/${user.id}`);
 
       setLoading(false);
 
@@ -38,7 +39,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
 
       setLoadingAction(true);
 
-      const { data } = await api.post("/user/new-follow", { 
+      const { data } = await api.put("/user/new-follow", { 
         userID: session.user.id, 
         followerID: user.id 
       });
@@ -61,7 +62,9 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
       console.log("unFollow");
 
       setLoadingAction(true);
-      const { data } = await api.post("/unFollow", { userID: session.user.id, followerID: user.id })
+
+      const { data } = await api.delete(`/user/unfollow/${session.user.id}/${user.id}`);
+
       setLoadingAction(false);
 
       if (data.success) {
@@ -171,10 +174,7 @@ export async function getServerSideProps(context) {
   const { params } = context;
   const {user} = await getSession(context);
 
-  const { data } = await api.post("/getProfile", {
-    userID: params.userID, 
-    currentUserId: user.id 
-  });
+  const { data } = await api.get(`/user/profile/${params.userID}/${user.id}`);
 
   if (data.userExists) {
     return {

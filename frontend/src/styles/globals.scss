@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
+  font-family: 'Ubuntu', sans-serif;
 }
 
 #__next {
@@ -44,17 +44,19 @@ body {
 }
 
 body, input, textarea, select, button {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 h1, h2, h3, h4, h5, h6, strong {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 button {
   cursor: pointer;
+}
+
+hr {
+  opacity: 0.3;
 }
 
 img {
@@ -68,12 +70,11 @@ a {
 
 #main-container {
   display: flex;
-  height: inherit;
+  padding: 1rem;
+
 }
 
 #home_main_feed {
-  padding: 1rem 0 5rem 1rem;
-
   @media (max-width: 991px) {
     padding: 1rem;
     width: 100%;

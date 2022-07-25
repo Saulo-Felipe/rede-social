@@ -6,6 +6,7 @@ import Link from "next/link";
 import { BiMessageAltX } from "react-icons/bi";
 import { IoMdAddCircle } from "react-icons/io";
 import { useSession } from "next-auth/react";
+import { BsArrowReturnRight } from "react-icons/bs";
 
 import styles from "./Comments.module.scss";
 
@@ -107,12 +108,14 @@ export function Comments({ postID, setCommentsAmount }) {
 									</a>
 								</Link>
 
-								<div className={styles.createdOn}>{comment.created_on}</div>
+								<div className={styles.createdOn}>
+									{comment.created_on.replace(",", "/").replace(",", "/").replace(",", " às " )}
+								</div>
 							</header>
 
 							<section>
 								<div className={styles.data}>
-									{ comment.content }							
+									<BsArrowReturnRight/>{ comment.content }							
 								</div>	
 							</section>
 

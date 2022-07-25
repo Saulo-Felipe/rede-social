@@ -26,7 +26,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
         : <></>
       }
 
-      <h1 className={styles.title}>Últimas postagens</h1>
+      <h2 className={styles.title}>Últimas postagens</h2>
 
       <hr className={styles.division} />
 

@@ -3,7 +3,6 @@ import { api } from "../../../services/api";
 import { Comments } from "./Comments";
 
 import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
-import { CgSpinnerTwo } from "react-icons/cg";
 
 import Link from "next/link";
 import Image from "next/image";

@@ -44,7 +44,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
 
   return (
     <div className={styles.postContainer}>
-      <h2>Criar um novo posts</h2>
+      <h2>Criar uma nova postagem</h2>
 
       <hr />
 
