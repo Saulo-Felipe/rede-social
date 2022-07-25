@@ -43,10 +43,10 @@ export default function Chat() {
       if (socketRef.current) {
         let date = new Date();
         const newMessageObj = {
-          googleID: session.user.id,
+          googleID: session?.user?.id,
           message: newMessage,
           createdOn: date.getHours() + ":" + date.getMinutes(),
-          userPicture: session.user.image
+          userPicture: session?.user?.image
         }
 
         socketRef.current.emit("new-message", newMessageObj);
@@ -74,17 +74,28 @@ export default function Chat() {
         socketRef={socketRef}
       />
 
+      {
+        isMobile 
+        ? (
+          <div 
+            className={styles.menuBackground}
+            style={{ display: mobileOptionsIsOpen ? "block" : "none" }}
+          ></div>
+        ) : <></>
+      }
       <section
         style={isMobile ? { left: mobileOptionsIsOpen ? 0 : "-100%" } : null}
         className={styles.users}
       >
         { isMobile
-          ? <div
-              className={styles.optionsMobileClose}
-              onClick={() => setMobileOptionsIsOpen(mobileOptionsIsOpen === false)}
-            >
-              <IoMdClose /></div>
-          : <></>
+          ? (
+            <div
+                className={styles.optionsMobileClose}
+                onClick={() => setMobileOptionsIsOpen(mobileOptionsIsOpen === false)}
+              >
+                <IoMdClose />
+            </div>
+          ) : <></>
         }
 
         <h4>Usuários online</h4>
@@ -150,7 +161,7 @@ export default function Chat() {
 
                     <div className={styles.imageContainer}>
                       <Image
-                        src={session?.user.image || "/hpsp"}
+                        src={session?.user?.image || "/hpsp"}
                         width={"100%"}
                         height={"100%"}
                       />

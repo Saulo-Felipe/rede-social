@@ -25,7 +25,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
       
       const { data } = await api.put("/posts/create", { 
         postContent, 
-        userID: session.user.id,
+        userID: session?.user?.id,
         createdOn: getCurrentDate()
       });
 

@@ -11,8 +11,8 @@ import Link from 'next/link';
 export function OnlineUsers() {
   const { status } = useSession();
   const { pathname } = useRouter();
-  
-  if (status === "authenticated" && !isMobile && pathname !== "/chat") 
+
+  if (status === "authenticated" && !isMobile && pathname !== "/chat")
     return (
       <>
         <div className={styles.container}>
@@ -28,29 +28,11 @@ export function OnlineUsers() {
                 <div>Saulo Felipe</div>
 
                 <div className={styles.imageContainer}>
-                  <Image 
+                  <Image
                     alt={"user profile"}
                     src={"/images/temporary-logo.svg"}
                     width={"100%"}
-                    height={"100%"} 
-                  />
-                </div>
-              </div>
-
-            </div>
-            
-            <div className={styles.user}>
-              <span></span>
-
-              <div>
-                <div>Saulo Felipe</div>
-
-                <div className={styles.imageContainer}>
-                  <Image 
-                    alt={"user profile"}
-                    src={"/images/temporary-logo.svg"}
-                    width={"100%"}
-                    height={"100%"} 
+                    height={"100%"}
                   />
                 </div>
               </div>
@@ -64,11 +46,11 @@ export function OnlineUsers() {
                 <div>Saulo Felipe</div>
 
                 <div className={styles.imageContainer}>
-                  <Image 
+                  <Image
                     alt={"user profile"}
                     src={"/images/temporary-logo.svg"}
                     width={"100%"}
-                    height={"100%"} 
+                    height={"100%"}
                   />
                 </div>
               </div>
@@ -82,11 +64,29 @@ export function OnlineUsers() {
                 <div>Saulo Felipe</div>
 
                 <div className={styles.imageContainer}>
-                  <Image 
+                  <Image
                     alt={"user profile"}
                     src={"/images/temporary-logo.svg"}
                     width={"100%"}
-                    height={"100%"} 
+                    height={"100%"}
+                  />
+                </div>
+              </div>
+
+            </div>
+
+            <div className={styles.user}>
+              <span></span>
+
+              <div>
+                <div>Saulo Felipe</div>
+
+                <div className={styles.imageContainer}>
+                  <Image
+                    alt={"user profile"}
+                    src={"/images/temporary-logo.svg"}
+                    width={"100%"}
+                    height={"100%"}
                   />
                 </div>
               </div>
@@ -101,32 +101,32 @@ export function OnlineUsers() {
                 <div>Saulo Felipe</div>
 
                 <div className={styles.imageContainer}>
-                  <Image 
+                  <Image
                     alt={"user profile"}
                     src={"/images/temporary-logo.svg"}
                     width={"100%"}
-                    height={"100%"} 
+                    height={"100%"}
                   />
                 </div>
               </div>
 
-            </div>                                    
+            </div>
           </div>
-            
+
           <h2><GiTank /> Multiplayer Games</h2>
           <hr />
 
           <a href={"https://multiplayer-game-saulo.herokuapp.com"} target={"_blank"}>
             <div className={styles.game}>
               <div className={styles.gameTitle}>Jogue com seus amigos :D</div>
-            </div>          
+            </div>
           </a>
 
         </div>
         <hr className={styles.globalDivision} />
       </>
     );
-    
-  else 
+
+  else
     return <></>;
 }

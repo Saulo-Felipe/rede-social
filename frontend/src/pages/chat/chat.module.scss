@@ -1,9 +1,13 @@
 .chat {
   width: 100%;
   display: flex;
-  padding: 1rem;
 
   height: calc(100vh - 4.5rem);
+
+  @media (max-width: 991px) {
+    position: relative;
+    height: calc(100vh - 6.5rem);
+  }
 
   .showMobileOptions {
     position: absolute;
@@ -39,10 +43,16 @@
       8% { margin-left: 0px; }
     }
   }
+}
 
-  @media (max-width: 991px) {
-    position: relative;  
-  }
+.menuBackground {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(0, 0, 0, 0.3);
+  top: 0;
+  left: 0;
+  z-index: 98;
 }
 
 section.users {

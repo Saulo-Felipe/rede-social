@@ -11,6 +11,7 @@
 #firstContainer {
   display: flex;
   align-items: center;
+  margin-right: 0.75rem;
 
   > a {
     margin-right: 1rem;
@@ -34,6 +35,7 @@
 
     svg {
       font-size: 1.5rem;
+      color: rgb(0, 0, 0, 0.5);
     }
 
     label {
@@ -58,6 +60,24 @@
         }
       }
 
+    }
+
+    .searchIconContainer {
+      height: inherit;
+      display: flex;
+      align-items: center;
+
+      button {
+        border: none;
+        background-color: var(--default-blue);
+        color: white;
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.4rem;
+
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
     }
   }
 }

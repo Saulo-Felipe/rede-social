@@ -40,7 +40,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
       setLoadingAction(true);
 
       const { data } = await api.put("/user/new-follow", { 
-        userID: session.user.id, 
+        userID: session?.user?.id, 
         followerID: user.id 
       });
       
@@ -63,7 +63,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
 
       setLoadingAction(true);
 
-      const { data } = await api.delete(`/user/unfollow/${session.user.id}/${user.id}`);
+      const { data } = await api.delete(`/user/unfollow/${session?.user?.id}/${user.id}`);
 
       setLoadingAction(false);
 
@@ -160,7 +160,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
               <Post
                 key={post.id}
                 data={post}
-                currentUserId={session.user.id}
+                currentUserId={session?.user?.id}
               />
             )
           )

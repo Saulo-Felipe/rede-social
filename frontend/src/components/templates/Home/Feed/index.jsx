@@ -1,6 +1,5 @@
 import { Post } from "../../../utils/Post";
-import { useEffect, useState } from "react"; 
-import { AiOutlineLoading } from "react-icons/ai";
+import { useEffect } from "react"; 
 import { BsSignpostSplitFill } from "react-icons/bs";
 import { TbFidgetSpinner } from "react-icons/tb";
 import { FaSpinner } from "react-icons/fa";
@@ -43,7 +42,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
               <Post
                 key={post.id}
                 data={post}
-                currentUserId={session.user.id}
+                currentUserId={session?.user?.id}
                 time={750*delayTime}
               />
             )

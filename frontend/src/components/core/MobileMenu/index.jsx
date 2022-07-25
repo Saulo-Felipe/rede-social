@@ -4,6 +4,7 @@ import { MdOutlineClose, MdExitToApp } from "react-icons/md";
 import { AiOutlineHome, AiOutlineMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import Image from "next/image";
+import { GiTank } from "react-icons/gi";
 
 import styles from "./MobileMenu.module.scss";
 
@@ -19,13 +20,13 @@ export function MobileMenu(props) {
             <div className={styles.imgContainer}>
               <Image 
                 alt={"user profile"}
-                src={data?.user.image} 
+                src={data?.user?.image} 
                 width={"100%"}
                 height={"100%"}
               />
             </div>
 
-            <div className={styles.username}>{data?.user.name}</div>
+            <div className={styles.username}>{data?.user?.name}</div>
           </div>
 
           <div>
@@ -43,7 +44,7 @@ export function MobileMenu(props) {
           </div>
 
           <div className={styles.link}>
-            <Link href={`/profile/${data.user.id}`}>
+            <Link href={`/profile/${data?.user?.id}`}>
               <a><CgProfile /> Meu Perfil</a>
             </Link>
           </div>
@@ -60,6 +61,15 @@ export function MobileMenu(props) {
           >
               <a><MdExitToApp /> Sair</a>
           </div>
+
+          <h2><GiTank /> Multiplayer Games</h2>
+          <hr />
+
+          <a href={"https://multiplayer-game-saulo.herokuapp.com"} target={"_blank"}>
+            <div className={styles.game}>
+              <div className={styles.gameTitle}>Jogue com seus amigos :D</div>
+            </div>
+          </a>
         </nav>
 
       </div>

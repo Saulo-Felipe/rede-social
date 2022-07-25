@@ -1,5 +1,12 @@
 .Container {
-  width: 70vw;
+
+  .endOfResults {
+    margin-top: 2rem;
+    text-align: center;
+
+    color: var(--gray-2);
+    user-select: none;
+  }
 
   .notHaveUsers {
     margin-top: 5rem;
@@ -15,6 +22,15 @@
 
   @media (max-width: 991px) {
     width: 100%;
+
+    .notHaveUsers {
+      text-align: center;
+      flex-direction: column;
+
+      svg {
+        font-size: 4rem;
+      }
+    }
   }
 
   #loadingUsers {
@@ -36,14 +52,15 @@
   margin-top: 1rem;
   padding: 1rem;
 
+  background-color: #f7f7f7;
+
   border: solid 1px rgb(0, 0, 0, 0.2);
   border-radius: 0.5rem;
 
-  transition: all 300ms;
+  transition: all 200ms;
   cursor: pointer;
 
   &:hover {
-    background: var(--background);
 
     .imgContainer {
       border: solid 3px var(--background);
@@ -51,15 +68,13 @@
   }
 
   @media (max-width: 991px) {
-    background: var(--background);
-    border: solid 1px rgb(0, 0, 0, 0.5);
     padding: 0.75rem;
   }
 
   .imgContainer {
 
-    width: 5rem;
-    height: 5rem;
+    width: 3.5rem;
+    height: 3.5rem;
 
     border-radius: 50%;
     overflow: hidden;

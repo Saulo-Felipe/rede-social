@@ -40,7 +40,7 @@
 
 body {
   background: var(--background);
-  //overflow: hidden;
+  overflow-x: hidden;
 }
 
 body, input, textarea, select, button {
@@ -76,7 +76,6 @@ a {
 
 #home_main_feed {
   @media (max-width: 991px) {
-    padding: 1rem;
     width: 100%;
   }
 }

@@ -44,7 +44,7 @@ export function Comments({ postID, setCommentsAmount }) {
 
 		const { data } = await api.put("/posts/new-comment", { 
 			postID, 
-			userID: session.user.id, 
+			userID: session?.user?.id, 
 			content: newComment
 		});
 

@@ -23,6 +23,13 @@ export function Header() {
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
+  const [searchContent, setSearchContent] = useState("");
+
+  function goToSearch() {
+    if (searchContent.length > 0) {
+      router.push(`/search/${searchContent}`);
+    }
+  }
 
   if (status === "authenticated")
     return (
@@ -50,11 +57,21 @@ export function Header() {
 
             <input 
               id="search_user" 
+              value={searchContent}
               type={"text"} 
               placeholder={"Pesquise um usuário..."} 
-              onKeyPress={event => event.key === "Enter" ? router.push(`/search/${event.target.value}`) : null}
+              onChange={({target}) => setSearchContent(target.value)}
+              onKeyPress={event => event.key === "Enter" ? goToSearch() : null}
             />
+
+            <div className={styles.searchIconContainer}>
+              <button 
+                disabled={searchContent.length === 0} 
+                onClick={goToSearch}
+              >Pesquisar</button>
+            </div>
           </div>
+
 
         </div>
 
@@ -91,7 +108,7 @@ export function Header() {
                       dropdownIsOpen
                       ? <div className={styles.dropdown}>
                         <div>
-                          <Link href={`/profile/${data.user.id}`}>
+                          <Link href={`/profile/${data?.user?.id}`}>
                             <a><FaUserCircle /> Meu Perfil</a>
                           </Link>
                         </div>
@@ -104,12 +121,12 @@ export function Header() {
                     }                    
                   </div>
 
-                  <div className={styles.username}>{data?.user.name}</div>
+                  <div className={styles.username}>{data?.user?.name}</div>
 
                   <div className={styles.userPicture}>
                     <Image 
                       alt={"user"}
-                      src={data?.user.image} 
+                      src={data?.user?.image} 
                       width={"100%"}
                       height={"100%"}
                     />

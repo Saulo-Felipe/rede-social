@@ -46,26 +46,31 @@ export function Users({ searchQuery }) {
         users.length === 0
         ? <div className={styles.notHaveUsers}><BiUnlink /> Nenhum resultado encontrado</div>
         :
-        users.map(user =>
-          <div className={styles.user} key={user.id}>
-            <Link href={`/profile/${user.id}`}>
-              <a>
-                <div className={styles.imgContainer}>
-                  <Image 
-                    src={user.image_url}
-                    width={"100%"}
-                    height={"100%"}
-                  />
-                </div>
+        <>
+          {
+            users.map(user =>
+              <div className={styles.user} key={user.id}>
+                <Link href={`/profile/${user.id}`}>
+                  <a>
+                    <div className={styles.imgContainer}>
+                      <Image 
+                        src={user.image_url}
+                        width={"100%"}
+                        height={"100%"}
+                      />
+                    </div>
 
-                <div className={styles.content}>
-                  <div className={styles.username}>{user.username}</div>
-                  { user.id === session.user.id ? <div className={styles.badgeMyProfile}>Meu perfil</div> : <></>}
-                </div>
-              </a>
-            </Link>
-          </div>
-        )
+                    <div className={styles.content}>
+                      <div className={styles.username}>{user.username}</div>
+                      { user.id === session?.user?.id ? <div className={styles.badgeMyProfile}>Meu perfil</div> : <></>}
+                    </div>
+                  </a>
+                </Link>
+              </div>
+            )
+          }
+          <div className={styles.endOfResults}>Fim dos resultados</div>
+        </>
       }
 
     </div>

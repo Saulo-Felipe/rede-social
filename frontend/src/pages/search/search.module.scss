@@ -1,9 +1,8 @@
 .container {
 	background-color: white;
-	margin: 0.75rem 0 0.75rem 0.75rem;
+	width: 70%;
 
   @media (max-width: 1000px) {
-		margin: 0.75rem;
 		width: 100%;
 
 		min-height: calc(100vh - 6rem);
@@ -11,7 +10,7 @@
 
 	border-radius: 0.5rem;
 
-	padding: 2rem;
+	padding: 1.5rem;
 
 	.title {
 		margin-bottom: 0.75rem;
