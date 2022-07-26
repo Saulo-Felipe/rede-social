@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NewPost } from "../components/templates/Home/NewPost";
 import { Feed } from "../components/templates/Home/Feed";
 import { api } from "../services/api";
 
+import { PostBody } from "../components/utils/Post/index";
+
 export default function Home() {
-  const [allPosts, setAllPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState<PostBody[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
 
-  async function getRecentPosts(reset) {
+  async function getRecentPosts(reset: boolean) {
     setIsLoading(true);
 
     let { data } = await api.get(`/posts/recent/${reset ? 0 : pageIndex}`);

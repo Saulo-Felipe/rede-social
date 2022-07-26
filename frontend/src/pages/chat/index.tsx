@@ -4,7 +4,6 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { useState, useEffect, useRef } from "react";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { isMobile } from "react-device-detect";
-import { SocketClient } from "../../components/utils/socketClient";
 
 import styles from "./chat.module.scss";
 
@@ -65,19 +64,10 @@ export default function Chat() {
 
   return (
     <main className={styles.chat}>
-      <SocketClient 
-        user={session?.user} 
-        setOnlineUsers={setOnlineUsers}
-        onlineUsers={onlineUsers}
-        allMessages={allMessages}
-        setAllMessages={setAllMessages}
-        socketRef={socketRef}
-      />
-
       {
-        isMobile 
+        isMobile
         ? (
-          <div 
+          <div
             className={styles.menuBackground}
             style={{ display: mobileOptionsIsOpen ? "block" : "none" }}
           ></div>
@@ -115,7 +105,7 @@ export default function Chat() {
                   />
                 </div>
 
-                <div 
+                <div
                   className={styles.currentState}
                   style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
                 ></div>

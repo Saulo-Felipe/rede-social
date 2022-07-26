@@ -1,4 +1,4 @@
-import { Post } from "../../../utils/Post";
+import { Post, PostBody } from "../../../utils/Post";
 import { useEffect } from "react"; 
 import { BsSignpostSplitFill } from "react-icons/bs";
 import { TbFidgetSpinner } from "react-icons/tb";
@@ -7,7 +7,14 @@ import { useSession } from "next-auth/react";
 
 import styles from "./Feed.module.scss";
 
-export function Feed({ allPosts, isLoading, getRecentPosts }) {
+
+interface FeedProps {
+  allPosts: PostBody[];
+  isLoading: boolean;
+  getRecentPosts: (reset: boolean) => void;
+}
+
+export function Feed({ allPosts, isLoading, getRecentPosts }: FeedProps) {
   let delayTime = 0;
 
   useEffect(() => {
@@ -34,10 +41,9 @@ export function Feed({ allPosts, isLoading, getRecentPosts }) {
         ? (
           <div className={styles.notHavePosts}><BsSignpostSplitFill /> Nenhum post encontrado</div>
         ) : (
-          allPosts.map((post) => {
+          allPosts.map(post => {
             delayTime == 5 ? delayTime = 0 : delayTime++;
-            console.log("[renderizou post] ");
-
+            
             return (
               <Post
                 key={post.id}

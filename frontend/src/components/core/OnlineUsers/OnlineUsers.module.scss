@@ -89,7 +89,6 @@
     
     display: flex;
     align-items: center;
-    justify-content: space-between;
   
     margin-bottom: 1rem;
   
@@ -106,8 +105,13 @@
     > div {
       display: flex;
       align-items: center;
-  
+      margin-left: 0.5rem;
+      
       > div {
+        white-space: nowrap;
+        width: 12em;
+        overflow: hidden;
+        text-overflow: ellipsis;
         margin-right: 0.5rem;
         font-weight: 400;
       }

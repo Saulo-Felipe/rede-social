@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "../../../services/api";
 import { Comments } from "./Comments";
 
@@ -7,31 +7,37 @@ import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDi
 import Link from "next/link";
 import Image from "next/image";
 
-
 import styles from "./Post.module.scss";
 
-export function Post({ data: postInfo, time, currentUserId }) {
+export interface PostBody {
+  id: number;
+  content: string;
+  created_on: string;
+  fk_user_id: string;
+  image_url: string;
+  dislikes_amount: number;
+  likes_amount: number;
+  username: string;
+}
+
+interface PostProps {
+  data: PostBody;
+  time: number | undefined;
+  currentUserId: string;
+}
+
+
+export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   const [loadingLike, setLoadingLike] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [commentsAmount, setCommentsAmount] = useState(null);
-
-  const {
-    id,
-    content,
-    created_on,
-    fk_user_id,
-    image_url,
-    dislikes_amount,
-    likes_amount,
-    username
-  } = postInfo;
 
   const [action, setAction] = useState({
     isLike: false,
     isDislike: false,
     userAction: 0,
-    likeAmount: Number(likes_amount),
-    dislikeAmount: Number(dislikes_amount)
+    likeAmount: Number(postInfo.likes_amount),
+    dislikeAmount: Number(postInfo.dislikes_amount)
   });
 
   useEffect(() => {
@@ -39,7 +45,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
     console.log("ID recebido: ", currentUserId)
 
     setTimeout(async () => {
-      const {data} = await api.get(`/posts/user-liked-post/${id}/${currentUserId}`);
+      const {data} = await api.get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
 
       setLoadingLike(false);
 
@@ -50,20 +56,20 @@ export function Post({ data: postInfo, time, currentUserId }) {
       }
 
     }, time);
-  }, [])
+  }, []);
 
-  function handleLike(type) {
+  function handleLike(type: string) {
     if (!loadingLike) {
       if (type === "mouseEnter") {
         setAction({ ...action, isLike: true });
       }
       else if (action.userAction !== 1) {
         setAction({ ...action, isLike: false });
-      }      
+      }
     }
   }
 
-  function handleDislike(type) {
+  function handleDislike(type: string) {
     if (!loadingLike) {
 
       if (type === "mouseEnter") {
@@ -81,7 +87,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
       const oldUserAction = action.userAction;
 
       if (action.userAction == 1) { // Remove like
-        setAction({ 
+        setAction({
           isLike: false,
           isDislike: false,
           userAction: 0,
@@ -91,14 +97,14 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
         const { data } = await api.post(`/posts/delete-action`, {
           userID: currentUserId,
-          postID: id,
+          postID: postInfo.id,
           action: "Like"
         });
 
         console.log("remove Like aprovado")
 
         if (!data.success) {
-          setAction({ 
+          setAction({
             isLike: true,
             isDislike: false,
             userAction: oldUserAction,
@@ -110,7 +116,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         }
 
       } else { // Add like
-        setAction({ 
+        setAction({
           isLike: true,
           isDislike: false,
           userAction: 1,
@@ -120,7 +126,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
         const { data } = await api.put("/posts/new-action", {
           userID: currentUserId,
-          postID: id,
+          postID: postInfo.id,
           action: "Like",
           deleteOthers: oldUserAction == 2
         });
@@ -128,7 +134,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         console.log("Like aprovado");
 
         if (!data.success) { // Error
-          setAction({ 
+          setAction({
             isLike: false,
             isDislike: oldUserAction == 2,
             userAction: oldUserAction,
@@ -148,24 +154,24 @@ export function Post({ data: postInfo, time, currentUserId }) {
       const oldUserAction = action.userAction;
 
       if (action.userAction == 2) { // Remove dislike
-        setAction({ 
+        setAction({
           isLike: false,
           isDislike: false,
           userAction: 0,
           likeAmount: action.likeAmount,
-          dislikeAmount: action.dislikeAmount-1 
+          dislikeAmount: action.dislikeAmount-1
         });
 
         const { data } = await api.post(`/posts/delete-action`, {
           userID: currentUserId,
-          postID: id,
+          postID: postInfo.id,
           action: "Dislike"
         });
 
         console.log("remove Dislike aprovado")
 
         if (!data.success) { // error
-          setAction({ 
+          setAction({
             isLike: false,
             isDislike: true,
             userAction: oldUserAction,
@@ -177,7 +183,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
         }
 
       } else { // Add dislike
-        setAction({ 
+        setAction({
           isLike: false,
           isDislike: true,
           userAction: 2,
@@ -187,7 +193,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
         const { data } = await api.put("/posts/new-action", {
           userID: currentUserId,
-          postID: id,
+          postID: postInfo.id,
           action: "Dislike",
           deleteOthers: oldUserAction == 1
         });
@@ -195,12 +201,12 @@ export function Post({ data: postInfo, time, currentUserId }) {
         console.log("Dislike aprovado")
 
         if (!data.success) {
-          setAction({ 
+          setAction({
             isLike: oldUserAction == 1,
             isDislike: false,
             userAction: oldUserAction,
             likeAmount: oldUserAction == 1 ? action.likeAmount+1 : action.likeAmount,
-            dislikeAmount: action.dislikeAmount-1 
+            dislikeAmount: action.dislikeAmount-1
           })
 
           alert("Erro ao adicionar curtida")
@@ -217,16 +223,16 @@ export function Post({ data: postInfo, time, currentUserId }) {
         <div className={styles.profilePictureContainer}>
           <Image
             alt={"user profile"}
-            src={image_url}
+            src={postInfo.image_url}
             width={"100%"}
             height={"100%"}
           />
         </div>
 
         <div className={styles.username}>
-          <Link href={`/profile/${fk_user_id}`}>
+          <Link href={`/profile/${postInfo.fk_user_id}`}>
             <a>
-              {username}
+              {postInfo.username}
             </a>
           </Link>
         </div>
@@ -235,7 +241,7 @@ export function Post({ data: postInfo, time, currentUserId }) {
       <hr />
 
       <section className={styles.postContainer}>
-        { content }
+        { postInfo.content }
       </section>
 
       <footer>
@@ -288,20 +294,20 @@ export function Post({ data: postInfo, time, currentUserId }) {
 
         <div className={styles.publicationDate}>
           {
-            created_on.replace(",", "/").replace(",", "/").replace(",", " às " )
+            postInfo.created_on.replace(",", "/").replace(",", "/").replace(",", " às " )
           }
         </div>
       </footer>
 
       {
         showComments
-        ? <Comments 
-            setCommentsAmount={setCommentsAmount} 
-            postID={id} 
+        ? <Comments
+            setCommentsAmount={setCommentsAmount}
+            postID={postInfo.id}
           />
         : <></>
       }
-      
+
     </div>
   );
 }

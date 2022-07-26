@@ -129,4 +129,20 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
   }
 });
 
+user.get("/all", async (request, response) => {
+  try {
+
+    const [result] = await sequelize.query(`
+      SELECT id, username, image_url FROM "User"
+    `);
+
+    return response.json({ success: true, users: result });
+    
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(203).json({ error: true, message: "Erro ao buscar usuários." });
+  }
+});
+
+
 export { user };
