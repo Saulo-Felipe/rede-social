@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { HiOutlineStatusOnline } from "react-icons/hi";
 import { GiTank } from "react-icons/gi";
 import { useSocket } from '../../../hooks/useSocket';
+import { IoChatboxOutline } from "react-icons/io5";
 import Image from "next/image";
 import Link from 'next/link';
 
@@ -12,6 +13,7 @@ import styles from './OnlineUsers.module.scss';
 export function OnlineUsers() {
   const { status } = useSession();
   const { pathname } = useRouter();
+  const router = useRouter();
   
   const {allUsers} = useSocket();
 
@@ -19,7 +21,16 @@ export function OnlineUsers() {
     return (
       <>
         <div className={styles.container}>
-          <h2><HiOutlineStatusOnline /> Usuários online agora</h2>
+          <h2> 
+            <div className={styles.title}>
+              <HiOutlineStatusOnline /> 
+              Usuários 
+            </div>
+
+            <button
+              onClick={() => router.push("/chat")}
+            >Chat <IoChatboxOutline /></button>
+            </h2>
           <hr />
 
           <div className={styles.users}>

@@ -122,7 +122,7 @@ export function SocketProvider({ children }) {
       allUsers, 
       setAllUsers
     }}>
-      <div>{ children }</div>
+      { children }
       
     </SocketContext.Provider>
   );

@@ -1,282 +1,85 @@
 .chat {
+  border: solid 1px red;
+  height: -webkit-fill-available;
   width: 100%;
+
   display: flex;
-
-  height: calc(100vh - 4.5rem);
-
-  @media (max-width: 991px) {
-    position: relative;
-    height: calc(100vh - 6.5rem);
-  }
-
-  .showMobileOptions {
-    position: absolute;
-    background-color: white;
-
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    box-shadow: 0 0 20px var(--gray-2);
-    left: 1rem;
-    top: 1rem;
-
-    z-index: 98;
-
-    svg {
-      animation-name: animatedArrow;
-      animation-duration: 8s;
-      animation-iteration-count: infinite;  
-
-      transition: all 300ms;
-    }
-
-    @keyframes animatedArrow {
-      0% { margin-left: 0px }
-      2% { margin-left: 10px; }
-      4% { margin-left: 0px; }
-      6% { margin-left: 10px; }
-      8% { margin-left: 0px; }
-    }
-  }
+  justify-content: space-between;
 }
 
-.menuBackground {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgb(0, 0, 0, 0.3);
-  top: 0;
-  left: 0;
-  z-index: 98;
-}
-
-section.users {
-  width: 30vw;
+.firstContainer {
   background-color: white;
+  width: 35%;
   padding: 1rem;
 
-  .optionsMobileClose {
-    text-align: end;
-
-    svg {
-      font-size: 1.75rem;
-    }
+  h2 {
+    font-size: 1.2rem;
   }
 
-  h4 {
-    margin: 0.5rem 0 0.5rem 0;
+  hr {
+    margin: 0.5rem 0 1rem 0;
   }
 
-  .onlineUsers {
+  .usersContainer {
     display: flex;
     flex-wrap: wrap;
-
+    
     .aUser {
+      background-color: var(--background);
+      border-radius: 0.75rem;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+
       width: max-content;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      margin: 0 0.5rem 0.5rem 0;
 
       .imageContainer {
-        width: 2.5rem;
-        height: 2.5rem;
-        overflow: hidden;
-        border-radius: 50%;  
-      }
-
-      .currentState {
-        width: 0.8rem;
-        height: 0.8rem;
-        background-color: var(--online);
-        position: absolute;
-        z-index: 2;
-        right: 0;
-        top: 0;
-        border: solid 2px white;
+        width: 2rem;
+        height: 2rem;
         border-radius: 50%;
+        position: relative;
+        margin: auto;
+
+        img {
+          border-radius: 50%;
+        }
+
+        .isOnline {
+          border-radius: 50%;
+
+          width: 12px;
+          height: 12px;
+
+          position: absolute;
+          top: 0;
+          right: 0;
+          border: solid 2px white;
+        }
       }
 
-      .username {
-        font-size: 0.8rem;;
+      .name {
+        font-size: 0.85rem;
       }
     }
-  }
-
-  .chatMessageOption {
-    margin-top: 1rem;
-    display: flex;
-    padding: 1rem 0.5rem;
-    border-radius: 0.5rem;
-    background-color: #ebf2ff;
-    
-    display: flex;
-    align-items: center;
-    font-weight: 400;
-
-    svg {
-      color: var(--default-blue);
-      font-size: 2rem;
-      margin-right: 0.5rem;
-    }
-  }
-
-  @media (max-width: 991px) {
-    transition: all 400ms;
-    position: absolute;
-    height: 100%;
-    width: 75%;
-    z-index: 99;
-    top: 0;
-    left: -100%;
   }
 }
 
-section.content {
-  background-color: #f8f8f8;
-  padding: 1rem;
-  overflow-y: scroll;
-
-  width: 70vw;
+.secondContainer {
+  background-color: white;
+  width: 64%;
 
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: column-reverse;
 
-  .messages {
-    height: inherit;
+  .newMessageContainer {
+    border: solid 1px red;
+    height: 15%;
 
-    display: flex;
-    flex-direction: column;
-
-    overflow: auto;
-    flex-direction: column-reverse;
-
-    .myMessage {
-      align-self: flex-end;
-      align-items: flex-end;
-
-      > div {
-        justify-content: flex-end;
-      }
-
-      .imageContainer {
-        margin-left: 0.25rem;
-      }
-      .msgTxt {
-        background-color: var(--default-blue);
-      }
-      .date {
-        color: var(--gray-2);
-        margin-right: 2rem;
-      }
-    }
-
-    .otherMessage {
-      align-self: flex-start;
-      align-items: flex-start;
+    .cursor {
       
-      > div {
-        justify-content: flex-start;
-      }
-
-      .imageContainer {
-        margin-right: 0.25rem;
-      }
-
-      .msgTxt {
-        background-color: white;
-        color: black !important;
-        border: solid 1px var(--gray-1);
-      }
-      .date {
-        color: var(--gray-2);
-        margin-left: 2rem;
-      }
-    }
-
-    .myMessage, .otherMessage {
-      width: 70%;
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 0.75rem;
-
-      > div {
-        display: flex;
-        align-items: flex-end;
-        
-        .imageContainer {          
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
-          overflow: hidden;
-        }
-      }
-      .msgTxt {
-        max-width: 90%;
-        word-break: break-all;
-        color: white;
-        font-size: 1rem;
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-      }
-
-    }
-    
-  }
-
-  .sendMessage {
-    background-color: white;
-    padding: 1rem;
-    border: solid 1px var(--gray-1);
-    border-radius: 0.25rem;
-    margin-top: 1rem; 
-    
-    box-shadow: 0 0 10px var(--gray-3);
-
-    .inputContainer {
-
-      textarea {
-        width: 100%;
-        resize: none;
-        padding: 0.5rem;
-        font-size: 1rem;
-        min-height: 2.5rem !important;
-        overflow: hidden;
-        border: none;
-
-        &:focus {
-          outline: none;
-        }
-      }
-    }
-
-    .btnContainer {
-      display: flex;
-      justify-content: flex-end;
-
-      button {
-        background-color: var(--default-blue);
-        color: white;
-        padding: 0.5rem 2rem;
-        border: none;
-        border-radius: 0.5rem;
-
-        &:disabled {
-          opacity: 0.5;
-        }
-      }
     }
   }
 
-  @media (max-width: 991px) {
-    width: 100%;
+  .messagesContainer {
+    border: solid 1px red;
   }
-
 }
