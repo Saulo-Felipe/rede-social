@@ -27,6 +27,11 @@ export function useSocket(app: Express, httpServer: any) {
       
       deleteUser(socket.id);
     });
+
+    // Chat
+    socket.on("new-message", (googleID, message) => {
+      socket.broadcast.emit("received-message", googleID, message);
+    });
   });
 
   function newUser(googleID: string, socketID: string) {

@@ -3,21 +3,35 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
 
-
 import styles from "./chat.module.scss";
 
-export default function Chat() {
-  const { allUsers } = useSocket();
-  const { data: session } = useSession();
-  const [isInputFocus, setIsInputFocus] = useState(false);
-  
-  function blurOrFocusInput(e) {
-    let element = e.target;
 
-    if (element.classList[0].indexOf("newMessageContainer") === -1) {
-      if (isInputFocus) setIsInputFocus(false);
-    } else {
-      if (!isInputFocus) setIsInputFocus(true);
+interface Message {
+  username: string;
+  image: string;
+  content: string;
+  isOnline: boolean;
+}
+
+export default function Chat() {
+  const { allUsers, sendMessage } = useSocket();
+  const { data: session } = useSession();
+  const [newMessage, setNewMessage] = useState("");
+  const [allMessages, setAllMessages] = useState<Message[]>([])
+
+  function verifyMessage() {
+    if (newMessage.length > 0) {
+      console.log("Enviando: ", newMessage)
+      sendMessage(newMessage);
+
+      setAllMessages([ ...allMessages, {
+        content: newMessage,
+        image: session.user.image,
+        isOnline: true,
+        username: session.user.name
+      }]);
+
+      setNewMessage("");
     }
   }
 
@@ -32,7 +46,7 @@ export default function Chat() {
         <div className={styles.usersContainer}>        
           {
             allUsers.map(user => 
-            <div className={styles.aUser}>
+            <div key={user.id} className={styles.aUser}>
               <div className={styles.imageContainer}>
                 <Image 
                   src={user.image_url}
@@ -56,17 +70,19 @@ export default function Chat() {
 
       <section className={styles.secondContainer}>
 
-        <label htmlFor={"new-message"} className={styles.newMessageContainer}>
+        <div className={styles.newMessageContainer}>
+          <textarea 
+            value={newMessage}
+            onChange={({target}) => setNewMessage(target.value)}
+            placeholder={"Envie uma mensagem"}
+          >
+          </textarea>
 
-          <input 
-            id={"new-message"} 
-            type={"hidden"} 
-            onChange={(e) => console.log(e)}
-          />
-        </label>
-
-        <div className={styles.messagesContainer}></div>
-
+          <button 
+            onClick={verifyMessage}
+            disabled={newMessage.length === 0}
+          >Enviar</button>
+        </div>
       </section>
     </main>
   );

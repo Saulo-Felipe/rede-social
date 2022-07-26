@@ -16,6 +16,7 @@ export interface User {
 interface ReturnValue {
   allUsers: User[];
   setAllUsers: (users: User[]) => void;  
+  sendMessage: (content: string) => void;
 }
 
 interface serverUserObj {
@@ -24,15 +25,27 @@ interface serverUserObj {
   }
 }
 
+interface Message {
+  username: string;
+  image: string;
+  content: string;
+}
+
 export function SocketProvider({ children }) {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const { data: session } = useSession();
+  const [allMessages, setAllMessages] = useState<Message[]>([]);
+
   const allUsersRef = useRef(allUsers);
+  const socketRef = useRef(null);
 
 
   function socketConnect() {
     const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { transports: ["websocket"] })
+    socketRef.current = socket;
+
     const user = session.user;
+    
 
     socket.on("connect", () => {
       socket.emit("new-user", user.id, (response: serverUserObj) => {
@@ -47,12 +60,17 @@ export function SocketProvider({ children }) {
     socket.on("delete-user", (googleID: string) => {
       deleteUser(googleID);
     }); 
+
+    socket.on("received-message", (googleID, message) => {
+      console.log("received: ", message);
+    });
+    //reicevedMessage(googleID, message);
     
     async function initialState(initialValue: any) {
       console.log("[initial reiceved]: ", initialValue);
-
+  
       let newUsers: User[] = await getUsers();
-
+  
       for (let i in initialValue) {
         for (let j = 0; j < newUsers.length; j++) {
           if (initialValue[i] === newUsers[j].id) {
@@ -61,14 +79,14 @@ export function SocketProvider({ children }) {
           }
         }
       }
-
+  
       setAllUsers([ ...newUsers ]);
     }
-
+  
     function newUser(socketID: string, googleID: string) {
       let newUsers = allUsersRef.current;
       console.log("[new user]: ", googleID);
-
+  
       for (let i in newUsers) {
         if (newUsers[i].id === googleID) {
           newUsers[i].socketID = socketID;
@@ -76,22 +94,22 @@ export function SocketProvider({ children }) {
           break;
         }
       }
-
+  
       setAllUsers([ ...newUsers ]);
     }
-
+  
     function deleteUser(googleID: string) {
       let newUsers = allUsersRef.current;
-
+  
       for (let i in newUsers) {
         if (newUsers[i].id === googleID) {
           newUsers[i].isOnline = false;
-
+  
           console.log("[delete]: ", newUsers[i].id);
           break;
         }
       }
-
+  
       setAllUsers([ ...newUsers ]);
     }
     
@@ -104,6 +122,20 @@ export function SocketProvider({ children }) {
         alert("Erro ao buscar usuários.");
       }
     }
+
+    function reicevedMessage(googleID: string, message: string) {
+      for (let c = 0; c < allUsersRef.current.length; c++) {
+        console.log(allUsersRef);
+
+      }
+    }
+
+  }
+
+
+  function sendMessage(content: string) {
+    // console.log(socketRef.current.emit)
+    socketRef.current.emit("new-message", session.user.id, content);
   }
 
 
@@ -120,7 +152,8 @@ export function SocketProvider({ children }) {
   return (
     <SocketContext.Provider value={{ 
       allUsers, 
-      setAllUsers
+      setAllUsers,
+      sendMessage
     }}>
       { children }
       
