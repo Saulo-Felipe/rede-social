@@ -1,7 +1,0 @@
-{
-  "infiniteLoopProtection": true,
-  "hardReloadOnChange": false,
-  "template": "node",
-  "view": "terminal",
-  "node": "16"
-}
