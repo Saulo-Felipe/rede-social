@@ -12,8 +12,7 @@ backend/node_modules*
 
 # next.js
 /.next/
-*.next*
-/.next*
+.next
 /out/
 .swc
 *.idea*
