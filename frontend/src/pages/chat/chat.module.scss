@@ -117,4 +117,42 @@
     }    
   }
 
+  .messages {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    .aMessage {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+
+      .info {
+        display: flex;
+        align-items: center;
+
+        .imageContainer {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+          overflow: hidden;
+        }
+
+        .content {
+          background-color: var(--default-blue);
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          color: white;
+        }
+      }
+
+      .createdOn {
+        opacity: 0.5;
+        font-size: 0.75rem;
+        align-self: flex-start;
+        margin-top: 0.2rem;
+      }
+    }
+  }
+
 }

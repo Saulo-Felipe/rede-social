@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef } from "r
 import { api } from "../services/api";
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
+import { Message } from "../pages/chat";
 
 export const SocketContext = createContext<ReturnValue>({} as ReturnValue);
 
@@ -15,8 +16,9 @@ export interface User {
 
 interface ReturnValue {
   allUsers: User[];
-  setAllUsers: (users: User[]) => void;  
+  setAllUsers: (users: User[]) => void;
   sendMessage: (content: string) => void;
+  allMessages: Message[];
 }
 
 interface serverUserObj {
@@ -25,11 +27,6 @@ interface serverUserObj {
   }
 }
 
-interface Message {
-  username: string;
-  image: string;
-  content: string;
-}
 
 export function SocketProvider({ children }) {
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -38,125 +35,140 @@ export function SocketProvider({ children }) {
 
   const allUsersRef = useRef(allUsers);
   const socketRef = useRef(null);
+  const allMessagesRef = useRef(allMessages);
 
 
-  function socketConnect() {
-    const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { transports: ["websocket"] })
-    socketRef.current = socket;
+  async function initialState(initialValue: any) {
+    const { data } = await api.get("user/all",);
 
-    const user = session.user;
-    
+    if (data.success) {
+      let newUsers: User[] = data.users;
 
-    socket.on("connect", () => {
-      socket.emit("new-user", user.id, (response: serverUserObj) => {
-        initialState(response.allUsers);
-      });
-    });
-
-    socket.on("new-user", (socketID: string, googleID: string) => {
-      newUser(socketID, googleID);
-    });
-
-    socket.on("delete-user", (googleID: string) => {
-      deleteUser(googleID);
-    }); 
-
-    socket.on("received-message", (googleID, message) => {
-      console.log("received: ", message);
-    });
-    //reicevedMessage(googleID, message);
-    
-    async function initialState(initialValue: any) {
-      console.log("[initial reiceved]: ", initialValue);
-  
-      let newUsers: User[] = await getUsers();
-  
       for (let i in initialValue) {
         for (let j = 0; j < newUsers.length; j++) {
           if (initialValue[i] === newUsers[j].id) {
             newUsers[j].isOnline = true;
+
+            setAllUsers([ ...newUsers ]);
+
             break;
           }
         }
       }
-  
-      setAllUsers([ ...newUsers ]);
-    }
-  
-    function newUser(socketID: string, googleID: string) {
-      let newUsers = allUsersRef.current;
-      console.log("[new user]: ", googleID);
-  
-      for (let i in newUsers) {
-        if (newUsers[i].id === googleID) {
-          newUsers[i].socketID = socketID;
-          newUsers[i].isOnline = true;
-          break;
-        }
-      }
-  
-      setAllUsers([ ...newUsers ]);
-    }
-  
-    function deleteUser(googleID: string) {
-      let newUsers = allUsersRef.current;
-  
-      for (let i in newUsers) {
-        if (newUsers[i].id === googleID) {
-          newUsers[i].isOnline = false;
-  
-          console.log("[delete]: ", newUsers[i].id);
-          break;
-        }
-      }
-  
-      setAllUsers([ ...newUsers ]);
-    }
-    
-    async function getUsers() {
-      const { data } = await api.get("user/all",);
-  
-      if (data.success) { 
-        return data.users;
-      } else {
-        alert("Erro ao buscar usuários.");
-      }
-    }
 
-    function reicevedMessage(googleID: string, message: string) {
-      for (let c = 0; c < allUsersRef.current.length; c++) {
-        console.log(allUsersRef);
+    } else {
+      alert("Erro ao buscar usuários.");
+    }
+  }
 
+  function newUser(socketID: string, googleID: string) {
+    console.log("[new user]: ", googleID);
+
+    let newUsers = allUsersRef.current;
+
+    for (let i in newUsers) {
+      if (newUsers[i].id === googleID) {
+        newUsers[i] = { ...newUsers[i], socketID, isOnline: true };
+
+        setAllUsers([ ...newUsers ]);
+        break;
       }
     }
 
   }
 
+  function deleteUser(googleID: string) {
+    console.log("[delete]: ", googleID);
+
+    let newUsers = allUsersRef.current;
+
+    for (let i in newUsers) {
+      if (newUsers[i].id === googleID) {
+        newUsers[i].isOnline = false;
+
+        setAllUsers([ ...newUsers ]);
+        break;
+      }
+    }
+
+  }
+
+
+  // ------------| Reiceved Message |-------------
 
   function sendMessage(content: string) {
-    // console.log(socketRef.current.emit)
+    console.log("[sending] :", content);
+
     socketRef.current.emit("new-message", session.user.id, content);
   }
+
+  function receivedMessage(googleID: string, message: string) {
+    for (let c = 0; c < allUsersRef.current.length; c++) {
+      if (allUsersRef.current[c].id === googleID) {
+        let date = new Date().toLocaleString().split(" ")
+        let fullHours = date[1].substring(0, 5);
+
+        setAllMessages([
+          ...allMessagesRef.current, {
+            content: message,
+            image: allUsersRef.current[c].image_url,
+            createdOn: date[0]+" as "+fullHours,
+            googleID,
+            isMy: googleID === session.user.id
+          }]);
+      }
+    }
+  }
+
 
 
   useEffect(() => {
     if (session?.user) {
-      socketConnect(); 
+      const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { transports: ["websocket"] })
+      socketRef.current = socket;
+
+      const user = session.user;
+
+      socket.on("connect", () => {
+        socket.emit("new-user", user.id, (response: serverUserObj) => {
+          initialState(response.allUsers);
+        });
+      });
+
+      socket.on("new-user", (socketID: string, googleID: string) => {
+        newUser(socketID, googleID);
+      });
+
+      socket.on("delete-user", (googleID: string) => {
+        deleteUser(googleID);
+      });
+
+      // --------| Messages |----------
+
+      socket.on("received-message", (googleID, message) => {
+        receivedMessage(googleID, message);
+      });
+
     }
   }, [session]);
 
   useEffect(() => {
     allUsersRef.current = allUsers;
-  }, [allUsers])
+  }, [allUsers]);
+
+  useEffect(() => {
+    allMessagesRef.current = allMessages;
+  }, [allMessages]);
 
   return (
-    <SocketContext.Provider value={{ 
-      allUsers, 
+    <SocketContext.Provider value={{
+      allUsers,
       setAllUsers,
-      sendMessage
+      sendMessage,
+      allMessages
     }}>
       { children }
-      
+
     </SocketContext.Provider>
   );
 }
