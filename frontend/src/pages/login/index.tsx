@@ -6,7 +6,7 @@ import styles from './login.module.scss';
 export default function Login() {
   
   function auth() {
-    signIn("google");
+    signIn("google", { callbackUrl: "/" });
   }
 
   return (

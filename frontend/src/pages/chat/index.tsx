@@ -1,7 +1,9 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
+import { isMobile } from "react-device-detect";
+import { IoMdClose, IoIosArrowForward } from "react-icons/io";
 
 import styles from "./chat.module.scss";
 
@@ -18,6 +20,7 @@ export default function Chat() {
   const { allUsers, sendMessage, allMessages } = useSocket();
   const { data: session } = useSession();
   const [newMessage, setNewMessage] = useState("");
+  const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
 
   function verifyMessage() {
     if (newMessage.length > 0) {
@@ -30,9 +33,20 @@ export default function Chat() {
   return (
     <main className={styles.chat}>
 
-      <section className={styles.firstContainer}>
+      { 
+        isMobile 
+        ? <div 
+          className={styles.openMobileMenu} 
+          onClick={() => setMenuMobileIsOpen(true)}
+        ><IoIosArrowForward /></div> 
+        : null 
+      }
+      <section 
+        className={styles.firstContainer}
+        style={{ left: menuMobileIsOpen ? "0" : "-100%"}}
+      >
 
-        <h2>Usuários</h2>
+        <h2>Usuários { isMobile ? <IoMdClose onClick={() => setMenuMobileIsOpen(false)} /> : null}</h2>
         <hr />
 
         <div className={styles.usersContainer}>
@@ -60,12 +74,20 @@ export default function Chat() {
 
       </section>
 
+      { 
+        isMobile && menuMobileIsOpen 
+        ? <div className={styles.menuBg} onClick={() => setMenuMobileIsOpen(false)}></div> 
+        : null 
+      }
+
+
       <section className={styles.secondContainer}>
         <div className={styles.newMessageContainer}>
           <textarea
             value={newMessage}
             onChange={({target}) => setNewMessage(target.value)}
             placeholder={"Envie uma mensagem"}
+            onKeyDown={e => e.key === "Enter" ? (verifyMessage(), e.preventDefault()) : null}
           >
           </textarea>
 
@@ -101,7 +123,7 @@ export default function Chat() {
 
                   <div 
                     className={styles.content}
-                    style={!message.isMy ? {background: "gray"} : null}
+                    style={!message.isMy ? {background: "#e3e3e3", color: "black"} : null}
                   >{message.content}</div>
                 </div>
 

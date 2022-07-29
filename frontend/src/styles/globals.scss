@@ -5,6 +5,12 @@
   font-family: 'Ubuntu', sans-serif;
 }
 
+html, body, #__next, #main-container {
+  @media (max-width: 991px) {
+    height: -webkit-fill-available !important;
+  }
+}
+
 #__next {
   display: flex;
   flex-direction: column;
@@ -71,7 +77,7 @@ a {
 #main-container {
   display: flex;
   padding: 1rem;
-  height: -webkit-fill-available;
+  height: calc(100vh - 4.75rem);
 }
 
 #home_main_feed {

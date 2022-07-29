@@ -30,7 +30,7 @@ export function useSocket(app: Express, httpServer: any) {
 
     // Chat
     socket.on("new-message", (googleID, message) => {
-      socket.emit("received-message", googleID, message);
+      io.sockets.emit("received-message", googleID, message);
     });
   });
 
