@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { sequelize } from "../services/databse";
 import { axiosServer } from "../services/api";
+import multer from "multer";
 
 const posts = Router();
 
@@ -35,24 +36,34 @@ interface createPostBody {
   createdOn: string;
 }
 
-posts.put("/create", async (request, response) => {
+const upload = multer({
+  dest: "../images/"
+});
+
+posts.put("/create", upload.array("picture", 12), async (request, response) => {
   try {
-    const { createdOn, postContent, userID }: createPostBody = request.body;
+    const body: createPostBody = request.body;
 
-    if (createdOn && postContent && userID) {
+    console.log("Files: ", request.files)
 
-      await sequelize.query(`
-        INSERT INTO "Post" (content, fk_user_id, created_on)
-        VALUES (
-          '${postContent}',
-          '${userID}',
-          '${createdOn}'
-        );
-      `);
+    console.log(body)
 
-      return response.json({ success: true });
+    return response.json({ success: true });
 
-    } else throw true;
+    // if (createdOn && postContent && userID) {
+
+    //   await sequelize.query(`
+    //     INSERT INTO "Post" (content, fk_user_id, created_on)
+    //     VALUES (
+    //       '${postContent}',
+    //       '${userID}',
+    //       '${createdOn}'
+    //     );
+    //   `);
+
+    //   return response.json({ success: true });
+
+    // } else throw true;
 
   } catch(e) {
     console.log('----| Error |-----: ', e)
