@@ -9,14 +9,23 @@
   border-radius: 0.5rem;
   margin-top: 2rem;
 
+  @media (max-width: 991px) {
+    padding: 1rem;
+  }
+
   > header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     
     .profileInfo {
-      display: flex;
-      align-items: center;
+      width: 100%;
+
+      a {
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
 
       .profilePictureContainer {
         border-radius: 50%;
@@ -52,18 +61,21 @@
         box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
         z-index: 1;
         right: 0;
+        border-radius: 0.25rem;
+
 
         .option {
-          padding: 0.3rem 1.5rem;
-          border: solid 1px var(--gray-1);
-          margin: 0.2rem;
+          padding: 0.5rem 1.5rem;
           display: flex;
           justify-content: space-between;
           cursor: pointer;
           transition: 200ms;
+          border-radius: 0.25rem;
+          border: solid 1px gray;
 
           &:hover {
-            background-color: rgb(238, 238, 238);
+            // background-color: rgb(243, 243, 243);
+            box-shadow: 0 0 10px rgb(0, 0, 0, 0.4);
           }
 
           svg {
@@ -106,6 +118,8 @@
         height: max-content;
         width: max-content;
         position: relative;
+        border: solid 1px red;
+        margin-top: 1rem;
 
         display: flex;
         align-items: center;
@@ -145,13 +159,6 @@
         .arrowRight {
           right: -1rem;
         }
-
-        .imageCount {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-        }
       }
     }
     .imageCount {
@@ -159,7 +166,7 @@
       width: 100%;
       align-items: center;
       justify-content: center;
-      margin-top: 1rem;
+      margin: 1rem 0 1rem 0;
 
       .unSelected {
         background-color: var(--gray-1);
@@ -186,7 +193,7 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     
-    > div {
+    > div:nth-child(1) {
       display: flex;
       align-items: center;
       margin-right: 1rem;
@@ -195,6 +202,7 @@
     .publicationDate {
       opacity: 0.7;
       font-size: 0.85rem;
+      text-align: right;
     }
     
 

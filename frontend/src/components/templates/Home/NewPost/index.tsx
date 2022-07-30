@@ -1,23 +1,17 @@
 import { api } from "../../../../services/api";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
 
 import { IoCloseCircleSharp } from "react-icons/io5";
-import { BsFillTrashFill } from "react-icons/bs";
 import { RiImageAddFill } from "react-icons/ri";
 import { BiVideoPlus } from "react-icons/bi";
 
 import styles from "./NewPost.module.scss";
 
-export function adjustPreviewImageSize(image) {
-  if (image.width >= image.height) {
-    image.style.width = "100%";
-    image.style.height = "auto";
-  } else {
-    image.style.height = "100%";
-    image.style.width = "auto";
-  }
+interface SelectedImages {
+  id: string;
+  file: File;
 }
 
 export function NewPost({ setIsLoading, getRecentPosts }) {
@@ -25,8 +19,9 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   const [postContent, setPostContent] = useState("");
   const {data: session} = useSession();
   
-  const [previewImages, setPreviewImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState<SelectedImages[]>([]);
   const inputImagesRef = useRef(null);
+  const [previewFile, setPreviewFile] = useState(null);
 
   function getCurrentDate() {
     let date = new Date().toLocaleString().split(" ")
@@ -36,15 +31,15 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   }
 
   async function handlerNewPost() {
-    if (postContent.length > 0 || inputImagesRef.current.files.length > 0) {
+    if (postContent.length > 0 || selectedImages.length > 0) {
       setPostContent("");
-      setPreviewImages([]);
+      setSelectedImages([]);
       setIsLoading(true);
 
       const dataForm = new FormData();
 
-      for (let file of inputImagesRef.current.files) {
-        dataForm.append("picture", file);
+      for (let obj of selectedImages) {
+        dataForm.append("picture", obj.file);
       }
       
       dataForm.append("body", JSON.stringify({
@@ -76,27 +71,33 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
 
   async function addImage() {
     let updatePreviewImages = [];
+
     for (let file of inputImagesRef.current.files) {
       updatePreviewImages.push({
         id: uuid(),
-        url: URL.createObjectURL(file)
+        file
       });
     }
 
-    setPreviewImages([ ...updatePreviewImages]);
+    setSelectedImages([ ...selectedImages, ...updatePreviewImages]);
   }
 
   function deletePreview(id: string) {
     let newPreview = [];
 
-    for (let c = 0; c < previewImages.length; c++) {
-      if (previewImages[c].id !== id) {
-        newPreview.push(previewImages[c]);
+    for (let c = 0; c < selectedImages.length; c++) {
+      if (selectedImages[c].id !== id) {
+        newPreview.push(selectedImages[c]);
       }
     }
 
-    setPreviewImages([ ...newPreview ]);
+    setSelectedImages([ ...newPreview ]);
   }
+
+  useEffect(() => {
+    console.log("selected: ", selectedImages);
+
+  }, [selectedImages])
 
   return (
     <div className={styles.postContainer}>
@@ -120,22 +121,25 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
         />
       }
 
-      { previewImages.length > 0 ? <hr /> : null }
+      { selectedImages.length > 0 ? <hr /> : null }
 
       <div className={styles.previewFiles}>
 
         {
-          previewImages.map((item, index) => 
+          selectedImages.map(item => 
             <div 
-              className={styles.imageContainer}
-              onClick={() => deletePreview(item.id)}
-              key={index}
+              className={styles.SelectedImageContainer}
+              key={item.id}
             >
-              <IoCloseCircleSharp />
-              <div className={styles.onHoverBg}><BsFillTrashFill /></div>
+              <div 
+                className={styles.setPreviewBg} 
+                onClick={() => setPreviewFile(item)}
+              ></div>
+
+              <IoCloseCircleSharp onClick={() => deletePreview(item.id)} />
+
               <img 
-                onLoad={({target}) => adjustPreviewImageSize(target)}
-                src={item.url} 
+                src={URL.createObjectURL(item.file)} 
               />
             </div>
           )
@@ -171,6 +175,44 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
           onClick={handlerNewPost}
         >Publicar</button>
       </div>
+
+      {
+        previewFile !== null
+        ? 
+          <div className={styles.previewContainer}>
+            <div className={styles.bg} onClick={() => setPreviewFile(null)}>
+              <div className={styles.closeIconContainer}>
+                <IoCloseCircleSharp />
+              </div>
+            </div>
+
+            <div className={styles.imageContainer}>
+              <img 
+                alt={"preview"} 
+                src={URL.createObjectURL(previewFile.file)}
+              />
+            </div>
+
+            <div className={styles.options}>
+              {
+                selectedImages.map((item) => 
+                  <div 
+                    className={styles.aOption} 
+                    onClick={() => setPreviewFile(item)}
+                    style={
+                      previewFile.id === item.id 
+                      ? { transform: "scale(0.8)", border: "solid 1px var(--default-blue)" } 
+                      : {}
+                    }
+                  >
+                    <img src={URL.createObjectURL(item.file)} alt={"select option to view"} />
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        : <></>
+      }
 
     </div>    
   );

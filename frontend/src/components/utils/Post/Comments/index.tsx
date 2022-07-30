@@ -3,7 +3,7 @@ import { api } from "../../../../services/api";
 import { ImSpinner } from "react-icons/im";
 import Image from "next/image";
 import Link from "next/link";
-import { BiMessageAltX } from "react-icons/bi";
+import { BiMessageAltX, BiSend } from "react-icons/bi";
 import { IoMdAddCircle } from "react-icons/io";
 import { useSession } from "next-auth/react";
 import { BsArrowReturnRight } from "react-icons/bs";
@@ -81,7 +81,7 @@ export function Comments({ postID, setCommentsAmount }) {
 	        	disabled={newComment.length == 0}
 	        	onClick={handleAddComment}
 	        	className={newCommentLoading ? "loadingContainer" : ""}
-	        ><IoMdAddCircle /></button>
+	        ><BiSend /></button>
 	      </div>
 				{
 					isLoading ? <div id={styles.loading} className="loadingContainer"><ImSpinner /></div> : <></>

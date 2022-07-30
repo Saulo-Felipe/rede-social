@@ -40,7 +40,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   const [allImages, setAllImages] = useState([]);
   const [currentCarouselImage, setCurrentCarouselImage] = useState(0);
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
-  const [postIsDeleted, setPostIsDeleted] = useState(false);
+  const [postIsDeleted, setPostIsDeleted] = useState<number>(0);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [action, setAction] = useState({
@@ -275,13 +275,16 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     setDeleteLoading(false);
 
     if (data.success) {
-      setPostIsDeleted(true);
+      setPostIsDeleted(1);
+      setTimeout(() => {
+        setPostIsDeleted(2);
+      }, 3000)
     } else {
       alert("Erro ao deletar post");
     }
   }
 
-  if (!postIsDeleted)
+  if (postIsDeleted === 0)
     return (
       <div 
         style={deleteLoading ? { opacity: "0.5", userSelect: "none" } : null}
@@ -290,22 +293,22 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
       >
         <header>
           <div className={styles.profileInfo}>
-            <div className={styles.profilePictureContainer}>
-              <NextImage
-                alt={"user profile"}
-                src={postInfo.image_url}
-                width={"100%"}
-                height={"100%"}
-              />
-            </div>
+            <Link href={`/profile/${postInfo.fk_user_id}`}>
+              <a>
+                <div className={styles.profilePictureContainer}>
+                  <NextImage
+                    alt={"user profile"}
+                    src={postInfo.image_url}
+                    width={"100%"}
+                    height={"100%"}
+                  />
+                </div>
 
-            <div className={styles.username}>
-              <Link href={`/profile/${postInfo.fk_user_id}`}>
-                <a>
+                <div className={styles.username}>
                   {postInfo.username}
-                </a>
-              </Link>
-            </div>
+                </div>
+              </a>
+            </Link>
           </div>
 
           {
@@ -454,10 +457,14 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
 
       </div>
     );
-  else 
+
+  else if (postIsDeleted == 1)
     return (
       <div className={styles.deletedPost}>
         <div>Esta postagem foi removida</div>
       </div>
-  )
+  );
+
+  else return <></>;
+  
 }

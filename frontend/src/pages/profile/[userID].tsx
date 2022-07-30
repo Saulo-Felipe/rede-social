@@ -118,7 +118,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
           </div>
         </div>
 
-        <hr/>
+        {/* <hr/>
 
         <div className={styles.bottomContent}>
           <div className={styles.iconContainer}>
@@ -130,7 +130,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
             <AiOutlineUsergroupAdd />
             {user.following} Seguindo
           </div>
-        </div>
+        </div> */}
       </header>
 
       <section>
@@ -161,6 +161,7 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
                 key={post.id}
                 data={post}
                 currentUserId={session?.user?.id}
+                time={100}
               />
             )
           )

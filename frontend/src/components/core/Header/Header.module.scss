@@ -146,8 +146,11 @@
     div {
       transition: all 200ms;
       padding: 0.5rem;
-      background-color: rgba(0, 0, 34, 0.05);
+      background-color: white;
       cursor: pointer;
+
+      border-radius: 0.5rem;
+
 
       display: flex;
       align-items: center;
@@ -163,7 +166,7 @@
       }
 
       &:hover {
-        background-color: rgba(0, 0, 34, 0.1);
+        background-color: var(--background);
       }
     }
   }

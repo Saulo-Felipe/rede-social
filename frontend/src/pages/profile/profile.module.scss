@@ -10,11 +10,11 @@
     
     border-radius: 0.5rem;
 
-    margin: 1rem 0 0 1rem;
     padding: 1rem;
+    margin: 0rem -1rem;
 
-    @media (max-width: 901px) {
-      margin: 2rem 0 0 0;
+    @media (max-width: 991px) {
+      margin: 0 0 0 0;
     }
 
     .title {
@@ -109,14 +109,13 @@
   }
 
   > section {
-    padding: 1rem;
 
     h2 {
-      margin-top: 2rem;
+      margin-top: 2.5rem;
     }
 
     > hr {
-      margin: 1rem 0 0 0;
+      margin: 0.5rem 0 0 0;
     }
 
     .loadingIcon {
