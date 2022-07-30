@@ -68,7 +68,7 @@ user.get("/posts/:userID", async (request, response) => {
     const { userID }: postsParams = request.params;
 
     const [posts]: any = await sequelize.query(`
-      SELECT content, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on, "Post".id FROM "Post"
+      SELECT content, "Post".images, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on, "Post".id FROM "Post"
       INNER JOIN "User" ON "User".id = "Post".fk_user_id
       WHERE "Post".fk_user_id = '${userID}'
       ORDER BY "Post".id DESC;

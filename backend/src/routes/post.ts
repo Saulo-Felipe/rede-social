@@ -71,7 +71,7 @@ posts.put("/create", upload, async (request, response) => {
           '${postContent}',
           '${userID}',
           '${createdOn}',
-          ${databaseImagesName.length == 0 ? null : `${databaseImagesName}`}
+          ${databaseImagesName.length == 0 ? null : `'${databaseImagesName}'`}
         );
       `);
 
