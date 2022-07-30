@@ -6,15 +6,17 @@ import { FaSpinner } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 
 import styles from "./Feed.module.scss";
+import { MdWallpaper } from "react-icons/md";
 
 
 interface FeedProps {
   allPosts: PostBody[];
   isLoading: boolean;
   getRecentPosts: (reset: boolean) => void;
+  finishPosts: boolean;
 }
 
-export function Feed({ allPosts, isLoading, getRecentPosts }: FeedProps) {
+export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedProps) {
   let delayTime = 0;
 
   useEffect(() => {
@@ -57,13 +59,27 @@ export function Feed({ allPosts, isLoading, getRecentPosts }: FeedProps) {
       }
 
       <div className={styles.loadMorePosts}>
-        <button  
-          className="loadingContainer" 
-          onClick={() => !isLoading ? getRecentPosts(false) : null}
-          disabled={isLoading}
-        >
-          Carregar mais posts {isLoading ? <TbFidgetSpinner /> : <></>}
-        </button>
+        {
+          !finishPosts
+          ? (
+            <button  
+              className="loadingContainer" 
+              onClick={() => !isLoading ? getRecentPosts(false) : null}
+              disabled={isLoading}
+            >
+              Carregar mais posts {isLoading ? <TbFidgetSpinner /> : <></>}
+            </button>
+
+          ) : (
+            <div className={styles.noHavePosts}>
+              <div>
+                Você chegou ao fim. Não tem mais posts, crie uma postagem!
+              </div>
+
+              <div><MdWallpaper /></div>
+            </div>
+          )
+        }
       </div>
 
     </div>

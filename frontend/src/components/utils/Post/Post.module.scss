@@ -11,32 +11,77 @@
 
   > header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-
-    .profilePictureContainer {
-      border-radius: 50%;
-
-      height: 2rem;
-      width: 2rem;
-
+    
+    .profileInfo {
       display: flex;
       align-items: center;
-      justify-content: center;
 
-      overflow: hidden;
-      margin-right: 0.75rem;
-
-      img {
+      .profilePictureContainer {
         border-radius: 50%;
+    
+        height: 2rem;
+        width: 2rem;
+    
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    
+        overflow: hidden;
+        margin-right: 0.75rem;
+    
+        img {
+          border-radius: 50%;
+        }
+      }
+    
+      .username {
+        font-size: 1rem;
+        font-weight: 400;
       }
     }
 
-    .username {
-      font-size: 1rem;
-      font-weight: 400;
-    }
-  }
+    .menuDots {
+      position: relative;
+      cursor: pointer;
 
+      .dropdown {
+        position: absolute;
+        background: white;
+        box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
+        z-index: 1;
+        right: 0;
+
+        .option {
+          padding: 0.3rem 1.5rem;
+          border: solid 1px var(--gray-1);
+          margin: 0.2rem;
+          display: flex;
+          justify-content: space-between;
+          cursor: pointer;
+          transition: 200ms;
+
+          &:hover {
+            background-color: rgb(238, 238, 238);
+          }
+
+          svg {
+            font-size: 1.1rem;
+            color: red;
+            margin-right: 0.5rem;
+          }
+        }
+      }
+
+      svg {
+        font-size: 1.5rem;
+        color: var(--gray-2);
+      }
+    }
+
+  }
+  
   > hr {
     margin: 1rem 0;
   }
@@ -48,7 +93,6 @@
       padding-bottom: 1rem;
       border-left: solid 2px var(--gray-1);
       padding-left: 1rem;
-      margin-bottom: 2rem;
       line-break: anywhere;
     }
 
@@ -77,8 +121,8 @@
 
           box-shadow: 0 0 10px rgb(0, 0, 0, 0.5);
   
-          width: 2rem;
-          height: 2rem;
+          width: 3rem;
+          height: 3rem;
   
           display: flex;
           align-items: center;
@@ -101,8 +145,36 @@
         .arrowRight {
           right: -1rem;
         }
+
+        .imageCount {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+        }
+      }
+    }
+    .imageCount {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+
+      .unSelected {
+        background-color: var(--gray-1);
       }
 
+      .selected {
+        background-color: var(--default-blue);
+      }
+
+      .roundedOption {
+        width: 0.5rem;
+        height: 0.5rem;
+        margin-right: 0.5rem;
+        border-radius: 50%;
+      }
     }
   }
 
@@ -182,4 +254,15 @@
     }
 
   }
+}
+
+.deletedPost {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  color: red;
+  opacity: 0.75;
+  user-select: none;
+  margin-top: 2rem;
 }

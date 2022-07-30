@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../services/api";
 import { Comments } from "./Comments";
-import { adjustPreviewImageSize } from "../../templates/Home/NewPost";
 import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import Link from "next/link";
@@ -10,6 +9,8 @@ import NextImage from "next/image";
 import styles from "./Post.module.scss";
 import { isMobile } from "react-device-detect";
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
+import { BiDotsHorizontal } from "react-icons/bi";
+import { BsTrash } from "react-icons/bs";
 
 export interface PostBody {
   id: number;
@@ -36,8 +37,11 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   const [commentsAmount, setCommentsAmount] = useState(null);
 
   const postWidthRef = useRef(null);
-  const [allImages, setAllImages] = useState(postInfo.images?.split(",") || []);
+  const [allImages, setAllImages] = useState([]);
   const [currentCarouselImage, setCurrentCarouselImage] = useState(0);
+  const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+  const [postIsDeleted, setPostIsDeleted] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [action, setAction] = useState({
     isLike: false,
@@ -47,28 +51,27 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     dislikeAmount: Number(postInfo.dislikes_amount)
   });
 
-  // function normalizeImages() {
-  //   let newImageData = [];
-
-  //   for (let c = 0; c < allImages.length; c++) {
-  //     let image: any = <img style={{ maxHeight: 70/100*postWidthRef.current?.clientWidth }} src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+images[c]} />
-
-  //     newImageData.push({
-  //       element: image,
-  //       biggerSide: image.width >= image.height ? 0 : 1
-  //     })  
-  //   }
-
-  //   setAllImages([ ...newImageData ]);
-  // }
-
   useEffect(() => {
-    console.log("all images: ", allImages);
-  }, [allImages])
+    let images = postInfo.images?.split(",") || [];
+
+    if (images.length > 0) {
+      let preloadImages = [];
+      
+      for (let c = 0; c < images.length; c++) {
+        preloadImages.push(
+          <img 
+            src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+images[c]}
+            style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
+          />
+        );
+      }
+  
+      setAllImages([ ...preloadImages ]);
+    }
+  }, []);
 
   useEffect(() => {
     setLoadingLike(true);
-    // normalizeImages();
 
     setTimeout(async () => {
       const {data} = await api.get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
@@ -85,15 +88,13 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   }, []);
 
   function nextCarousel() {
-    if (currentCarouselImage < allImages.length) {
-      console.log("passando")
+    if (currentCarouselImage < allImages.length-1) {
       setCurrentCarouselImage(currentCarouselImage+1);
     }
   }
 
   function backCarousel() {
     if (currentCarouselImage > 0) {
-      console.log("voltando")
       setCurrentCarouselImage(currentCarouselImage-1);
     }
   }
@@ -256,151 +257,207 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     }
   }
 
-  return (
-    <div className={styles.post}>
-      <header>
-        <div className={styles.profilePictureContainer}>
-          <NextImage
-            alt={"user profile"}
-            src={postInfo.image_url}
-            width={"100%"}
-            height={"100%"}
-          />
-        </div>
+  function onClickOutsideDropdown(element, event) {
+    if (deleteLoading)
+      return event.preventDefault();
+    
+    let classes = element.classList
 
-        <div className={styles.username}>
-          <Link href={`/profile/${postInfo.fk_user_id}`}>
-            <a>
-              {postInfo.username}
-            </a>
-          </Link>
-        </div>
-      </header>
+    for (let c = 0; c < classes.length; c++) {
+      if (classes[c].toLocaleLowerCase().indexOf("option") == -1)
+        setDropdownIsOpen(false);
+    }
+  }
 
-      <hr />
+  async function deletePost() {
+    setDeleteLoading(true);
+    const { data } = await api.delete(`/posts/${currentUserId}/${postInfo.fk_user_id}/${postInfo.id}`)
+    setDeleteLoading(false);
 
-      <section className={styles.postContainer} ref={postWidthRef}>
-        { 
-          postInfo.content.length > 0  
-          ? <div className={styles.commentContent}>{ postInfo.content }</div>
+    if (data.success) {
+      setPostIsDeleted(true);
+    } else {
+      alert("Erro ao deletar post");
+    }
+  }
+
+  if (!postIsDeleted)
+    return (
+      <div 
+        style={deleteLoading ? { opacity: "0.5", userSelect: "none" } : null}
+        className={styles.post} 
+        onClick={(e) => onClickOutsideDropdown(e.target, e)}
+      >
+        <header>
+          <div className={styles.profileInfo}>
+            <div className={styles.profilePictureContainer}>
+              <NextImage
+                alt={"user profile"}
+                src={postInfo.image_url}
+                width={"100%"}
+                height={"100%"}
+              />
+            </div>
+
+            <div className={styles.username}>
+              <Link href={`/profile/${postInfo.fk_user_id}`}>
+                <a>
+                  {postInfo.username}
+                </a>
+              </Link>
+            </div>
+          </div>
+
+          {
+            postInfo.fk_user_id === currentUserId
+            ? <div 
+                className={styles.menuDots}
+                onClick={() => setDropdownIsOpen(dropdownIsOpen == false)}
+              >
+              <BiDotsHorizontal />
+
+              {
+                dropdownIsOpen 
+                ? ( 
+                  <div className={styles.dropdown}>
+                    <div className={styles.option} onClick={deletePost}>
+                      <BsTrash />
+                      Deletar
+                    </div>
+                  </div>
+                ) : <></>
+              }
+            </div>
+            : <></>
+          }
+        </header>
+
+        <hr />
+
+        <section className={styles.postContainer} ref={postWidthRef}>
+          { 
+            postInfo.content.length > 0  
+            ? <div className={styles.commentContent}>{ postInfo.content }</div>
+            : <></>
+          }
+
+          <div className={styles.carousel} >
+            {
+              allImages.length > 0
+              ? (
+                  <>
+                    <div className={styles.imageContainer}>
+                      {
+                        allImages.length > 1 && currentCarouselImage < allImages.length-1
+                        ? <div 
+                          className={`${styles.arrowRight} ${styles.arrow}`}
+                          onClick={nextCarousel}
+                        >
+                          <MdOutlineArrowForwardIos /></div>
+                        : <></>
+                      }
+
+                      {
+                        allImages.length > 1 && currentCarouselImage > 0
+                        ? 
+                          <div 
+                            className={`${styles.arrowLeft} ${styles.arrow}`}
+                            onClick={backCarousel}
+                          ><MdOutlineArrowBackIos /></div>
+                        : <></>
+                      }
+          
+                      { allImages[currentCarouselImage] }
+
+                    </div>
+                  </>
+                )
+              : <></>
+            }
+          </div>
+          <div className={styles.imageCount}>
+            { 
+              allImages.length > 1 
+              ? allImages.map((item, index) => 
+                index !== currentCarouselImage
+                ? <div key={index} className={`${styles.unSelected} ${styles.roundedOption}`}></div>
+                : <div key={index} className={`${styles.selected} ${styles.roundedOption}`}></div>
+              ) 
+              : <></>
+            }
+          </div>        
+        </section>
+
+        <footer>
+          <div>
+            <div className={styles.like}
+              onMouseEnter={() => handleLike("mouseEnter")}
+              onMouseLeave={() => handleLike("mouseLeave")}
+              onClick={handleNewLike}
+            >
+              {
+                loadingLike
+                ? (
+                  <div style={{ color: "gray" }}>
+                    <AiOutlineLike style={{ color: "gray" }} /> 0
+                  </div>
+                ) : (
+                  <>
+                    { action.isLike ? <AiFillLike  /> : <AiOutlineLike /> }
+                    { action.likeAmount }
+                  </>
+                )
+              }
+            </div>
+
+            <div
+              className={styles.dislike}
+              onMouseEnter={() => handleDislike("mouseEnter")}
+              onMouseLeave={() => handleDislike("mouseLeave")}
+              onClick={handleNewDislike}
+            >
+              {
+                loadingLike
+                ? (
+                  <div style={{ color: "gray" }}>
+                    <AiFillDislike style={{ color: "gray" }} /> 0
+                  </div>
+                ) : (
+                  <>
+                    { action.isDislike ? <AiFillDislike  /> : <AiOutlineDislike /> }
+                    { action.dislikeAmount }
+                  </>
+                )
+              }
+            </div>
+
+            <div className={styles.comments} onClick={() => setShowComments(showComments == false)}>
+              <AiOutlineComment /> Comentários { commentsAmount == null ? "" : "("+commentsAmount+")" }
+            </div>
+          </div>
+
+          <div className={styles.publicationDate}>
+            {
+              postInfo.created_on.replace(",", "/").replace(",", "/").replace(",", " às " )
+            }
+          </div>
+        </footer>
+
+        {
+          showComments
+          ? <Comments
+              setCommentsAmount={setCommentsAmount}
+              postID={postInfo.id}
+            />
           : <></>
         }
 
-        <div className={styles.carousel} >
-          {
-            allImages.length > 0
-            ? (
-              <>
-                <div className={styles.imageContainer}>
-                  {
-                    allImages.length > 1
-                    ? (
-                      <>
-                        <div 
-                          className={`${styles.arrowRight} ${styles.arrow}`}
-                          onClick={nextCarousel}
-                        ><MdOutlineArrowForwardIos /></div>
-      
-                        <div 
-                          className={`${styles.arrowLeft} ${styles.arrow}`}
-                          onClick={backCarousel}
-                        ><MdOutlineArrowBackIos /></div>
-                      </>
-                    ) : <></>
-                  }
-                  
-                  <img 
-                    src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+allImages[currentCarouselImage]}
-                    style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
-                  />
-                </div>
-              </>
-              )
-            : <></>
-          }
-          {/* {
-            allImages.map((image, index) => 
-              <div 
-                key={index}
-                className={styles.publImageContainer}
-                style={{
-                  width: (image.biggerSide == 0 ? 80 : 60)/100*postWidthRef.current?.clientWidth, 
-                  height: image.element.clientHeight, 
-                  marginLeft: (image.biggerSide == 0 ? 10 : 20)/100*postWidthRef.current?.clientWidth,
-                  marginRight: (image.biggerSide == 0 ? 10 : 20)/100*postWidthRef.current?.clientWidth,
-                }}
-              >
-                { image.element }
-              </div>
-            )
-          } */}
-        </div>
-      </section>
-
-      <footer>
-        <div>
-          <div className={styles.like}
-            onMouseEnter={() => handleLike("mouseEnter")}
-            onMouseLeave={() => handleLike("mouseLeave")}
-            onClick={handleNewLike}
-          >
-            {
-              loadingLike
-              ? (
-                <div style={{ color: "gray" }}>
-                  <AiOutlineLike style={{ color: "gray" }} /> 0
-                </div>
-              ) : (
-                <>
-                  { action.isLike ? <AiFillLike  /> : <AiOutlineLike /> }
-                  { action.likeAmount }
-                </>
-              )
-            }
-          </div>
-
-          <div
-            className={styles.dislike}
-            onMouseEnter={() => handleDislike("mouseEnter")}
-            onMouseLeave={() => handleDislike("mouseLeave")}
-            onClick={handleNewDislike}
-          >
-            {
-              loadingLike
-              ? (
-                <div style={{ color: "gray" }}>
-                  <AiFillDislike style={{ color: "gray" }} /> 0
-                </div>
-              ) : (
-                <>
-                  { action.isDislike ? <AiFillDislike  /> : <AiOutlineDislike /> }
-                  { action.dislikeAmount }
-                </>
-              )
-            }
-          </div>
-
-          <div className={styles.comments} onClick={() => setShowComments(showComments == false)}>
-            <AiOutlineComment /> Comentários { commentsAmount == null ? "" : "("+commentsAmount+")" }
-          </div>
-        </div>
-
-        <div className={styles.publicationDate}>
-          {
-            postInfo.created_on.replace(",", "/").replace(",", "/").replace(",", " às " )
-          }
-        </div>
-      </footer>
-
-      {
-        showComments
-        ? <Comments
-            setCommentsAmount={setCommentsAmount}
-            postID={postInfo.id}
-          />
-        : <></>
-      }
-
-    </div>
-  );
+      </div>
+    );
+  else 
+    return (
+      <div className={styles.deletedPost}>
+        <div>Esta postagem foi removida</div>
+      </div>
+  )
 }

@@ -9,6 +9,7 @@ export default function Home() {
   const [allPosts, setAllPosts] = useState<PostBody[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
+  const [finishPosts, setFinishPosts] = useState(false);
 
   async function getRecentPosts(reset: boolean) {
     setIsLoading(true);
@@ -18,7 +19,6 @@ export default function Home() {
     setIsLoading(false);
 
     if (data.success) {   
-      console.log(data.posts);
       if (reset) {
         setAllPosts([
           ...data.posts
@@ -27,12 +27,16 @@ export default function Home() {
         setPageIndex(1);
 
       } else {
-        setAllPosts([
-          ...allPosts,
-          ...data.posts
-        ]);
-
-        setPageIndex(pageIndex+1)
+        if (data.posts.length > 0) {
+          setAllPosts([
+            ...allPosts,
+            ...data.posts
+          ]);
+  
+          setPageIndex(pageIndex+1)
+        } else {
+          setFinishPosts(true);
+        }
       }
 
     } else {
@@ -52,6 +56,7 @@ export default function Home() {
         getRecentPosts={getRecentPosts}
         allPosts={allPosts}
         isLoading={isLoading}
+        finishPosts={finishPosts}
       />
 
     </main>

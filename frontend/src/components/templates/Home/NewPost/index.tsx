@@ -2,7 +2,6 @@ import { api } from "../../../../services/api";
 import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
-import Image from "next/image"; 
 
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -39,6 +38,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   async function handlerNewPost() {
     if (postContent.length > 0 || inputImagesRef.current.files.length > 0) {
       setPostContent("");
+      setPreviewImages([]);
       setIsLoading(true);
 
       const dataForm = new FormData();

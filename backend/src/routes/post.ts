@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { response, Router } from "express";
 import { sequelize } from "../services/databse";
 import { axiosServer } from "../services/api";
 import { v4 as uuid } from "uuid";
+import fsPromisses from "fs/promises";
 
 import multer from "multer";
 import path from "path";
@@ -70,7 +71,7 @@ posts.put("/create", upload, async (request, response) => {
           '${postContent}',
           '${userID}',
           '${createdOn}',
-          '${databaseImagesName}'
+          ${databaseImagesName.length == 0 ? null : `${databaseImagesName}`}
         );
       `);
 
@@ -83,6 +84,53 @@ posts.put("/create", upload, async (request, response) => {
     return response.status(203).json({ error: true, message: "Erro ao criar post" });
   }
 });
+
+
+interface deletePostParams {
+  currentUserId: string;
+  fk_user_id: string;
+  postID: string;
+}
+
+posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) => {
+  try {
+    const { currentUserId, fk_user_id, postID }: deletePostParams = request.params;
+
+    if (currentUserId === fk_user_id) {
+      let [images]: any = await sequelize.query(`
+        SELECT images FROM "Post"
+        WHERE id = ${Number(postID)}
+      `);
+      
+      await sequelize.query(`
+        DELETE FROM "LikeAndDislike" 
+        WHERE fk_post_id = ${Number(postID)} 
+      `);
+  
+      await sequelize.query(`
+        DELETE FROM "Post" 
+        WHERE id = ${Number(postID)}
+      `);
+
+      images = images[0]?.images?.split(",") || [];
+
+      for (let c = 0; c < images.length; c++) {
+        fsPromisses.unlink((path.join(__dirname, `../images/${images[c]}`)));
+      }
+
+
+      return response.json({ success: true });
+
+    } else {
+      return response.status(203).json({ error: true, message: "Erro ao deletar post. Usuário sem permissão." });
+    }
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(203).json({ error: true, message: "Erro ao deletar post" });
+  }
+});
+
 
 
 interface getPostsFromUser {
