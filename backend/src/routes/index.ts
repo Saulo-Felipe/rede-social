@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { sequelize } from "../services/databse";
+import path from "path";
 
 const index = Router();
 
@@ -23,6 +24,23 @@ index.get("/search/:searchQuery", async (request, response) => {
     console.log('----| Error |-----: ', e);
     return response.status(203).json({ error: true, message: "Erro ao pesquisar usuários" });
   }
-})
+});
+
+
+interface getImageParams {
+  image: string;
+}
+
+index.get("/images/:image", (request, response) => {
+  try {
+    const { image }: getImageParams = request.params;
+
+    return response.sendFile(path.join(__dirname, "../images/"+image));
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(203).json({ error: true, message: "Erro. Arquivo inválido." });
+  }
+});
 
 export { index }

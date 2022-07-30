@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { sequelize } from "../services/databse";
 import { axiosServer } from "../services/api";
+import { v4 as uuid } from "uuid";
+
 import multer from "multer";
+import path from "path";
 
 const posts = Router();
 
@@ -15,7 +18,7 @@ posts.get("/recent/:index", async (request, response) => {
     const { index }: recentPostsParams = request.params;
 
     const [posts] = await sequelize.query(`
-      SELECT "Post".id, content, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on FROM "Post"
+      SELECT "Post".id, "Post".images, content, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on FROM "Post"
       INNER JOIN "User" ON "User".id = "Post".fk_user_id
       ORDER BY "Post".id DESC
       OFFSET 5*${Number(index)} LIMIT 5;
@@ -36,34 +39,44 @@ interface createPostBody {
   createdOn: string;
 }
 
-const upload = multer({
-  dest: "../images/"
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '../images'),
+  filename: (request, file, callback) => {
+    callback(null, uuid()+"."+file.mimetype.split("/")[1]);
+  }
 });
 
-posts.put("/create", upload.array("picture", 12), async (request, response) => {
+const upload = multer({ storage: storage }).array("picture");
+
+posts.put("/create", upload, async (request, response) => {
   try {
-    const body: createPostBody = request.body;
+    const { createdOn, postContent, userID } : createPostBody = JSON.parse(request.body.body);    
+    let databaseImagesName = "";
+    const fileAmount: any = request.files;
 
-    console.log("Files: ", request.files)
+    for (let c = 0; c < fileAmount.length; c++) {
+      if (c < fileAmount.length-1) {
+        databaseImagesName += fileAmount[c].filename+",";
+      } else {
+        databaseImagesName += fileAmount[c].filename;
+      }
+    }
+    
+    if (createdOn && userID) {
 
-    console.log(body)
+      await sequelize.query(`
+        INSERT INTO "Post" (content, fk_user_id, created_on, images)
+        VALUES (
+          '${postContent}',
+          '${userID}',
+          '${createdOn}',
+          '${databaseImagesName}'
+        );
+      `);
 
-    return response.json({ success: true });
+      return response.json({ success: true });
 
-    // if (createdOn && postContent && userID) {
-
-    //   await sequelize.query(`
-    //     INSERT INTO "Post" (content, fk_user_id, created_on)
-    //     VALUES (
-    //       '${postContent}',
-    //       '${userID}',
-    //       '${createdOn}'
-    //     );
-    //   `);
-
-    //   return response.json({ success: true });
-
-    // } else throw true;
+    } else throw true;
 
   } catch(e) {
     console.log('----| Error |-----: ', e)

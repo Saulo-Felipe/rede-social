@@ -11,6 +11,16 @@ import { BiVideoPlus } from "react-icons/bi";
 
 import styles from "./NewPost.module.scss";
 
+export function adjustPreviewImageSize(image) {
+  if (image.width >= image.height) {
+    image.style.width = "100%";
+    image.style.height = "auto";
+  } else {
+    image.style.height = "100%";
+    image.style.width = "auto";
+  }
+}
+
 export function NewPost({ setIsLoading, getRecentPosts }) {
   const [inputIsOpen, setInputIsOpen] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -28,28 +38,27 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
 
   async function handlerNewPost() {
     if (postContent.length > 0 || inputImagesRef.current.files.length > 0) {
-      const dataForm = new FormData();
-
-      console.log("[FILES]: ", inputImagesRef.current.file);
-
-      for (let file of inputImagesRef.current.files) {
-        dataForm.append("file", file);
-      }
-
-      dataForm.append("body", postContent);
-      dataForm.append("body", JSON.stringify({userID: session.user.id}));
-      dataForm.append("body", JSON.stringify({createdOn: getCurrentDate()}))
-      
       setPostContent("");
       setIsLoading(true);
+
+      const dataForm = new FormData();
+
+      for (let file of inputImagesRef.current.files) {
+        dataForm.append("picture", file);
+      }
       
-      const { data } = await api.put("/posts/create", { 
-        dataForm
-      }, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
+      dataForm.append("body", JSON.stringify({
+        createdOn: getCurrentDate(),
+        postContent, 
+        userID: session.user.id
+      }));
+
+      const { data } = await api.put("/posts/create", 
+        dataForm, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        });
 
       setIsLoading(false);
       setInputIsOpen(false);
@@ -75,16 +84,6 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
     }
 
     setPreviewImages([ ...updatePreviewImages]);
-  }
-
-  function adjustPreviewImageSize(image) {
-    if (image.width >= image.height) {
-      image.style.width = "100%";
-      image.style.height = "auto";
-    } else {
-      image.style.height = "100%";
-      image.style.width = "auto";
-    }
   }
 
   function deletePreview(id: string) {

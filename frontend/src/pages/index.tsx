@@ -18,8 +18,8 @@ export default function Home() {
     setIsLoading(false);
 
     if (data.success) {   
+      console.log(data.posts);
       if (reset) {
-        console.log("[index] Reset");
         setAllPosts([
           ...data.posts
         ]);
@@ -27,8 +27,6 @@ export default function Home() {
         setPageIndex(1);
 
       } else {
-        console.log("[index] No reset");
-
         setAllPosts([
           ...allPosts,
           ...data.posts

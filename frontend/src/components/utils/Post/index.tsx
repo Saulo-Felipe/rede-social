@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../services/api";
 import { Comments } from "./Comments";
-
+import { adjustPreviewImageSize } from "../../templates/Home/NewPost";
 import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import Link from "next/link";
-import Image from "next/image";
+import NextImage from "next/image";
 
 import styles from "./Post.module.scss";
+import { isMobile } from "react-device-detect";
+import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 
 export interface PostBody {
   id: number;
@@ -18,6 +20,7 @@ export interface PostBody {
   dislikes_amount: number;
   likes_amount: number;
   username: string;
+  images: string;
 }
 
 interface PostProps {
@@ -32,6 +35,10 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   const [showComments, setShowComments] = useState(false);
   const [commentsAmount, setCommentsAmount] = useState(null);
 
+  const postWidthRef = useRef(null);
+  const [allImages, setAllImages] = useState(postInfo.images?.split(",") || []);
+  const [currentCarouselImage, setCurrentCarouselImage] = useState(0);
+
   const [action, setAction] = useState({
     isLike: false,
     isDislike: false,
@@ -40,9 +47,28 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     dislikeAmount: Number(postInfo.dislikes_amount)
   });
 
+  // function normalizeImages() {
+  //   let newImageData = [];
+
+  //   for (let c = 0; c < allImages.length; c++) {
+  //     let image: any = <img style={{ maxHeight: 70/100*postWidthRef.current?.clientWidth }} src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+images[c]} />
+
+  //     newImageData.push({
+  //       element: image,
+  //       biggerSide: image.width >= image.height ? 0 : 1
+  //     })  
+  //   }
+
+  //   setAllImages([ ...newImageData ]);
+  // }
+
+  useEffect(() => {
+    console.log("all images: ", allImages);
+  }, [allImages])
+
   useEffect(() => {
     setLoadingLike(true);
-    console.log("ID recebido: ", currentUserId)
+    // normalizeImages();
 
     setTimeout(async () => {
       const {data} = await api.get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
@@ -57,6 +83,20 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
 
     }, time);
   }, []);
+
+  function nextCarousel() {
+    if (currentCarouselImage < allImages.length) {
+      console.log("passando")
+      setCurrentCarouselImage(currentCarouselImage+1);
+    }
+  }
+
+  function backCarousel() {
+    if (currentCarouselImage > 0) {
+      console.log("voltando")
+      setCurrentCarouselImage(currentCarouselImage-1);
+    }
+  }
 
   function handleLike(type: string) {
     if (!loadingLike) {
@@ -216,12 +256,11 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     }
   }
 
-
   return (
     <div className={styles.post}>
       <header>
         <div className={styles.profilePictureContainer}>
-          <Image
+          <NextImage
             alt={"user profile"}
             src={postInfo.image_url}
             width={"100%"}
@@ -240,8 +279,62 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
 
       <hr />
 
-      <section className={styles.postContainer}>
-        { postInfo.content }
+      <section className={styles.postContainer} ref={postWidthRef}>
+        { 
+          postInfo.content.length > 0  
+          ? <div className={styles.commentContent}>{ postInfo.content }</div>
+          : <></>
+        }
+
+        <div className={styles.carousel} >
+          {
+            allImages.length > 0
+            ? (
+              <>
+                <div className={styles.imageContainer}>
+                  {
+                    allImages.length > 1
+                    ? (
+                      <>
+                        <div 
+                          className={`${styles.arrowRight} ${styles.arrow}`}
+                          onClick={nextCarousel}
+                        ><MdOutlineArrowForwardIos /></div>
+      
+                        <div 
+                          className={`${styles.arrowLeft} ${styles.arrow}`}
+                          onClick={backCarousel}
+                        ><MdOutlineArrowBackIos /></div>
+                      </>
+                    ) : <></>
+                  }
+                  
+                  <img 
+                    src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+allImages[currentCarouselImage]}
+                    style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
+                  />
+                </div>
+              </>
+              )
+            : <></>
+          }
+          {/* {
+            allImages.map((image, index) => 
+              <div 
+                key={index}
+                className={styles.publImageContainer}
+                style={{
+                  width: (image.biggerSide == 0 ? 80 : 60)/100*postWidthRef.current?.clientWidth, 
+                  height: image.element.clientHeight, 
+                  marginLeft: (image.biggerSide == 0 ? 10 : 20)/100*postWidthRef.current?.clientWidth,
+                  marginRight: (image.biggerSide == 0 ? 10 : 20)/100*postWidthRef.current?.clientWidth,
+                }}
+              >
+                { image.element }
+              </div>
+            )
+          } */}
+        </div>
       </section>
 
       <footer>
