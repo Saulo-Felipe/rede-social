@@ -73,10 +73,6 @@
         color: white;
         padding: 0.3rem 0.5rem;
         border-radius: 0.4rem;
-
-        &:disabled {
-          opacity: 0.5;
-        }
       }
     }
   }
@@ -135,6 +131,7 @@
     position: absolute;
     background-color: white;
     border: solid 1px rgb(0, 0, 0, 0.2);
+    z-index: 19;
 
     right: 3rem;
     left: 0;

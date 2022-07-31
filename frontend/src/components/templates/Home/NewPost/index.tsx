@@ -27,7 +27,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
     let date = new Date().toLocaleString().split(" ")
     let fullHours = date[1].substring(0, 5);
     
-    return date[0]+" as "+fullHours;
+    return date[0]+" às "+fullHours;
   }
 
   async function handlerNewPost() {

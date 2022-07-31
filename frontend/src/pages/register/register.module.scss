@@ -1,0 +1,147 @@
+.Main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 100vw;
+  height: 100vh;
+
+  @media (max-width: 991px) {
+    background: white;
+    padding: 1rem;
+  }
+
+}
+
+.registerContainer {
+  background-color: white;
+  min-height: 65vh;
+  width: 45vw;
+  border: solid 1px var(--gray-1);
+
+  border-radius: 0.5rem;
+
+  padding: 2rem 1.5rem;
+
+  hr {
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  @media (max-width: 901px) {
+    width: 100%;
+    height: max-content;
+    padding-bottom: 10rem;
+    border: solid 1px rgb(0, 0, 0, 0.5);
+    margin-top: -8rem;
+  }
+
+  footer {
+    text-align: right;
+
+    a {
+      color: blue;
+      text-decoration: underline;
+      margin-left: 0.25rem;
+    }
+  }
+} 
+
+.authContainer {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0;
+
+  .content {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    border: solid 1px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.438);
+    cursor: pointer;
+    transition: all 150ms;
+
+    color: var(--gray-4);
+
+    svg {
+      font-size: 1.6rem;
+      margin-right: 0.45rem;
+      color: black;
+    }
+
+    &:hover {
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.438);
+    }
+  }
+}
+
+
+.emailRegisterContainer {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .back {
+      cursor: pointer;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      border: solid 1px var(--gray-1);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        font-size: 100%;
+      }
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+  }
+
+  .formControl {
+    margin-bottom: 1.25rem;
+
+    label {
+      margin-bottom: 0.2rem;
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 0.9rem;
+      border: solid 1px var(--gray-1);
+
+      &:focus {
+        outline: none;
+      }
+      &::placeholder {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .loading {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .btnRegister {
+    background-color: var(--default-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    width: 100%;
+    border-radius: 0.3rem;
+  }
+}

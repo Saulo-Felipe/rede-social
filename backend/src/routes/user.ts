@@ -1,5 +1,6 @@
-import { request, Router } from "express";
+import { Router } from "express";
 import { sequelize } from "../services/databse";
+import { v4 as uuid } from "uuid";
 
 const user = Router();
 
@@ -142,6 +143,63 @@ user.get("/all", async (request, response) => {
     console.log('----| Error |-----: ', e);
     return response.status(203).json({ error: true, message: "Erro ao buscar usuários." });
   }
+});
+
+
+interface createUserBody {
+  email: string,
+  name: string,
+  passwordConfirm?: string,
+  id?: string | null;
+  password?: string | null,
+  image_url?: string | null;
+}
+
+user.put("/:type", async (request, response) => {
+  try {
+    const { type } = request.params;
+    const body: createUserBody = request.body;
+
+    let date = new Date().toLocaleString().split(" ")
+    let fullHours = date[1].substring(0, 5);
+
+    if (type === "email") {
+      if (body.password === body.passwordConfirm) {
+        await sequelize.query(`
+          INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
+          VALUES (
+            '${uuid()}',
+            '${body.name}',
+            '${body.email}',
+            ${null},
+            '${body.password}',
+            '${type}',
+            '${date[0]+" às "+fullHours}'
+          );
+        `);
+      }
+
+    } else if (type === "google") {
+      await sequelize.query(`
+        INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
+        VALUES (
+          '${body.id}',
+          '${body.name}',
+          '${body.email}',
+          '${body.image_url}',
+          ${null},
+          '${type}',
+          '${date[0]+" às "+fullHours}'
+        );
+      `);
+    } else throw true;
+
+    return response.json({ success: true });  
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(203).json({ error: true, message: "Erro ao criar usuário." });
+  }  
 });
 
 

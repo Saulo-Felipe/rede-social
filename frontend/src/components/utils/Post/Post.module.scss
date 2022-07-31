@@ -25,6 +25,7 @@
         width: 100%;
         display: flex;
         align-items: center;
+        width: max-content;
       }
 
       .profilePictureContainer {
@@ -118,7 +119,6 @@
         height: max-content;
         width: max-content;
         position: relative;
-        border: solid 1px red;
         margin-top: 1rem;
 
         display: flex;

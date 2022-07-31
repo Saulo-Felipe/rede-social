@@ -48,11 +48,6 @@
         filter: brightness(0.9);
       }
 
-      &:disabled {
-        opacity: 0.7;
-        cursor: default;
-        filter: brightness(1) !important;
-      }
     }
 
     .noHavePosts {

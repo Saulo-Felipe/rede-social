@@ -112,7 +112,7 @@ export function SocketProvider({ children }) {
           ...allMessagesRef.current, {
             content: message,
             image: allUsersRef.current[c].image_url,
-            createdOn: date[0]+" as "+fullHours,
+            createdOn: date[0]+" às "+fullHours,
             googleID,
             isMy: googleID === session.user.id
           }]);

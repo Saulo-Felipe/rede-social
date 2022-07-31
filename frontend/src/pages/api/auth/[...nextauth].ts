@@ -1,6 +1,16 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { api } from "../../../services/api";
 import { sequelize } from "../database/connect";
+
+
+interface userGoogleRegister {
+  name: string;
+  email: string;
+  password: null;
+  image_url: string;
+  id: string;
+}
 
 
 export default NextAuth({
@@ -20,23 +30,19 @@ export default NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      const [result] = await sequelize.query(`
-        SELECT * FROM "User" WHERE email = '${user.email}';
-      `);
       
-      if (result.length === 0) {
-        await sequelize.query(`
-          INSERT INTO "User" (id, username, email, image_url)
-          VALUES (
-            '${user.id}',
-            '${user.name}',
-            '${user.email}',
-            '${user.image}'
-          );
-        `);
-      }
+      let newUser: userGoogleRegister = {
+        email: user.email,
+        name: user.image,
+        password: null,
+        id: user.id,
+        image_url: user.image
+      };
 
-      return true;
+      const { data } = await api.put("/user/google", { ...newUser });
+      
+
+      return data.success == true;
     },
     async session({ session, user, token }) {
       session.user.id = token.sub;
