@@ -1,26 +1,47 @@
-import { IoMdAddCircle } from "react-icons/io";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
 import { Post } from "../../components/utils/Post";
 import { api } from "../../services/api";
 import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import ReactModal from "react-modal";
+import { Edit } from "./edit";
+
+import { RiAddFill } from "react-icons/ri";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
+import { TbEdit } from "react-icons/tb";
 
 import styles from "./profile.module.scss";
 
-export default function Profile({ user, isMyProfile, isFollowing }) {
+ReactModal.setAppElement("#__next")
+
+export interface User {
+  id: string;
+  image_url: string;
+  username: string;
+  followers: number;
+  following: number;
+  created_on: string;
+} 
+
+interface ProfileProps {
+  user: User;
+  isMyProfile: boolean;
+  isFollowing: boolean;
+}
+
+export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [following, setFollowing] = useState(isFollowing);
   const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
   const [loadingAction, setLoadingAction] = useState(false);
   const { data: session } = useSession();
+  const [modalIsOpen, setModalIsOpen] = useState(true);
 
   useEffect(() => {
+    console.log(user);
     (async() => {
       setLoading(true);
-      console.log("renderizou posts");
 
       const { data } = await api.get(`/user/posts/${user.id}`);
 
@@ -79,58 +100,69 @@ export default function Profile({ user, isMyProfile, isFollowing }) {
 
   return (
     <div className={styles.profileContainer}>
-      <header>
-        <div className={styles.title}>
-          <div className={styles.imageContainer}>
-            <Image 
-              src={user.image_url} 
-              alt={"profile"}
-              width={"100%"}
-              height={"100%"}
-            />
-          </div>
+      <Edit 
+        user={user} 
+        useModalIsOpen={{ modalIsOpen, setModalIsOpen }}
+      />
 
-          <div className={styles.userInfo}>
-            <div className={styles.username}>{user.username}</div>
-            {
-
-              isMyProfile ? <></>
-              : following 
-                ? (
-                  <div className={styles.unFollowButton}>
-                    <button
-                      onClick={unFollow}
-                      disabled={loadingAction}
-
-                    > Seguindo </button>
-                  </div>
-                ) : (
-                  <div className={styles.followButton}>
-                    <button 
-                      disabled={loadingAction} 
-                      onClick={follow}
-                    >
-                      <IoMdAddCircle /> Seguir 
-                    </button>
-                  </div>                  
-                )
-            }
-          </div>
+      <header className={styles.userHeader}>
+        <div className={styles.cover}>
+          <div 
+            className={styles.editIconContainer}
+            onClick={() => setModalIsOpen(true)}
+          ><TbEdit /></div>
         </div>
 
-        {/* <hr/>
+        <div className={styles.profileInfo}>
 
-        <div className={styles.bottomContent}>
-          <div className={styles.iconContainer}>
-            <AiOutlineUserAdd />
-            {followerAmount} Seguidores
+          <div className={styles.firstContainer}>
+
+            <div className={styles.containInfo}>
+              <div className={styles.userPicture}>
+                <div className={styles.profileImageContainer}>
+                  <Image width={"110%"} height={"110%"} src={user.image_url} />
+                </div>  
+              </div>
+
+              <h1 className={styles.username}>
+                { user.username }
+              </h1>
+            </div>
+
+            <div className={`${styles.action} ${styles.columnOption}`}>
+              <strong>{user.following}</strong> 
+              <span>Seguindo</span>
+            </div>
+
+            <div className={`${styles.action} ${styles.columnOption}`}>
+              <strong>{followerAmount}</strong>
+              <span>{followerAmount > 1 || followerAmount == 0 ? "Seguidores" : "Seguidor"}</span>
+            </div>
+
+            <div className={`${styles.bio} ${styles.columnOption}`}>Biografia here</div>
+
+            <div className={`${styles.userCreatedOn} ${styles.columnOption}`}>Usuário desde {user.created_on}</div>
           </div>
 
-          <div className={styles.iconContainer}>
-            <AiOutlineUsergroupAdd />
-            {user.following} Seguindo
-          </div>
-        </div> */}
+          {
+            !isMyProfile 
+            ? (
+              <div 
+                className={styles.secondContainer}>
+                <button 
+                  className={`${styles.actionBtn} ${following ? styles.unFollowBtn : styles.followBtn}`}
+                  disabled={loadingAction}
+                  onClick={following ? unFollow : follow}
+                >
+                  { following ? "Seguindo" : <>Seguir <RiAddFill /></> }
+                </button>
+              </div>
+            ) : <></>
+          }
+
+
+        </div>
+
       </header>
 
       <section>

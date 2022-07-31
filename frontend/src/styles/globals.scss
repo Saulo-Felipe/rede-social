@@ -116,3 +116,42 @@ a {
 .color-blue {
   color: var(--default-blue);
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  background-color: rgb(0, 0, 0, 0.6);
+  z-index: 99;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width: 720px) {
+    align-items: baseline;
+    padding-top: 0.5rem;
+  }
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 750px;
+  background-color: #fff;
+  padding: 2rem 3rem;
+  position: relative;
+  border-radius: 0.25rem;
+  z-index: 99;
+ 
+  .close-modal-icon {
+    font-size: 1.5rem;
+    position: absolute;
+    right: 3rem;
+    top: 2rem;
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
