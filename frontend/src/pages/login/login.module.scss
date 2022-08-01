@@ -16,11 +16,11 @@
 .loginContainer {
   background-color: white;
   min-height: 75vh;
-  width: 45vw;
+  min-width: 40vw;
 
-  border-radius: 0.5rem;
+  border: solid 1px var(--gray-1);
 
-  padding: 1.5rem;
+  padding: 2rem;
 
   hr {
     margin-top: 0.5rem;
@@ -28,6 +28,7 @@
 
   p {
     text-align: center;
+    opacity: 0.5;
   }
 
   label {

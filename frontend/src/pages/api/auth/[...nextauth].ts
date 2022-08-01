@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { api } from "../../../services/api";
-import { sequelize } from "../database/connect";
 
 
 interface userGoogleRegister {
@@ -33,15 +32,16 @@ export default NextAuth({
       
       let newUser: userGoogleRegister = {
         email: user.email,
-        name: user.image,
+        name: user.name,
         password: null,
         id: user.id,
         image_url: user.image
       };
 
-      const { data } = await api.put("/user/google", { ...newUser });
-      
+      const { data } = await api.put("/auth/register/google", { ...newUser });
 
+      // Realizar login via jsonWebToken
+      
       return data.success == true;
     },
     async session({ session, user, token }) {

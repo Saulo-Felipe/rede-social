@@ -3,7 +3,8 @@ import { OnlineUsers } from '../components/core/OnlineUsers';
 import { SessionProvider } from 'next-auth/react';
 import { SocketProvider } from '../hooks/useSocket';
 
-import '../styles/globals.scss'
+import '../styles/globals.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MyApp({ Component, pageProps }) {
 

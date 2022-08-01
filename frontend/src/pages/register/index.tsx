@@ -67,16 +67,16 @@ export default function Register() {
       
       setIsLoading(true);
 
-      const { data } = await api.put("/user/email", { ...registerInfo });
+      const { data } = await api.put("/auth/register/email", { ...registerInfo });
 
       setIsLoading(false);
   
-      if (data.success) {
-        alert("Cadastrado com sucesso!");
+      if (data.success && data.failed) {
+        alert(data.message);
+      } else {
+        alert("Usuário registrado com sucesso");
 
         router.push("/login");
-      } else {
-        alert("Erro ao criar usuário")
       }
   
     }
@@ -113,7 +113,7 @@ export default function Register() {
                   className={styles.content}
                   onClick={auth}
                 >
-                  <FcGoogle /> Entrar com o Google
+                  <FcGoogle /> Google
                 </div>
               </div>
 
