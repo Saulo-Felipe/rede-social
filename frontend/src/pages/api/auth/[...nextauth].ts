@@ -14,21 +14,6 @@ interface userGoogleRegister {
   id: string;
 }
 
-const setRefreshCookie = ({ cookies, refresh_token }) => {
-  const date = new Date()
-  const time = date.getTime()
-  const expireTime = time + 24 * 60 * 60 * 1000 * 30 // 30 days
-  date.setTime(expireTime)
-
-  cookies.set('refresh_token', refresh_token,
-      {
-          sameSite: 'strict',
-          overwrite: true,
-          expires: date,
-          httpOnly: true
-      })
-}
-
 const Auth = (request: NextApiRequest, response: NextApiResponse) => {
 
   return NextAuth(request, response, {
@@ -57,10 +42,10 @@ const Auth = (request: NextApiRequest, response: NextApiResponse) => {
           image_url: image
         };
   
-        // const { data } = await api.post("/auth/sigin/Google", { ...newUser });
+        // const { data } = await api.post("/auth/signin/Google", { ...newUser });
         
         const req = await fetch(
-          new Request(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/sigin/Google"`, {
+          new Request(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/signin/Google"`, {
             method: "POST",
             body: JSON.stringify({ ...newUser })
           })

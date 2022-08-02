@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { sequelize } from "../services/databse";
+import { verifyToken } from "../utils/authorization";
 
 const user = Router();
 
+user.use(verifyToken);
 
 interface getProfileParams {
   userID: string;
@@ -48,9 +50,8 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
         user,
         isFollowing: isFollowing.length !== 0 
       });
-    }
 
-    return response.json({ success: true, userExists: false });
+    } else return response.json({ success: true, userExists: false });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);

@@ -59,25 +59,44 @@ interface RegisterGoogleBody {
   id: string;
 }
 
-authentication.put("/register/google", async (request, response) => {
+authentication.post("/signin/:authType", async (request, response) => {
   try {
     const { email, id, image_url, name }: RegisterGoogleBody = request.body;
+    const { authType } = request.params;
+
+    console.log("rota inciaida: ", authType)
 
     const [result] = await sequelize.query(`
       SELECT id FROM "User"
       WHERE email = '${email}'
     `);
     
+    console.log("inserção 1 finalizada")
+
     if (result.length == 0) {
       await sequelize.query(`
         INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
         VALUES (
-          '${id}', '${name}', '${email}', '${image_url}', ${null}, 'Google', '${getCurrentDate()}'
+          '${id}', '${name}', '${email}', '${image_url}', ${null}, '${authType}', '${getCurrentDate()}'
         );
       `);
     }
 
-    return response.json({ success: true });
+    console.log("inserção 2 finalizada")
+
+    // Automatic login
+
+    const token = jwt.sign({ email: email }, String(process.env.SECRET), {
+      expiresIn: "1d"
+    });
+
+    console.log("Logado com google: ", token);
+
+    return response.json({
+      success: true, 
+      message: "Login realizado com sucesso!",
+      token: token
+    });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -117,11 +136,9 @@ authentication.post("/login", async (request, response) => {
     bcrypt.compare(password, user[0].password, (err, result) => {
       if (result) {
         
-        const token = jwt.sign({ email: user[0].email }, "SECTETR HERE", {
+        const token = jwt.sign({ email: user[0].email }, String(process.env.SECRET), {
           expiresIn: "1d"
         });
-
-        console.log("Your token: ", token);
 
         return response.json({ 
           success: true, 
@@ -135,21 +152,44 @@ authentication.post("/login", async (request, response) => {
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao criar usuário." });
+    return response.status(203).json({ error: true, message: "Erro ao autenticar usuário." });
   }
 
 });
 
 
+// interface LoginOAuthBody {
+//   email: string;
+// }
+
+// authentication.post("/login/OAuth", async (request, response) => {
+//   try {
+//     const { email }: LoginOAuthBody = request.body; 
+
+//     const [user] = await sequelize.query(`
+//       SELECT id, auth_type FROM "User"
+//       WHERE email = '${email}'
+//     `);
+
+//     if (user.length > 0) {
+//       console.log(user);
+//     }
+
+//   } catch(e) {
+//     console.log('----| Error |-----: ', e);
+//     return response.status(203).json({ error: true, message: "Erro ao autenticar usuário." });
+//   }
+// });
+
+
 authentication.post("/current-session", (request, response) => {
   try {
-    const token = request.header("token") || "";
+    const token = request.header("app-token") || "";
 
     if (token && typeof token === "string" && token !== null) {
-      console.log("Token: ", token);
-      jwt.verify(token, "SECTETR HERE", async (err, decoded: any) => {
-        if (err) console.log("error: ", err);
-  
+
+      jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {  
+        
         if (decoded) {
           const [user] = await sequelize.query(`
             SELECT id, username, email, image_url, created_on FROM "User"
@@ -170,6 +210,26 @@ authentication.post("/current-session", (request, response) => {
   }
 });
 
+
+authentication.post("/authenticated", (request, response) => {
+  try {
+    const token = request.header("app-token") || "";
+
+    if (token && typeof token === "string" && token !== null) {
+
+      jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
+  
+        return response.json({ isAuthenticated: decoded ? true : false });
+      });
+      
+    } else return response.json({ isAuthenticated: false });
+
+    
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(203).json({ error: true, message: "Erro ao selecionar usuário." });
+  }
+});
 
 
 export { authentication };

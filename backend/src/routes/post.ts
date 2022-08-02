@@ -6,8 +6,11 @@ import fsPromisses from "fs/promises";
 
 import multer from "multer";
 import path from "path";
+import { verifyToken } from "../utils/authorization";
 
 const posts = Router();
+
+posts.use(verifyToken);
 
 
 interface recentPostsParams {
@@ -77,7 +80,7 @@ posts.put("/create", upload, async (request, response) => {
 
       return response.json({ success: true });
 
-    } else throw true;
+    } else throw "Erro na criação do post";
 
   } catch(e) {
     console.log('----| Error |-----: ', e)
