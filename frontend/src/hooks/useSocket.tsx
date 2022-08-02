@@ -57,7 +57,7 @@ export function SocketProvider({ children }) {
       }
 
     } else {
-      alert("Erro ao buscar usuários.");
+      alert("[socket] Erro ao buscar usuários.");
     }
   }
 

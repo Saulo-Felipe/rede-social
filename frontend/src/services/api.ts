@@ -1,11 +1,20 @@
 import axios from "axios";
+import cookie from "cookie";
 
 export const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
   headers: {
-    "Access-Control-Allow-Origin": String(process.env.NEXT_PUBLIC_SERVER_URL)
+    "Access-Control-Allow-Origin": String(process.env.NEXT_PUBLIC_SERVER_URL),
+    "app-token": getToken()
   }
 });
+
+
+function getToken() {
+  if (typeof document !== 'undefined') {
+    return cookie.parse(document.cookie)["app-token"];
+  }
+}
 
 export function customAPI(token: string) {
   if (!token || typeof token === 'undefined' || token === null) {
@@ -15,7 +24,7 @@ export function customAPI(token: string) {
   const localApi = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
     headers: {
-      token: token 
+      "app-token": token 
     }
   });
 

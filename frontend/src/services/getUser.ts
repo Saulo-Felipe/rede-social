@@ -20,11 +20,10 @@ export interface GetUserReturn {
 }
 
 export async function getUser(context: GetServerSidePropsContext) {
-  const sessionCookie = cookie.parse(context.req.headers.cookie)["@rede-social/token"];
-
+  const sessionCookie = cookie.parse(context.req.headers.cookie)["app-token"];
+  
   const api = customAPI(sessionCookie);
 
-  // Token already sent in the function
   const { data }: GetUserReturn = await api.post("/auth/current-session");
 
   return data;

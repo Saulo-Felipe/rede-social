@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { getUser } from "./services/getUser";
 
 const secret = process.env.NEXT_PUBLIC_SECRET || "secret";
 
-export default async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret });
+interface IsAuthenticated {
+  isAuthenticated: boolean;
+}
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
+export default async function middleware(req: NextRequest) {
+  const token = req.cookies.get("app-token") || "";
+
+  const request = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/authenticated`, {
+    headers: {
+      "app-token": token
+    }
+  });
+
+
+  // const {isAuthenticated}: IsAuthenticated = await request.json();
+
+  // if (!isAuthenticated) {
+  //   return NextResponse.redirect(new URL('/login', req.url))
+  // }
 
   return NextResponse.next();
 }
