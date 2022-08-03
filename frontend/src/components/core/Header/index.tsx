@@ -1,9 +1,10 @@
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import { MobileMenu } from "../MobileMenu";
 import { useRouter } from "next/router";
+import { getSession } from "../../../services/getSession";
 
 import { IoMdExit } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
@@ -21,6 +22,15 @@ export function Header() {
   const { data, status } = useSession();
   const router = useRouter();
 
+  const [user,setUser] = useState({});
+  const las = getSession(setUser)
+
+  // useEffect(() => {
+  //   console.log("current user: ", user);
+  // }, [user])
+
+  console.log("user; ", user)
+  
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
   const [searchContent, setSearchContent] = useState("");

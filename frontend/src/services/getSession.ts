@@ -1,20 +1,13 @@
-import cookie from "cookie";
-import { customAPI } from "./api";
 import { GetUserReturn } from "./getUser";
-
+import { api } from "./api";
 /*
 * -> this function is limited to client side
 */
 
-export async function getSession() {
-  let token = cookie.parse(document.cookie)["app-token"];
-
-  if (!token || typeof token == "undefined" || token == null)
-    token = "";
-
-  const api = customAPI(token);
-
+export async function getSession(setUser) {
   const { data }: GetUserReturn = await api.post("/auth/current-session");
+
+  setUser(data);
 
   return data;    
 }

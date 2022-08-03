@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { userEmailRegister } from "../../../../pages/auth/register";
 import { api } from "../../../../services/api";
+import { toast } from "react-toastify";
 
 import styles from "./EmailSignUp.module.scss";
 import { ImSpinner9 } from "react-icons/im";
@@ -55,7 +56,9 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
    async function registerEmail() {
     if (!isLoading) {
       for (let c = 0; c < Object.keys(validation).length; c++) {
-        if (!Object.keys(validation)[c]) {
+        console.log(Object.keys(validation)[c])
+        if (!validation[Object.keys(validation)[c]]) {
+          toast("Verifique todos os campos.", { type: "warning" });
           return;
         }
   
@@ -65,6 +68,8 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
             password: false,
             passwordConfirm: false
           });
+
+          toast("As senhas não estão iguais.", { type: "warning" });
   
           return;
         }
@@ -77,11 +82,13 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
       setIsLoading(false);
   
       if (data.success && data.failed) {
-        alert(data.message);
+        toast(data.message, { type: "warning" });
       } else {
-        alert("Usuário registrado com sucesso");
+        toast("Usuário registrado com sucesso", { type: "success" });
 
-        router.push("/login");
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 1500);
       }
   
     }

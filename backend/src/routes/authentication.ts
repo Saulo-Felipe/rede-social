@@ -71,9 +71,8 @@ authentication.post("/signin/:authType", async (request, response) => {
       WHERE email = '${email}'
     `);
     
-    console.log("inserção 1 finalizada")
-
     if (result.length == 0) {
+      console.log("Usuário não cadastrado, cadastrando...")
       await sequelize.query(`
         INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
         VALUES (
@@ -82,15 +81,13 @@ authentication.post("/signin/:authType", async (request, response) => {
       `);
     }
 
-    console.log("inserção 2 finalizada")
-
     // Automatic login
 
     const token = jwt.sign({ email: email }, String(process.env.SECRET), {
       expiresIn: "1d"
     });
 
-    console.log("Logado com google: ", token);
+    console.log("[Google] success");
 
     return response.json({
       success: true, 
@@ -157,31 +154,6 @@ authentication.post("/login", async (request, response) => {
 
 });
 
-
-// interface LoginOAuthBody {
-//   email: string;
-// }
-
-// authentication.post("/login/OAuth", async (request, response) => {
-//   try {
-//     const { email }: LoginOAuthBody = request.body; 
-
-//     const [user] = await sequelize.query(`
-//       SELECT id, auth_type FROM "User"
-//       WHERE email = '${email}'
-//     `);
-
-//     if (user.length > 0) {
-//       console.log(user);
-//     }
-
-//   } catch(e) {
-//     console.log('----| Error |-----: ', e);
-//     return response.status(203).json({ error: true, message: "Erro ao autenticar usuário." });
-//   }
-// });
-
-
 authentication.post("/current-session", (request, response) => {
   try {
     const token = request.header("app-token") || "";
@@ -211,14 +183,15 @@ authentication.post("/current-session", (request, response) => {
 });
 
 
-authentication.post("/authenticated", (request, response) => {
+authentication.post("/isAuthenticated", (request, response) => {
   try {
     const token = request.header("app-token") || "";
 
     if (token && typeof token === "string" && token !== null) {
 
       jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
-  
+        
+        console.log("Decoded: ", decoded);
         return response.json({ isAuthenticated: decoded ? true : false });
       });
       

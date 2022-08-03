@@ -51,7 +51,7 @@ export function GoogleSignIn() {
             maxAge: 60 * 60 * 24 * 365
           });;
 
-          toast("Loading realizado com sucesso.", {
+          toast("Conectado!", {
             type: "success",
           });
 

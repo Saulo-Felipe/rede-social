@@ -1,11 +1,21 @@
 import { BsGithub } from "react-icons/bs";
 import { GoogleSignIn } from "../../../components/templates/auth/GoogleSignIn";
 import { EmailSignIn } from "../../../components/templates/auth/EmailSignIn";
+import { useEffect } from "react";
 
 import styles from './login.module.scss';
+import { api } from "../../../services/api";
 
 
 export default function Login() {
+
+  useEffect(() => {
+    (async() => {
+      const {data} = await api.post("/auth/isAuthenticated");
+
+      console.log("[login data]: ", data);
+    })();
+  }, [])
 
   return (
     <main className={styles.Main}>
