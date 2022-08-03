@@ -160,6 +160,10 @@ export function SocketProvider({ children }) {
     allMessagesRef.current = allMessages;
   }, [allMessages]);
 
+  useEffect(() => {
+    console.log("Render")
+  }, [])
+
   return (
     <SocketContext.Provider value={{
       allUsers,

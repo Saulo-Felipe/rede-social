@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import { MobileMenu } from "../MobileMenu";
 import { useRouter } from "next/router";
-import { getSession } from "../../../services/getSession";
+import { getClientUser } from "../../../hooks/useSession";
 
 import { IoMdExit } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
@@ -19,18 +19,10 @@ import Link from "next/link";
 import styles from "./Header.module.scss";
 
 export function Header() {
-  const { data, status } = useSession();
   const router = useRouter();
-
-  const [user,setUser] = useState({});
-  const las = getSession(setUser)
-
-  // useEffect(() => {
-  //   console.log("current user: ", user);
-  // }, [user])
-
-  console.log("user; ", user)
+  const { user, isAuthenticated } = getClientUser();
   
+
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
   const [searchContent, setSearchContent] = useState("");
@@ -40,8 +32,8 @@ export function Header() {
       router.push(`/search/${searchContent}`);
     }
   }
-
-  if (status === "authenticated")
+  
+  if (isAuthenticated === true)
     return (
       <header className={styles.Header}>
         <div id={styles.firstContainer}>
@@ -118,7 +110,7 @@ export function Header() {
                       dropdownIsOpen
                       ? <div className={styles.dropdown}>
                         <div>
-                          <Link href={`/profile/${data?.user?.id}`}>
+                          <Link href={`/profile/${user.id}`}>
                             <a><FaUserCircle /> Meu Perfil</a>
                           </Link>
                         </div>
@@ -131,12 +123,12 @@ export function Header() {
                     }                    
                   </div>
 
-                  <div className={styles.username}>{data?.user?.name}</div>
+                  <div className={styles.username}>{user.username}</div>
 
                   <div className={styles.userPicture}>
                     <Image 
                       alt={"user"}
-                      src={data?.user?.image} 
+                      src={"/images/user.image_url"} 
                       width={"100%"}
                       height={"100%"}
                     />

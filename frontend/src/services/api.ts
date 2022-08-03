@@ -19,8 +19,12 @@ service.register({
     return config;
   },
   onResponse(response: AxiosResponse) {
-    if (response.data.logout)
+    let resp = JSON.parse(response.data);
+
+    if (resp?.logout) {
+      console.log("redirecionando")
       return window.location.pathname = "/auth/login";
+    }
 
     return response;
   }
