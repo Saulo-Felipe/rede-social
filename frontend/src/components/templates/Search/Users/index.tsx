@@ -18,7 +18,7 @@ export function Users({ searchQuery }) {
     (async() => {
       setLoading(true);
 
-      const { data } = await api.get(`/search/${searchQuery}`);
+      const { data } = await api().get(`/search/${searchQuery}`);
 
       if (data.success) {
         setUsers(data.users);

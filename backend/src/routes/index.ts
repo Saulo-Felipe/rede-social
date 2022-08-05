@@ -19,7 +19,7 @@ index.get("/test", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "ErroR: "+e });
+    return response.status(500).json({ error: true, message: "ErroR: "+e });
   }
 });
 
@@ -36,7 +36,7 @@ index.get("/search/:searchQuery", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao pesquisar usuários" });
+    return response.status(500).json({ error: true, message: "Erro ao pesquisar usuários" });
   }
 });
 
@@ -53,7 +53,7 @@ index.get("/images/:image", (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro. Arquivo inválido." });
+    return response.status(500).json({ error: true, message: "Erro. Arquivo inválido." });
   }
 });
 

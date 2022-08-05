@@ -24,7 +24,7 @@ export function Comments({ postID, setCommentsAmount }) {
 		console.log("atualizando comentários");
 		setIsLoading(true);
 
-		const { data } = await api.get(`/posts/comments/${postID}`);
+		const { data } = await api().get(`/posts/comments/${postID}`);
 
 		setIsLoading(false);
 
@@ -42,7 +42,7 @@ export function Comments({ postID, setCommentsAmount }) {
 		setNewComment("");
 		setNewCommentLoading(true);
 
-		const { data } = await api.put("/posts/new-comment", { 
+		const { data } = await api().put("/posts/new-comment", { 
 			postID, 
 			userID: session?.user?.id, 
 			content: newComment

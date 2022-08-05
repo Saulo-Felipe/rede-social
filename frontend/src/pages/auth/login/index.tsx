@@ -11,11 +11,11 @@ export default function Login() {
 
   useEffect(() => {
     (async() => {
-      const {data} = await api.post("/auth/isAuthenticated");
+      const {data} = await api().post("/auth/isAuthenticated");
 
       console.log("[login data]: ", data);
     })();
-  }, [])
+  }, []);
 
   return (
     <main className={styles.Main}>

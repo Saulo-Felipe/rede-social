@@ -42,7 +42,7 @@ const Auth = (request: NextApiRequest, response: NextApiResponse) => {
           image_url: image
         };
   
-        // const { data } = await api.post("/auth/signin/Google", { ...newUser });
+        // const { data } = await api().post("/auth/signin/Google", { ...newUser });
         
         const req = await fetch(
           new Request(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/signin/Google"`, {

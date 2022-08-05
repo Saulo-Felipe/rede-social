@@ -39,7 +39,7 @@ export function SocketProvider({ children }) {
 
 
   async function initialState(initialValue: any) {
-    const { data } = await api.get("user/all",);
+    const { data } = await api().get("user/all",);
 
     if (data.success) {
       let newUsers: User[] = data.users;

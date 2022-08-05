@@ -39,15 +39,30 @@ authentication.put("/register/email", async (request, response) => {
           });
         });
 
-        return response.json({ success: true });
+        // Automatic login
+        const token: any = jwt.sign({ email: email }, String(process.env.SECRET), {
+          expiresIn: "1d"
+        });
 
-      } else return response.json({ success: true, failed: true, message: "Este email já está em uso" });
+        console.log("[Email] success");
 
-    } else return response.json({ success: true, failed: true, message: "Senhas inválidas." });
+        return response.json({
+          success: true, 
+          token: token,
+          user: {
+            name, 
+            email, 
+            user_picture: "profile-user.png"
+          }
+        });
+        
+      } else return response.json({ success: true, message: "Este email já está em uso" });
+
+    } else return response.json({ success: true, message: "Senhas inválidas." });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao criar usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao criar usuário." });
   }
 });
 
@@ -72,7 +87,8 @@ authentication.post("/signin/:authType", async (request, response) => {
     `);
     
     if (result.length == 0) {
-      console.log("Usuário não cadastrado, cadastrando...")
+      console.log("[creating user]");
+
       await sequelize.query(`
         INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
         VALUES (
@@ -91,13 +107,18 @@ authentication.post("/signin/:authType", async (request, response) => {
 
     return response.json({
       success: true, 
+      token: token,
       message: "Login realizado com sucesso!",
-      token: token
+      user: {
+        name, 
+        email, 
+        image_url
+      }
     });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao criar usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao criar usuário." });
   }
 });
 
@@ -149,12 +170,12 @@ authentication.post("/login", async (request, response) => {
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao autenticar usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao autenticar usuário." });
   }
 
 });
 
-authentication.post("/current-session", (request, response) => {
+authentication.post("/recover-user-information", (request, response) => {
   try {
     const token = request.header("app-token") || "";
 
@@ -168,17 +189,18 @@ authentication.post("/current-session", (request, response) => {
             WHERE email = '${decoded.email}'
           `);
   
-          return response.json({ user: user[0], isAuthenticated: true });
+          return response.json({ user: user[0] });
   
 
-        } else return response.json({ user: {}, isAuthenticated: false });
+        } else return response.json({ user: null });
       });
-    } else return response.json({ user: {}, isAuthenticated: false });
+      
+    } else return response.json({ user: null });
 
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao selecionar usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao selecionar usuário." });
   }
 });
 
@@ -200,7 +222,7 @@ authentication.post("/isAuthenticated", (request, response) => {
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao selecionar usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao selecionar usuário." });
   }
 });
 

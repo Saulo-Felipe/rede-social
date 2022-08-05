@@ -74,7 +74,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
     setLoadingLike(true);
 
     setTimeout(async () => {
-      const {data} = await api.get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
+      const {data} = await api().get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
 
       setLoadingLike(false);
 
@@ -136,7 +136,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
           dislikeAmount: action.dislikeAmount
         });
 
-        const { data } = await api.post(`/posts/delete-action`, {
+        const { data } = await api().post(`/posts/delete-action`, {
           userID: currentUserId,
           postID: postInfo.id,
           action: "Like"
@@ -165,7 +165,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
           dislikeAmount: oldUserAction == 2 ? action.dislikeAmount-1 : action.dislikeAmount
         });
 
-        const { data } = await api.put("/posts/new-action", {
+        const { data } = await api().put("/posts/new-action", {
           userID: currentUserId,
           postID: postInfo.id,
           action: "Like",
@@ -203,7 +203,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
           dislikeAmount: action.dislikeAmount-1
         });
 
-        const { data } = await api.post(`/posts/delete-action`, {
+        const { data } = await api().post(`/posts/delete-action`, {
           userID: currentUserId,
           postID: postInfo.id,
           action: "Dislike"
@@ -232,7 +232,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
           dislikeAmount: action.dislikeAmount+1
         })
 
-        const { data } = await api.put("/posts/new-action", {
+        const { data } = await api().put("/posts/new-action", {
           userID: currentUserId,
           postID: postInfo.id,
           action: "Dislike",
@@ -271,7 +271,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
 
   async function deletePost() {
     setDeleteLoading(true);
-    const { data } = await api.delete(`/posts/${currentUserId}/${postInfo.fk_user_id}/${postInfo.id}`)
+    const { data } = await api().delete(`/posts/${currentUserId}/${postInfo.fk_user_id}/${postInfo.id}`)
     setDeleteLoading(false);
 
     if (data.success) {

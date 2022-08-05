@@ -1,13 +1,12 @@
 import { MdAlternateEmail } from "react-icons/md";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { userEmailRegister } from "../../../../pages/auth/register";
-import { api } from "../../../../services/api";
 import { toast } from "react-toastify";
+import { ImSpinner9 } from "react-icons/im";
+import { useAuth } from "../../../../hooks/useAuth";
 
 import styles from "./EmailSignUp.module.scss";
-import { ImSpinner9 } from "react-icons/im";
 
 
 interface userRegiserValidation {
@@ -24,7 +23,7 @@ interface EmailSignUpProps {
 export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
   const [registerInfo, setRegisterInfo] = useState<userEmailRegister>({
     email: "",
-    name: "",
+    username: "",
     password: "",
     passwordConfirm: ""
   });
@@ -35,7 +34,7 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
     passwordConfirm: true
   });
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const { registerWithEmail, user } = useAuth();
 
 
   useEffect(() => {
@@ -53,10 +52,9 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
     }
   }, [registerInfo]);
 
-   async function registerEmail() {
+  async function registerEmail() {
     if (!isLoading) {
       for (let c = 0; c < Object.keys(validation).length; c++) {
-        console.log(Object.keys(validation)[c])
         if (!validation[Object.keys(validation)[c]]) {
           toast("Verifique todos os campos.", { type: "warning" });
           return;
@@ -77,22 +75,14 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
       
       setIsLoading(true);
 
-      const { data } = await api.put("/auth/register/email", { ...registerInfo });
+      await registerWithEmail({ ...registerInfo, toast });
 
       setIsLoading(false);
-  
-      if (data.success && data.failed) {
-        toast(data.message, { type: "warning" });
-      } else {
-        toast("Usuário registrado com sucesso", { type: "success" });
 
-        setTimeout(() => {
-          router.push("/auth/login");
-        }, 1500);
-      }
-  
     }
   }
+
+  console.log("test: ", user);
 
 
   return (
@@ -116,8 +106,8 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
           id={"username"}
           type={"text"}
           placeholder={"Nome de usuário"}
-          value={registerInfo.name}
-          onChange={({target}) => setRegisterInfo({ ...registerInfo, name: target.value })}
+          value={registerInfo.username}
+          onChange={({target}) => setRegisterInfo({ ...registerInfo, username: target.value })}
           style={!validation.name ? { borderColor: "red" }:{}}
         />
       </div>

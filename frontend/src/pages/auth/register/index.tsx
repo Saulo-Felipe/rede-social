@@ -8,7 +8,7 @@ import { EmailSignUp } from '../../../components/templates/auth/EmailSignUp';
 
 
 export interface userEmailRegister {
-  name: string;
+  username: string;
   email: string;
   password: string;
   passwordConfirm: string;

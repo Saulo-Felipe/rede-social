@@ -31,7 +31,7 @@ export function EmailSignIn() {
     toast.loading("Carregando", { autoClose: false });
     setLoading(true);
 
-    const { data } = await api.post("/auth/login", emailLoginInfo);
+    const { data } = await api().post("/auth/login", emailLoginInfo);
 
     setLoading(false);
     toast.dismiss();

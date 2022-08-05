@@ -36,7 +36,7 @@ export function GoogleSignIn() {
           `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
         `);
   
-        const res = await api.post("/auth/signin/Google", {
+        const res = await api().post("/auth/signin/Google", {
           email: data.email,
           name: data.name,
           password: null,

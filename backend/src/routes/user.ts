@@ -55,7 +55,7 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao buscar profile." });
+    return response.status(500).json({ error: true, message: "Erro ao buscar profile." });
   }
 });
 
@@ -79,7 +79,7 @@ user.get("/posts/:userID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao selecionar posts do usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao selecionar posts do usuário." });
   }
 });
 
@@ -102,7 +102,7 @@ user.put("/new-follow", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao seguir o usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao seguir o usuário." });
   }
 });
 
@@ -126,7 +126,7 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao parar de seguir usuário." });
+    return response.status(500).json({ error: true, message: "Erro ao parar de seguir usuário." });
   }
 });
 
@@ -141,7 +141,7 @@ user.get("/all", async (request, response) => {
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao buscar usuários." });
+    return response.status(500).json({ error: true, message: "Erro ao buscar usuários." });
   }
 });
 

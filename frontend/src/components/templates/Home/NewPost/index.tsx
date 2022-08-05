@@ -48,7 +48,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
         userID: session.user.id
       }));
 
-      const { data } = await api.put("/posts/create", 
+      const { data } = await api().put("/posts/create", 
         dataForm, {
           headers: {
             "Content-Type": "multipart/form-data"

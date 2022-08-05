@@ -10,7 +10,7 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
       if (decoded) {
         next();
 
-      } else response.status(203).json({ logout: true });
+      } else response.status(500).json({ logout: true });
     });
-  } else response.status(203).json({ logout: true });
+  } else response.status(500).json({ logout: true });
 }

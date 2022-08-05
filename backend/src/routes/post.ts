@@ -32,7 +32,7 @@ posts.get("/recent/:index", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao buscar postagens recentes." });
+    return response.status(500).json({ error: true, message: "Erro ao buscar postagens recentes." });
   }
 });
 
@@ -84,7 +84,7 @@ posts.put("/create", upload, async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e)
-    return response.status(203).json({ error: true, message: "Erro ao criar post" });
+    return response.status(500).json({ error: true, message: "Erro ao criar post" });
   }
 });
 
@@ -125,12 +125,12 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
       return response.json({ success: true });
 
     } else {
-      return response.status(203).json({ error: true, message: "Erro ao deletar post. Usuário sem permissão." });
+      return response.status(500).json({ error: true, message: "Erro ao deletar post. Usuário sem permissão." });
     }
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao deletar post" });
+    return response.status(500).json({ error: true, message: "Erro ao deletar post" });
   }
 });
 
@@ -157,7 +157,7 @@ posts.get("/get-by-user/:userID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao buscar posts de usuário" });
+    return response.status(500).json({ error: true, message: "Erro ao buscar posts de usuário" });
   }
 });
 
@@ -183,7 +183,7 @@ posts.get("/user-liked-post/:postID/:userID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao verificar ação." });
+    return response.status(500).json({ error: true, message: "Erro ao verificar ação." });
   }
 });
 
@@ -218,7 +218,7 @@ posts.post("/delete-action", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao deletar ação." });
+    return response.status(500).json({ error: true, message: "Erro ao deletar ação." });
   }
 });
 
@@ -263,7 +263,7 @@ posts.put("/new-action", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao dar like ou dislike" });
+    return response.status(500).json({ error: true, message: "Erro ao dar like ou dislike" });
   }
 });
 
@@ -294,7 +294,7 @@ posts.get("/comments/:postID", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao buscar comentários" });
+    return response.status(500).json({ error: true, message: "Erro ao buscar comentários" });
   }
 });
 
@@ -321,7 +321,7 @@ posts.put("/new-comment", async (request, response) => {
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
-    return response.status(203).json({ error: true, message: "Erro ao criar comentários." });
+    return response.status(500).json({ error: true, message: "Erro ao criar comentários." });
   }
 });
 

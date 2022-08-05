@@ -1,48 +1,48 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import cookie from "cookie";
 import { Service } from "axios-middleware";
+import { parseCookies } from "nookies";
 
 
-export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
-  headers: {
-    "Access-Control-Allow-Origin": String(process.env.NEXT_PUBLIC_SERVER_URL),
+export function api(token?: string) { // For server side
+  if (!token) {
+    const { "app-token": getToken } = parseCookies();
+    token = getToken;
   }
-});
 
-const service = new Service(api);
-
-service.register({
-  onRequest(config: AxiosRequestConfig) {
-    config.headers["app-token"] = typeof document !== "undefined" ? cookie.parse(document.cookie)["app-token"] : "";
-    
-    return config;
-  },
-  onResponse(response: AxiosResponse) {
-    let resp = JSON.parse(response.data);
-
-    if (resp?.logout) {
-      console.log("redirecionando")
-      return window.location.pathname = "/auth/login";
-    }
-
-    return response;
-  }
-});
-
-
-
-export function customAPI(token: string) { // For server side
-  if (!token || typeof token === 'undefined' || token === null) {
-    token = "";
-  }
-  
-  const localApi = axios.create({
+  const createConnection = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
     headers: {
-      "app-token": token 
+      "Access-Control-Allow-Origin": String(process.env.NEXT_PUBLIC_SERVER_URL),
+      "app-token": token
     }
   });
 
-  return localApi;
+  return createConnection;
 }
+
+
+const service = new Service(api());
+
+service.register({
+  onRequest(config: AxiosRequestConfig) {    
+    return config;
+  },
+  onResponse(response: AxiosResponse) {
+    try {
+      let resp = JSON.parse(response.data);
+  
+      if (resp?.logout) {
+        console.log("redirecionando")
+        return window.location.pathname = "/auth/login";
+      }
+  
+      return response;
+
+    } catch(e) {
+      alert("Erro no servidor.");
+      console.log(e);
+    }
+  }
+});
+
+

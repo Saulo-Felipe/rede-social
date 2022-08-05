@@ -4,7 +4,6 @@ import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import { MobileMenu } from "../MobileMenu";
 import { useRouter } from "next/router";
-import { getClientUser } from "../../../hooks/useSession";
 
 import { IoMdExit } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
@@ -20,7 +19,6 @@ import styles from "./Header.module.scss";
 
 export function Header() {
   const router = useRouter();
-  const { user, isAuthenticated } = getClientUser();
   
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
@@ -33,7 +31,7 @@ export function Header() {
     }
   }
   
-  if (isAuthenticated === true)
+  if (false)
     return (
       <header className={styles.Header}>
         <div id={styles.firstContainer}>
@@ -110,7 +108,7 @@ export function Header() {
                       dropdownIsOpen
                       ? <div className={styles.dropdown}>
                         <div>
-                          <Link href={`/profile/${user.id}`}>
+                          <Link href={`/profile/${"user.id"}`}>
                             <a><FaUserCircle /> Meu Perfil</a>
                           </Link>
                         </div>
@@ -123,7 +121,7 @@ export function Header() {
                     }                    
                   </div>
 
-                  <div className={styles.username}>{user.username}</div>
+                  <div className={styles.username}>{"user.username"}</div>
 
                   <div className={styles.userPicture}>
                     <Image 

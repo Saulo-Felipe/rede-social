@@ -14,7 +14,7 @@ export default function Home() {
   async function getRecentPosts(reset: boolean) {
     setIsLoading(true);
 
-    let { data } = await api.get(`/posts/recent/${reset ? 0 : pageIndex}`);
+    let { data } = await api().get(`/posts/recent/${reset ? 0 : pageIndex}`);
 
     setIsLoading(false);
 
