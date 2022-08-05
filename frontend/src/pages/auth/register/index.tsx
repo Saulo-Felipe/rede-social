@@ -7,13 +7,6 @@ import { GoogleSignIn } from "../../../components/templates/auth/GoogleSignIn";
 import { EmailSignUp } from '../../../components/templates/auth/EmailSignUp';
 
 
-export interface userEmailRegister {
-  username: string;
-  email: string;
-  password: string;
-  passwordConfirm: string;
-}
-
 
 export default function Register() {
   const [isEmailAuth, setIsEmailAuth] = useState(false);

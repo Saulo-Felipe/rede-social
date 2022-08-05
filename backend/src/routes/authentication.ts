@@ -27,13 +27,15 @@ authentication.put("/register/email", async (request, response) => {
       `);
 
       if (result.length === 0) {
+        const id = uuid();
+        const createdOn = getCurrentDate()
 
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, async (error, hash) => {
             await sequelize.query(`
               INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
               VALUES (
-                '${uuid()}', '${name}', '${email}', ${null}, '${hash}', 'Email', '${getCurrentDate()}'
+                '${id}', '${name}', '${email}', ${null}, '${hash}', 'Email', '${createdOn}'
               );
             `);
           });
@@ -44,15 +46,15 @@ authentication.put("/register/email", async (request, response) => {
           expiresIn: "1d"
         });
 
-        console.log("[Email] success");
-
         return response.json({
           success: true, 
           token: token,
           user: {
+            id,
             name, 
             email, 
-            user_picture: "profile-user.png"
+            createdOn,
+            picture: "profile-user.png"
           }
         });
         
@@ -79,20 +81,20 @@ authentication.post("/signin/:authType", async (request, response) => {
     const { email, id, image_url, name }: RegisterGoogleBody = request.body;
     const { authType } = request.params;
 
-    console.log("rota inciaida: ", authType)
-
-    const [result] = await sequelize.query(`
-      SELECT id FROM "User"
+    const [result]: any = await sequelize.query(`
+      SELECT id, created_on FROM "User"
       WHERE email = '${email}'
     `);
     
+    const currentDate = result.length == 0 ? getCurrentDate() : result[0].created_on;
+
     if (result.length == 0) {
       console.log("[creating user]");
 
       await sequelize.query(`
         INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
         VALUES (
-          '${id}', '${name}', '${email}', '${image_url}', ${null}, '${authType}', '${getCurrentDate()}'
+          '${id}', '${name}', '${email}', '${image_url}', ${null}, '${authType}', '${currentDate}'
         );
       `);
     }
@@ -110,9 +112,11 @@ authentication.post("/signin/:authType", async (request, response) => {
       token: token,
       message: "Login realizado com sucesso!",
       user: {
+        id,
         name, 
         email, 
-        image_url
+        picture: image_url,
+        createdOn: currentDate,
       }
     });
 
@@ -133,20 +137,19 @@ authentication.post("/login", async (request, response) => {
     const { email, password }: LoginBody = request.body;
 
     const [user]: any = await sequelize.query(`
-      SELECT password, auth_type, email FROM "User" 
+      SELECT id, username, image_url, password, auth_type, email, created_on FROM "User" 
       WHERE email = '${email}'
     `);
 
     console.log(user);
 
     if (user.length == 0) {
-      return response.json({ success: true, failed: true, message: "Essa conta não existe." });
+      return response.json({ success: true, message: "Essa conta não existe." });
     }
 
     if (user[0].password === null)
       return response.json({ 
         success: true, 
-        failed: true, 
         message: `Esta conta foi registrada via ${user[0].auth_type}, tente "Entrar com ${user[0].auth_type}".` 
       });
 
@@ -154,18 +157,24 @@ authentication.post("/login", async (request, response) => {
     bcrypt.compare(password, user[0].password, (err, result) => {
       if (result) {
         
-        const token = jwt.sign({ email: user[0].email }, String(process.env.SECRET), {
+        const token = jwt.sign({ email }, String(process.env.SECRET), {
           expiresIn: "1d"
         });
 
         return response.json({ 
           success: true, 
-          message: "Login realizado com sucesso!",
-          token: token
-        });
+          user: {
+            id: user[0].id,
+            name: user[0].username,
+            email,
+            picture: user[0].image_url || "profile-user.png",
+            createdOn: user[0].created_on
+          },
+          token
+        });      
       }
       else 
-        return response.json({ success: true, failed: true, message: "Senha incorreta" })
+        return response.json({ success: true, message: "Senha incorreta" });
     });
     
   } catch(e) {
@@ -184,40 +193,27 @@ authentication.post("/recover-user-information", (request, response) => {
       jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {  
         
         if (decoded) {
-          const [user] = await sequelize.query(`
+          const [user]: any = await sequelize.query(`
             SELECT id, username, email, image_url, created_on FROM "User"
             WHERE email = '${decoded.email}'
           `);
-  
-          return response.json({ user: user[0] });
+          
+          return response.json({ 
+            success: true,
+            user: {
+              id: user[0].id,
+              name: user[0].username,
+              email: user[0].email,
+              picture: user[0].image_url || "profile-user.png",
+              createdOn: user[0].created_on
+            }
+          });
   
 
-        } else return response.json({ user: null });
+        } else return response.json({ message: "Usuário sem autenticação", user: null });
       });
       
-    } else return response.json({ user: null });
-
-    
-  } catch(e) {
-    console.log('----| Error |-----: ', e);
-    return response.status(500).json({ error: true, message: "Erro ao selecionar usuário." });
-  }
-});
-
-
-authentication.post("/isAuthenticated", (request, response) => {
-  try {
-    const token = request.header("app-token") || "";
-
-    if (token && typeof token === "string" && token !== null) {
-
-      jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
-        
-        console.log("Decoded: ", decoded);
-        return response.json({ isAuthenticated: decoded ? true : false });
-      });
-      
-    } else return response.json({ isAuthenticated: false });
+    } else return response.json({ message: "Usuário sem autenticação", user: null });
 
     
   } catch(e) {

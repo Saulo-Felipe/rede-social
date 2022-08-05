@@ -3,54 +3,39 @@ import { useState } from "react"
 import { toast } from "react-toastify";
 import { api } from "../../../../services/api";
 import Link from "next/link";
+import { useAuth } from "../../../../hooks/useAuth";
 
 import styles from "./EmailSignIn.module.scss";
 
 
-interface LoginInfo {
+export interface LoginEmailInfo {
   password: string;
   email: string;
 }
 
 export function EmailSignIn() {
-  const [emailLoginInfo, setEmailLoginInfo] = useState<LoginInfo>({
+  const [emailLoginInfo, setEmailLoginInfo] = useState<LoginEmailInfo>({
     password: "",
     email: ""
   });
 
   const [loading, setLoading] = useState(false)
 
+  const { signInEmail } = useAuth();
+
   async function emailLogin() {
 
     if (emailLoginInfo.email.length == 0 || emailLoginInfo.email.indexOf("@") == -1)
-      return toast("Email inválido", { type: "warning" });
+      return toast.warning("Email inválido");
 
     if (emailLoginInfo.password.length == 0)
-      return toast("Senha inválida", { type: "warning" });
+      return toast.warning("Senha inválida");
 
-    toast.loading("Carregando", { autoClose: false });
     setLoading(true);
 
-    const { data } = await api().post("/auth/login", emailLoginInfo);
+    await signInEmail({ ...emailLoginInfo });
 
     setLoading(false);
-    toast.dismiss();
-
-    if (data.success) {
-      toast(data.message, {
-        type: data.failed ? "warning" : "success",
-        autoClose: 7000
-      });
-
-      if (!data.failed)
-        document.cookie = cookie.serialize("app-token", data.token, {
-          maxAge: 60 * 60 * 24 * 365
-        });;
-
-    } else {
-      toast(data.message, { type: "error" });
-    }
-
   }
 
 

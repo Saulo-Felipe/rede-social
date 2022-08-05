@@ -12,8 +12,8 @@ import { ToastContainer } from 'react-toastify';
 function MyApp({ Component, pageProps }) {
 
   return (
-    <AuthProvider>
-      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID} >
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID} >
+      <AuthProvider>
         <SessionProvider session={pageProps.session} >
           <SocketProvider>
             <Header />
@@ -26,8 +26,8 @@ function MyApp({ Component, pageProps }) {
             </div>
           </SocketProvider>
         </SessionProvider>
-      </GoogleOAuthProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 
