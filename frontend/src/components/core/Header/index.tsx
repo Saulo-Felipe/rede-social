@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
 import Router from "next/router";
 import { IoMdExit } from "react-icons/io";
@@ -7,7 +6,6 @@ import { BiSearch } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscSettingsGear } from "react-icons/vsc";
 import { FaUserCircle } from "react-icons/fa";
-import Image from "next/image";
 import Link from "next/link";
 import { MobileMenu } from "../MobileMenu";
 import { useAuth } from "../../../hooks/useAuth";
@@ -26,8 +24,6 @@ export function Header() {
       Router.push(`/search/${searchContent}`);
     }
   }
-
-  console.log(user);
   
   if (isAuthenticated)
     return (

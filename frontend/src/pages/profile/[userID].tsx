@@ -36,11 +36,10 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
   const [following, setFollowing] = useState(isFollowing);
   const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
   const [loadingAction, setLoadingAction] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(true);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const { user: myUser } = useAuth();
 
   useEffect(() => {
-    console.log(user);
     (async() => {
       setLoading(true);
 
@@ -101,17 +100,25 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
 
   return (
     <div className={styles.profileContainer}>
-      <Edit 
-        user={user} 
-        useModalIsOpen={{ modalIsOpen, setModalIsOpen }}
-      />
+      {
+        isMyProfile
+        ? <Edit 
+          user={user} 
+          useModalIsOpen={{ modalIsOpen, setModalIsOpen }}
+        />
+        : <></>
+      }
 
       <header className={styles.userHeader}>
         <div className={styles.cover}>
-          <div 
-            className={styles.editIconContainer}
-            onClick={() => setModalIsOpen(true)}
-          ><TbEdit /></div>
+          {
+            isMyProfile 
+            ? <div 
+              className={styles.editIconContainer}
+              onClick={() => setModalIsOpen(true)}
+            ><TbEdit /></div>
+            : <></>
+          }
         </div>
 
         <div className={styles.profileInfo}>
@@ -206,29 +213,30 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
-  const {data} = await api(context).get("/user/current");
+  const { data: { user } } = await api(context).get("/user/current");
 
-  console.log("your data: ", data);
+  if (user) {
+    const { data } = await api(context).get(`user/profile/${params.userID}/${user.id}`);
 
-  return {
-    props: {
-      
+    if (data.userExists) {
+      return {
+        props: {
+          user: data.user,
+          isMyProfile: user.id === data.user.id,
+          isFollowing: data.isFollowing
+        }
+      }
+    }
+
+    return {
+      notFound: true
+    }
+
+
+  } else {
+    return {
+      props: {},
+      redirect: "/auth/login"
     }
   }
-  
-  // const { data } = await api().get(`/user/profile/${params.userID}/${user.id}`);
-
-  // if (data.userExists) {
-  //   return {
-  //     props: {
-  //       user: data.user,
-  //       isMyProfile: user.id === data.user.id,
-  //       isFollowing: data.isFollowing
-  //     }
-  //   }
-  // }
-
-  // return {
-  //   notFound: true
-  // }
 }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { sequelize } from "../services/databse";
 import { verifyToken } from "../utils/authorization";
+import jwt from "jsonwebtoken";
 
 const user = Router();
 
@@ -16,8 +17,8 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
     const { currentUserID, userID }: getProfileParams = request.params;
 
     let [user]: any = await sequelize.query(`
-      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on 
-      FROM "User" 
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on
+      FROM "User"
       WHERE id = '${userID}';
     `);
 
@@ -40,15 +41,15 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
       // Is follower?
       const [isFollowing]: any = await sequelize.query(`
         SELECT id FROM "Follower"
-        WHERE fk_user_id = '${currentUserID}' 
+        WHERE fk_user_id = '${currentUserID}'
         AND fk_follower_id = '${userID}'
       `);
 
-      return response.json({ 
-        success: true, 
-        userExists: true, 
+      return response.json({
+        success: true,
+        userExists: true,
         user,
-        isFollowing: isFollowing.length !== 0 
+        isFollowing: isFollowing.length !== 0
       });
 
     } else return response.json({ success: true, userExists: false });
@@ -108,7 +109,7 @@ user.put("/new-follow", async (request, response) => {
 
 
 interface unfollowBody {
-  userID: string; 
+  userID: string;
   followerID: string;
 }
 
@@ -117,12 +118,12 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
     const { userID, followerID }: unfollowBody = request.params;
 
 		await sequelize.query(`
-			DELETE FROM "Follower" 
-			WHERE fk_user_id = '${userID}' 
+			DELETE FROM "Follower"
+			WHERE fk_user_id = '${userID}'
 			AND fk_follower_id = '${followerID}'
 		`);
 
-		return response.json({ success: true });		
+		return response.json({ success: true });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -138,7 +139,7 @@ user.get("/all", async (request, response) => {
     `);
 
     return response.json({ success: true, users });
-    
+
   } catch(e) {
     console.log('----| Error |-----: ', e);
     return response.status(500).json({ error: true, message: "Erro ao buscar usuários." });
@@ -148,11 +149,22 @@ user.get("/all", async (request, response) => {
 
 user.get("/current", async (request, response) => {
   try {
-    const token = request.header("app-token");
+    const token = request.header("app-token") || "";
 
-    console.log("token: ", token);
+    jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
 
-    return response.json({ success: true, token });
+      if (decoded) {
+        const [user] = await sequelize.query(`
+          SELECT id FROM "User"
+          WHERE email = '${decoded.email}'
+        `);
+
+        return response.json({ user: user[0] });
+
+      } else {
+        return response.json({ logout: true });
+      }
+    });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);

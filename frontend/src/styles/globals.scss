@@ -142,11 +142,24 @@ a {
 .modal-content {
   width: 100%;
   max-width: 750px;
+  max-height: 90vh;
   background-color: #fff;
   padding: 2rem 3rem;
   position: relative;
   border-radius: 0.25rem;
   z-index: 99;
+  overflow: auto;
+
+  &::-webkit-scrollbar-track {
+    background-color: #F4F4F4;
+  }
+  &::-webkit-scrollbar {
+    width: 6px;
+    background: #F4F4F4;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dad7d7;
+  }
  
   .close-modal-icon {
     font-size: 1.5rem;

@@ -17,9 +17,10 @@
 
       .editIconContainer {
         background: white;
-        box-shadow: 0 0 10px rgb(0, 0, 0, 0.5);
+        box-shadow: 0 0 10px rgb(0, 0, 0, 0.6);
         width: 2rem;
         height: 2rem;
+        opacity: 0.75;
         
         border-radius: 50%;
         display: flex;
@@ -27,13 +28,17 @@
         justify-content: center;
         
         position: absolute;
-        right: 0.5rem;
-        top: 0.5rem;
+        right: 1rem;
+        top: 1rem;
 
         cursor: pointer;
 
         svg {
           font-size: 1.5rem;
+        }
+
+        &:hover {
+          opacity: 1;
         }
       }
     }
