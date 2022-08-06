@@ -1,37 +1,35 @@
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { isMobile } from "react-device-detect";
-import { MobileMenu } from "../MobileMenu";
-import { useRouter } from "next/router";
-
+import Router from "next/router";
 import { IoMdExit } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscSettingsGear } from "react-icons/vsc";
 import { FaUserCircle } from "react-icons/fa";
-
 import Image from "next/image";
 import Link from "next/link";
+import { MobileMenu } from "../MobileMenu";
+import { useAuth } from "../../../hooks/useAuth";
 
 
 import styles from "./Header.module.scss";
 
 export function Header() {
-  const router = useRouter();
-  
-
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
   const [searchContent, setSearchContent] = useState("");
+  const { isAuthenticated, user, logOut } = useAuth();
 
   function goToSearch() {
     if (searchContent.length > 0) {
-      router.push(`/search/${searchContent}`);
+      Router.push(`/search/${searchContent}`);
     }
   }
+
+  console.log(user);
   
-  if (false)
+  if (isAuthenticated)
     return (
       <header className={styles.Header}>
         <div id={styles.firstContainer}>
@@ -39,7 +37,7 @@ export function Header() {
           <Link href={"/"}>
             <a>
               <div className={styles.logoContainer}>
-                <Image
+                <img
                   src={"/images/temporary-logo.svg"}
                   className={styles.logotipoImg}
                   alt={"profile"}
@@ -108,12 +106,12 @@ export function Header() {
                       dropdownIsOpen
                       ? <div className={styles.dropdown}>
                         <div>
-                          <Link href={`/profile/${"user.id"}`}>
+                          <Link href={`/profile/${user?.id}`}>
                             <a><FaUserCircle /> Meu Perfil</a>
                           </Link>
                         </div>
 
-                        <div onClick={() => signOut({ callbackUrl: "/login" })}>
+                        <div onClick={() => logOut()}>
                           <IoMdExit /> Sair
                         </div>
                       </div>
@@ -121,12 +119,12 @@ export function Header() {
                     }                    
                   </div>
 
-                  <div className={styles.username}>{"user.username"}</div>
+                  <div className={styles.username}>{user?.name}</div>
 
                   <div className={styles.userPicture}>
-                    <Image 
+                    <img 
                       alt={"user"}
-                      src={"/images/user.image_url"} 
+                      src={user?.picture} 
                       width={"100%"}
                       height={"100%"}
                     />

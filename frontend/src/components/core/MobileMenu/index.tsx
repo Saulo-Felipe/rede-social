@@ -1,15 +1,15 @@
-import { useSession,signOut } from "next-auth/react";
 import Link from "next/link";
 import { MdOutlineClose, MdExitToApp } from "react-icons/md";
 import { AiOutlineHome, AiOutlineMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import Image from "next/image";
 import { GiTank } from "react-icons/gi";
+import { useAuth } from "../../../hooks/useAuth";
 
 import styles from "./MobileMenu.module.scss";
 
 export function MobileMenu(props) {
-  const { data, status } = useSession();
+  const { user, logOut } = useAuth();
   const { setMenuMobileIsOpen } = props;
 
   return (
@@ -18,15 +18,15 @@ export function MobileMenu(props) {
         <header>
           <div>
             <div className={styles.imgContainer}>
-              <Image 
+              <img 
                 alt={"user profile"}
-                src={data?.user?.image} 
+                src={user?.picture} 
                 width={"100%"}
                 height={"100%"}
               />
             </div>
 
-            <div className={styles.username}>{data?.user?.name}</div>
+            <div className={styles.username}>{user?.name}</div>
           </div>
 
           <div>
@@ -44,7 +44,7 @@ export function MobileMenu(props) {
           </div>
 
           <div className={styles.link}>
-            <Link href={`/profile/${data?.user?.id}`}>
+            <Link href={`/profile/${user?.id}`}>
               <a><CgProfile /> Meu Perfil</a>
             </Link>
           </div>
@@ -57,7 +57,7 @@ export function MobileMenu(props) {
 
           <div
             className={styles.link}
-            onClick={() => signOut()}
+            onClick={() => logOut()}
           >
               <a><MdExitToApp /> Sair</a>
           </div>

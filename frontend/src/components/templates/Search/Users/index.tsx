@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { api } from "../../../../services/api";
-import { useSession } from "next-auth/react";
 import { BiUnlink } from "react-icons/bi";
-
 import Image from "next/image";
 import Link from "next/link";
 import { ImSpinner9 } from "react-icons/im";
+import { api } from "../../../../services/api";
+import { useAuth } from "../../../../hooks/useAuth";
 
 import styles from "./Users.module.scss";
 
 export function Users({ searchQuery }) {
-  const [users, setUsers] = useState([]);
-  const { data: session } = useSession();
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     (async() => {
@@ -21,7 +20,7 @@ export function Users({ searchQuery }) {
       const { data } = await api().get(`/search/${searchQuery}`);
 
       if (data.success) {
-        setUsers(data.users);
+        setAllUsers(data.users);
 
       } else {
         alert("Erro ao realizar busca.");
@@ -43,26 +42,26 @@ export function Users({ searchQuery }) {
       }
 
       {
-        users.length === 0
+        allUsers.length === 0
         ? <div className={styles.notHaveUsers}><BiUnlink /> Nenhum resultado encontrado</div>
         :
         <>
           {
-            users.map(user =>
-              <div className={styles.user} key={user.id}>
-                <Link href={`/profile/${user.id}`}>
+            allUsers.map(aUser =>
+              <div className={styles.user} key={aUser.id}>
+                <Link href={`/profile/${aUser.id}`}>
                   <a>
                     <div className={styles.imgContainer}>
-                      <Image 
-                        src={user.image_url}
+                      <img 
+                        src={aUser.image_url}
                         width={"100%"}
                         height={"100%"}
                       />
                     </div>
 
                     <div className={styles.content}>
-                      <div className={styles.username}>{user.username}</div>
-                      { user.id === session?.user?.id ? <div className={styles.badgeMyProfile}>Meu perfil</div> : <></>}
+                      <div className={styles.username}>{aUser.username}</div>
+                      { aUser.id === user?.id ? <div className={styles.badgeMyProfile}>Meu perfil</div> : <></>}
                     </div>
                   </a>
                 </Link>

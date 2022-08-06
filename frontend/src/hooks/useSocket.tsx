@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { api } from "../services/api";
 import { io } from "socket.io-client";
-import { useSession } from "next-auth/react";
 import { Message } from "../pages/chat";
+import { useAuth } from "./useAuth";
 
 export const SocketContext = createContext<ReturnValue>({} as ReturnValue);
 
@@ -30,8 +30,8 @@ interface serverUserObj {
 
 export function SocketProvider({ children }) {
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  const { data: session } = useSession();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
+  const { user } = useAuth();
 
   const allUsersRef = useRef(allUsers);
   const socketRef = useRef(null);
@@ -99,7 +99,7 @@ export function SocketProvider({ children }) {
   function sendMessage(content: string) {
     console.log("[sending] :", content);
 
-    socketRef.current.emit("new-message", session.user.id, content);
+    socketRef.current.emit("new-message", user?.id, content);
   }
 
   function receivedMessage(googleID: string, message: string) {
@@ -114,7 +114,7 @@ export function SocketProvider({ children }) {
             image: allUsersRef.current[c].image_url,
             createdOn: date[0]+" às "+fullHours,
             googleID,
-            isMy: googleID === session.user.id
+            isMy: googleID === user?.id
           }]);
       }
     }
@@ -123,14 +123,12 @@ export function SocketProvider({ children }) {
 
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { transports: ["websocket"] })
       socketRef.current = socket;
 
-      const user = session.user;
-
       socket.on("connect", () => {
-        socket.emit("new-user", user.id, (response: serverUserObj) => {
+        socket.emit("new-user", user?.id, (response: serverUserObj) => {
           initialState(response.allUsers);
         });
       });
@@ -150,7 +148,7 @@ export function SocketProvider({ children }) {
       });
 
     }
-  }, [session]);
+  }, [user]);
 
   useEffect(() => {
     allUsersRef.current = allUsers;

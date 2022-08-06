@@ -1,6 +1,5 @@
 import { api } from "../../../../services/api";
 import { useState, useRef, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { v4 as uuid } from "uuid";
 
 import { IoCloseCircleSharp } from "react-icons/io5";
@@ -8,6 +7,7 @@ import { RiImageAddFill } from "react-icons/ri";
 import { BiVideoPlus } from "react-icons/bi";
 
 import styles from "./NewPost.module.scss";
+import { useAuth } from "../../../../hooks/useAuth";
 
 interface SelectedImages {
   id: string;
@@ -17,11 +17,11 @@ interface SelectedImages {
 export function NewPost({ setIsLoading, getRecentPosts }) {
   const [inputIsOpen, setInputIsOpen] = useState(false);
   const [postContent, setPostContent] = useState("");
-  const {data: session} = useSession();
-  
   const [selectedImages, setSelectedImages] = useState<SelectedImages[]>([]);
   const inputImagesRef = useRef(null);
   const [previewFile, setPreviewFile] = useState(null);
+  const { user } = useAuth();
+
 
   function getCurrentDate() {
     let date = new Date().toLocaleString().split(" ")
@@ -45,7 +45,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
       dataForm.append("body", JSON.stringify({
         createdOn: getCurrentDate(),
         postContent, 
-        userID: session.user.id
+        userID: user?.id
       }));
 
       const { data } = await api().put("/posts/create", 

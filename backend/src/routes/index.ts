@@ -27,8 +27,8 @@ index.get("/search/:searchQuery", async (request, response) => {
   try {
     const { searchQuery }: searchParams = request.params;
 
-    const [users] = await sequelize.query(`
-      SELECT * FROM "User" 
+    let [users] = await sequelize.query(`
+      SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url FROM "User" 
       WHERE username ILIKE '%${searchQuery}%';
     `);
 

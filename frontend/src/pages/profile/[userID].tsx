@@ -1,6 +1,5 @@
 import { Post } from "../../components/utils/Post";
 import { api } from "../../services/api";
-import { getSession, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactModal from "react-modal";
@@ -11,6 +10,8 @@ import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { TbEdit } from "react-icons/tb";
 
 import styles from "./profile.module.scss";
+import { useAuth } from "../../hooks/useAuth";
+import { GetServerSideProps } from "next";
 
 ReactModal.setAppElement("#__next")
 
@@ -35,8 +36,8 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
   const [following, setFollowing] = useState(isFollowing);
   const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
   const [loadingAction, setLoadingAction] = useState(false);
-  const { data: session } = useSession();
   const [modalIsOpen, setModalIsOpen] = useState(true);
+  const { user: myUser } = useAuth();
 
   useEffect(() => {
     console.log(user);
@@ -61,7 +62,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
       setLoadingAction(true);
 
       const { data } = await api().put("/user/new-follow", { 
-        userID: session?.user?.id, 
+        userID: myUser?.id, 
         followerID: user.id 
       });
       
@@ -84,7 +85,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
 
       setLoadingAction(true);
 
-      const { data } = await api().delete(`/user/unfollow/${session?.user?.id}/${user.id}`);
+      const { data } = await api().delete(`/user/unfollow/${myUser?.id}/${user.id}`);
 
       setLoadingAction(false);
 
@@ -120,7 +121,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
             <div className={styles.containInfo}>
               <div className={styles.userPicture}>
                 <div className={styles.profileImageContainer}>
-                  <Image width={"110%"} height={"110%"} src={user.image_url} />
+                  <img width={"110%"} height={"110%"} src={user.image_url} />
                 </div>  
               </div>
 
@@ -192,7 +193,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
               <Post
                 key={post.id}
                 data={post}
-                currentUserId={session?.user?.id}
+                currentUserId={myUser?.id}
                 time={100}
               />
             )
@@ -203,23 +204,31 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
   );
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
-  const {user} = await getSession(context);
+  const {data} = await api(context).get("/user/current");
 
-  const { data } = await api().get(`/user/profile/${params.userID}/${user.id}`);
-
-  if (data.userExists) {
-    return {
-      props: {
-        user: data.user,
-        isMyProfile: user.id === data.user.id,
-        isFollowing: data.isFollowing
-      }
-    }
-  }
+  console.log("your data: ", data);
 
   return {
-    notFound: true
+    props: {
+      
+    }
   }
+  
+  // const { data } = await api().get(`/user/profile/${params.userID}/${user.id}`);
+
+  // if (data.userExists) {
+  //   return {
+  //     props: {
+  //       user: data.user,
+  //       isMyProfile: user.id === data.user.id,
+  //       isFollowing: data.isFollowing
+  //     }
+  //   }
+  // }
+
+  // return {
+  //   notFound: true
+  // }
 }

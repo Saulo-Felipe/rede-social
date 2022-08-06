@@ -16,7 +16,7 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
     const { currentUserID, userID }: getProfileParams = request.params;
 
     let [user]: any = await sequelize.query(`
-      SELECT id, username, image_url, created_on 
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on 
       FROM "User" 
       WHERE id = '${userID}';
     `);
@@ -133,11 +133,11 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
 user.get("/all", async (request, response) => {
   try {
 
-    const [result] = await sequelize.query(`
-      SELECT id, username, image_url FROM "User"
+    let [users] = await sequelize.query(`
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url FROM "User"
     `);
 
-    return response.json({ success: true, users: result });
+    return response.json({ success: true, users });
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -145,5 +145,19 @@ user.get("/all", async (request, response) => {
   }
 });
 
+
+user.get("/current", async (request, response) => {
+  try {
+    const token = request.header("app-token");
+
+    console.log("token: ", token);
+
+    return response.json({ success: true, token });
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro ao buscar usuário." });
+  }
+});
 
 export { user };

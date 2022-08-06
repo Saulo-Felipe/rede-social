@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { BsSignpostSplitFill } from "react-icons/bs";
 import { TbFidgetSpinner } from "react-icons/tb";
 import { FaSpinner } from "react-icons/fa";
-import { useSession } from "next-auth/react";
 
 import styles from "./Feed.module.scss";
 import { MdWallpaper } from "react-icons/md";
+import { useAuth } from "../../../../hooks/useAuth";
 
 
 interface FeedProps {
@@ -18,12 +18,11 @@ interface FeedProps {
 
 export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedProps) {
   let delayTime = 0;
+  const { user } = useAuth();
 
   useEffect(() => {
     getRecentPosts(true);
   }, [])
-
-  const { data: session } = useSession();
 
   return (
     <div className={styles.feed}>
@@ -50,7 +49,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedP
               <Post
                 key={post.id}
                 data={post}
-                currentUserId={session?.user?.id}
+                currentUserId={user?.id}
                 time={750*delayTime}
               />
             )

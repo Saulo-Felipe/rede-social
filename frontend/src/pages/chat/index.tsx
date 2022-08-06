@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
@@ -18,7 +17,6 @@ export interface Message {
 
 export default function Chat() {
   const { allUsers, sendMessage, allMessages } = useSocket();
-  const { data: session } = useSession();
   const [newMessage, setNewMessage] = useState("");
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
 
@@ -54,7 +52,7 @@ export default function Chat() {
             allUsers.map(user =>
             <div key={user.id} className={styles.aUser}>
               <div className={styles.imageContainer}>
-                <Image
+                <img
                   src={user.image_url}
                   width={"100%"}
                   height={"100%"}
@@ -114,7 +112,7 @@ export default function Chat() {
                     className={styles.imageContainer}
                   >
 
-                    <Image
+                    <img
                       src={message.image}
                       width={"100%"}
                       height={"100%"}

@@ -36,7 +36,7 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
         
         <div className={styles.imageContainer}>
           <div className={styles.changeBg}><MdAddAPhoto /></div>
-          <Image width={"100%"} height={"100%"} src={user.image_url} />
+          <img width={"100%"} height={"100%"} src={user.image_url} />
         </div>
 
         <div className={`${styles.name} ${styles.formContainer}`}>

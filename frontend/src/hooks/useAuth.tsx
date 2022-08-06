@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import Router from "next/router";
-import { setCookie } from "nookies"
+import { setCookie, destroyCookie } from "nookies"
 import { toast } from "react-toastify"
 import axios from "axios";
 import { OverridableTokenClientConfig, useGoogleLogin } from "@react-oauth/google";
@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User;
   signInEmail: (args: LoginEmailInfo) => Promise<void>;
   signInGoogle: (overrideConfig?: OverridableTokenClientConfig) => void;
+  logOut: () => void;
 }
 
 interface PropsUserInfo {
@@ -64,8 +65,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     api().post("/auth/recover-user-information").then(response => {
-      if (!!response.data.user) {
-        console.log("[returned]: ", response.data);
+      if (!!response.data.user) { 
         setUser(response.data.user);
       }
     });
@@ -81,8 +81,9 @@ export function AuthProvider({ children }) {
     else {
       toast.success("Usuário registrado com sucesso! Redirecionando...");
 
-      setCookie(undefined, "app-token", data.token, {
+      setCookie(null, "app-token", data.token, {
         maxAge: 60 * 60 * 1, // 1 hour
+        path: "/"
       });
 
       setUser(data.user);
@@ -106,8 +107,9 @@ export function AuthProvider({ children }) {
         autoClose: 6000
       });
     } else {
-      setCookie(undefined, "app-token", data.token, {
+      setCookie(null, "app-token", data.token, {
         maxAge: 60 * 60 * 1, // 1 hour
+        path: "/"
       });
 
       setUser(data.user);
@@ -137,8 +139,9 @@ export function AuthProvider({ children }) {
       toast.dismiss();
 
       if (res.data.success) {
-        setCookie(undefined, "app-token", res.data.token, {
+        setCookie(null, "app-token", res.data.token, {
           maxAge: 60 * 60 * 1, // 1 hour
+          path: "/"
         });
 
         toast.success("Conectado! redirecionando...", {
@@ -152,13 +155,22 @@ export function AuthProvider({ children }) {
     }
   });
 
+  function logOut() {
+    destroyCookie(null, "app-token", {
+      path: "/"
+    });
+
+    Router.push("/auth/login");
+  }
+
   return (
     <AuthContext.Provider value={{ 
       isAuthenticated, 
       user,
       registerWithEmail,
       signInEmail,
-      signInGoogle
+      signInGoogle,
+      logOut
     }}>
       { children }
     </AuthContext.Provider>

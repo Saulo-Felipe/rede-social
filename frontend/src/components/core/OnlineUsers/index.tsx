@@ -1,4 +1,3 @@
-import { useSession } from 'next-auth/react';
 import { isMobile } from "react-device-detect";
 import { useRouter } from "next/router";
 import { HiOutlineStatusOnline } from "react-icons/hi";
@@ -7,17 +6,18 @@ import { useSocket } from '../../../hooks/useSocket';
 import { IoChatboxOutline } from "react-icons/io5";
 import Image from "next/image";
 import Link from 'next/link';
+import { useAuth } from "../../../hooks/useAuth";
 
 import styles from './OnlineUsers.module.scss';
 
 export function OnlineUsers() {
-  const { status } = useSession();
   const { pathname } = useRouter();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   
   const {allUsers} = useSocket();
 
-  if (status === "authenticated" && !isMobile && pathname !== "/chat")
+  if (isAuthenticated && !isMobile && pathname !== "/chat")
     return (
       <>
         <div className={styles.container}>
@@ -41,7 +41,7 @@ export function OnlineUsers() {
     
                   <div>    
                     <div className={styles.imageContainer}>
-                      <Image
+                      <img
                         alt={"user profile"}
                         src={aUser.image_url}
                         width={"100%"}

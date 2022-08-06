@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { api } from "../../../../services/api";
-import { ImSpinner } from "react-icons/im";
 import Image from "next/image";
 import Link from "next/link";
 import { BiMessageAltX, BiSend } from "react-icons/bi";
-import { IoMdAddCircle } from "react-icons/io";
-import { useSession } from "next-auth/react";
 import { BsArrowReturnRight } from "react-icons/bs";
+import { ImSpinner } from "react-icons/im";
+import { api } from "../../../../services/api";
+import { useAuth } from "../../../../hooks/useAuth";
 
 import styles from "./Comments.module.scss";
 
@@ -16,8 +15,7 @@ export function Comments({ postID, setCommentsAmount }) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [newCommentLoading, setNewCommentLoading] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const { data: session } = useSession();
-
+	const { user } = useAuth();
 
 
 	async function getComments() {
@@ -44,7 +42,7 @@ export function Comments({ postID, setCommentsAmount }) {
 
 		const { data } = await api().put("/posts/new-comment", { 
 			postID, 
-			userID: session?.user?.id, 
+			userID: user?.id, 
 			content: newComment
 		});
 
@@ -97,7 +95,7 @@ export function Comments({ postID, setCommentsAmount }) {
 								<Link href={`/profile/${comment.userID}`}>
 									<a>
 										<div className={styles.imageContainer}>
-											<Image 
+											<img 
 												width={"100%"} 
 												height={"100%"} 
 												src={comment.image_url}

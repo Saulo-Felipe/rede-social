@@ -54,7 +54,7 @@ authentication.put("/register/email", async (request, response) => {
             name, 
             email, 
             createdOn,
-            picture: "profile-user.png"
+            picture: process.env.SERVER_URL+"/images/profile-user.png"
           }
         });
         
@@ -136,12 +136,10 @@ authentication.post("/login", async (request, response) => {
   try {
     const { email, password }: LoginBody = request.body;
 
-    const [user]: any = await sequelize.query(`
-      SELECT id, username, image_url, password, auth_type, email, created_on FROM "User" 
+    let [user]: any = await sequelize.query(`
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, password, auth_type, email, created_on FROM "User" 
       WHERE email = '${email}'
     `);
-
-    console.log(user);
 
     if (user.length == 0) {
       return response.json({ success: true, message: "Essa conta não existe." });
@@ -167,7 +165,7 @@ authentication.post("/login", async (request, response) => {
             id: user[0].id,
             name: user[0].username,
             email,
-            picture: user[0].image_url || "profile-user.png",
+            picture: user[0].image_url,
             createdOn: user[0].created_on
           },
           token
@@ -193,8 +191,8 @@ authentication.post("/recover-user-information", (request, response) => {
       jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {  
         
         if (decoded) {
-          const [user]: any = await sequelize.query(`
-            SELECT id, username, email, image_url, created_on FROM "User"
+          let [user]: any = await sequelize.query(`
+            SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on FROM "User"
             WHERE email = '${decoded.email}'
           `);
           
@@ -204,7 +202,7 @@ authentication.post("/recover-user-information", (request, response) => {
               id: user[0].id,
               name: user[0].username,
               email: user[0].email,
-              picture: user[0].image_url || "profile-user.png",
+              picture: user[0].image_url,
               createdOn: user[0].created_on
             }
           });
