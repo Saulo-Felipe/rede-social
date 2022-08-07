@@ -17,7 +17,13 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
     const { currentUserID, userID }: getProfileParams = request.params;
 
     let [user]: any = await sequelize.query(`
-      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on
+      SELECT 
+      id, 
+      username, 
+      COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, 
+      created_on,
+      COALESCE(cover_color, '#2F5BAC') as cover_color,
+      COALESCE(bio, 'Sem biografia') as bio
       FROM "User"
       WHERE id = '${userID}';
     `);

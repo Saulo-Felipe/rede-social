@@ -22,6 +22,8 @@ export interface User {
   followers: number;
   following: number;
   created_on: string;
+  bio: string;
+  cover_color: string;
 } 
 
 interface ProfileProps {
@@ -110,7 +112,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
       }
 
       <header className={styles.userHeader}>
-        <div className={styles.cover}>
+        <div className={styles.cover} style={{ background: user.cover_color }}>
           {
             isMyProfile 
             ? <div 
@@ -216,7 +218,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { data: { user } } = await api(context).get("/user/current");
 
   if (user) {
-    const { data } = await api(context).get(`user/profile/${params.userID}/${user.id}`);
+    const { data } = await api(context).get(`/user/profile/${params.userID}/${user.id}`);
 
     if (data.userExists) {
       return {

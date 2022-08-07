@@ -140,7 +140,7 @@ export function AuthProvider({ children }) {
 
       if (res.data.success) {
         setCookie(null, "app-token", res.data.token, {
-          maxAge: 60 * 60 * 1, // 1 hour
+          maxAge: 60 * 60 * 3, // 1 hour
           path: "/"
         });
 
