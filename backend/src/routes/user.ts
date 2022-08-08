@@ -2,6 +2,10 @@ import { Router } from "express";
 import { sequelize } from "../services/databse";
 import { verifyToken } from "../utils/authorization";
 import jwt from "jsonwebtoken";
+import multer from "multer";
+import path from "path";
+import { v4 as uuid } from "uuid";
+import bcrypt from "bcrypt";
 
 const user = Router();
 
@@ -17,13 +21,17 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
     const { currentUserID, userID }: getProfileParams = request.params;
 
     let [user]: any = await sequelize.query(`
-      SELECT 
-      id, 
-      username, 
-      COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, 
-      created_on,
-      COALESCE(cover_color, '#2F5BAC') as cover_color,
-      COALESCE(bio, 'Sem biografia') as bio
+      SELECT
+        id,
+        username,
+        COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url,
+        created_on,
+        COALESCE(cover_color, '#2F5BAC') as cover_color,
+        COALESCE(bio, 'Sem biografia') as bio,
+          CASE WHEN password is null
+            THEN false
+          ELSE true
+          END as "havePassword"
       FROM "User"
       WHERE id = '${userID}';
     `);
@@ -141,7 +149,7 @@ user.get("/all", async (request, response) => {
   try {
 
     let [users] = await sequelize.query(`
-      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url FROM "User"
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url FROM "User"
     `);
 
     return response.json({ success: true, users });
@@ -175,6 +183,84 @@ user.get("/current", async (request, response) => {
   } catch(e) {
     console.log('----| Error |-----: ', e);
     return response.status(500).json({ error: true, message: "Erro ao buscar usuário." });
+  }
+});
+
+
+interface UpdateUserInfoBody {
+  bio: string;
+  name: string;
+  picture: null | File;
+  cover_color: string | null;
+  currentPassword: string;
+  newPassword: string;
+  id: string;
+}
+
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '../public/images/user'),
+  filename: (request, file, callback) => {
+    callback(null, uuid()+"."+file.mimetype.split("/")[1]);
+  }
+});
+
+const upload = multer({ storage: storage }).array("picture");
+
+
+user.post("/update-info", upload, async (request, response) => {
+  try {
+    const email: any = request.header("current-user-email");
+    const {bio, cover_color, id, name, picture, currentPassword, newPassword}: UpdateUserInfoBody = JSON.parse(request.body.body);
+    const file: any = request.files
+
+    if (currentPassword === '' && newPassword === '') {
+      await sequelize.query(`
+        UPDATE "User"
+        SET bio = '${bio}',
+        cover_color = '${cover_color}',
+        username = '${name}'
+        ${picture ? `, image_url = '${process.env.SERVER_URL}/images/user/${file[0].filename}'` : ""}
+        WHERE email = '${email}' AND id = '${id}'
+      `);
+
+      return response.json({ success: true });
+    } else { // change password
+      const [user]: any = await sequelize.query(`
+        SELECT password FROM "User"
+        WHERE email = '${email}' AND id = '${id}'
+      `);
+
+      if (user.length > 0) {
+        const match = user[0].password ? await bcrypt.compare(currentPassword, user[0].password) : true;
+
+        if (match) {
+          const salt = await bcrypt.genSalt(5);
+          const hash = await bcrypt.hash(newPassword, salt);
+
+          await sequelize.query(`
+            UPDATE "User"
+            SET
+            bio = '${bio}',
+            cover_color = '${cover_color}',
+            username = '${name}'
+            ${picture ? `, image_url = '${process.env.SERVER_URL}/images/user/${file[0].filename}'` : ""},
+            password = '${hash}'
+            WHERE email = '${email}' AND id = '${id}'
+          `);
+
+          return response.json({ success: true });
+
+        } else { // incorrect password
+          return response.json({ failed: true, message: "Senha incorreta." });
+        }
+      } else { // Erro de permissão
+        return response.json({ failed: true, message: "Permission denied." });
+      }
+    }
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro ao atualizar dados." });
   }
 });
 

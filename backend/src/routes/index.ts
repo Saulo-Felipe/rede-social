@@ -28,7 +28,7 @@ index.get("/search/:searchQuery", async (request, response) => {
     const { searchQuery }: searchParams = request.params;
 
     let [users] = await sequelize.query(`
-      SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url FROM "User" 
+      SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url FROM "User" 
       WHERE username ILIKE '%${searchQuery}%';
     `);
 
@@ -45,11 +45,24 @@ interface getImageParams {
   image: string;
 }
 
-index.get("/images/:image", (request, response) => {
+index.get("/images/user/:image", (request, response) => {
   try {
     const { image }: getImageParams = request.params;
 
-    return response.sendFile(path.join(__dirname, "../images/"+image));
+    return response.sendFile(path.join(__dirname, "../public/images/user/"+image));
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro. Arquivo inválido." });
+  }
+});
+
+
+index.get("/images/post/:image", (request, response) => {
+  try {
+    const { image }: getImageParams = request.params;
+
+    return response.sendFile(path.join(__dirname, "../public/images/posts/"+image));
 
   } catch(e) {
     console.log('----| Error |-----: ', e);

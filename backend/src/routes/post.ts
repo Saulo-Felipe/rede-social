@@ -44,7 +44,7 @@ interface createPostBody {
 }
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, '../images'),
+  destination: path.join(__dirname, '../public/images/posts'),
   filename: (request, file, callback) => {
     callback(null, uuid()+"."+file.mimetype.split("/")[1]);
   }
@@ -118,7 +118,7 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
       images = images[0]?.images?.split(",") || [];
 
       for (let c = 0; c < images.length; c++) {
-        fsPromisses.unlink((path.join(__dirname, `../images/${images[c]}`)));
+        fsPromisses.unlink((path.join(__dirname, `../public/images/posts/${images[c]}`)));
       }
 
 

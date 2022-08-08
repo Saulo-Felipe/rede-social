@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { Router } from "express";
 import { getCurrentDate } from "../utils/date";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../utils/authorization";
 
 const authentication = Router();
 
@@ -14,6 +15,10 @@ interface RegisterEmailBody {
   password: string;
   passwordConfirm: string;
 }
+
+authentication.get("/verify-token", verifyToken, (request, response) => {
+  return response.json({ success: true });
+});
 
 authentication.put("/register/email", async (request, response) => {
   try {
@@ -30,7 +35,7 @@ authentication.put("/register/email", async (request, response) => {
         const id = uuid();
         const createdOn = getCurrentDate()
 
-        bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.genSalt(5, (err, salt) => {
           bcrypt.hash(password, salt, async (error, hash) => {
             await sequelize.query(`
               INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
@@ -54,7 +59,7 @@ authentication.put("/register/email", async (request, response) => {
             name, 
             email, 
             createdOn,
-            picture: process.env.SERVER_URL+"/images/profile-user.png"
+            picture: process.env.SERVER_URL+"/images/user/profile-user.png"
           }
         });
         
@@ -82,7 +87,7 @@ authentication.post("/signin/:authType", async (request, response) => {
     const { authType } = request.params;
 
     const [result]: any = await sequelize.query(`
-      SELECT id, created_on FROM "User"
+      SELECT id, username, image_url, created_on FROM "User"
       WHERE email = '${email}'
     `);
     
@@ -101,7 +106,7 @@ authentication.post("/signin/:authType", async (request, response) => {
 
     // Automatic login
 
-    const token = jwt.sign({ email: email }, String(process.env.SECRET), {
+    const token: string = jwt.sign({ email: email }, String(process.env.SECRET), {
       expiresIn: "1d"
     });
 
@@ -113,9 +118,9 @@ authentication.post("/signin/:authType", async (request, response) => {
       message: "Login realizado com sucesso!",
       user: {
         id,
-        name, 
+        name: result[0] ? result[0].username : name, 
         email, 
-        picture: image_url,
+        picture: result[0] ? result[0].image_url : image_url,
         createdOn: currentDate,
       }
     });
@@ -137,7 +142,7 @@ authentication.post("/login", async (request, response) => {
     const { email, password }: LoginBody = request.body;
 
     let [user]: any = await sequelize.query(`
-      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, password, auth_type, email, created_on FROM "User" 
+      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, password, auth_type, email, created_on FROM "User" 
       WHERE email = '${email}'
     `);
 
@@ -192,7 +197,7 @@ authentication.post("/recover-user-information", (request, response) => {
         
         if (decoded) {
           let [user]: any = await sequelize.query(`
-            SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/profile-user.png') as image_url, created_on FROM "User"
+            SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, created_on FROM "User"
             WHERE email = '${decoded.email}'
           `);
           
