@@ -1,7 +1,6 @@
 import { Post } from "../../components/utils/Post";
 import { api } from "../../services/api";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import ReactModal from "react-modal";
 import { Edit } from "./edit";
 
@@ -24,6 +23,7 @@ export interface User {
   created_on: string;
   bio: string;
   cover_color: string;
+  havePassword: boolean;
 } 
 
 interface ProfileProps {
@@ -32,14 +32,17 @@ interface ProfileProps {
   isFollowing: boolean;
 }
 
-export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps) {
+export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: ProfileProps) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [following, setFollowing] = useState(isFollowing);
-  const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
   const [loadingAction, setLoadingAction] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { user: myUser } = useAuth();
+  const [user, setUser] = useState({ ...serverUSer });
+  const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
+  
+  
 
   useEffect(() => {
     (async() => {
@@ -106,6 +109,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
         isMyProfile
         ? <Edit 
           user={user} 
+          setUser={setUser}
           useModalIsOpen={{ modalIsOpen, setModalIsOpen }}
         />
         : <></>
@@ -149,7 +153,7 @@ export default function Profile({ user, isMyProfile, isFollowing }: ProfileProps
               <span>{followerAmount > 1 || followerAmount == 0 ? "Seguidores" : "Seguidor"}</span>
             </div>
 
-            <div className={`${styles.bio} ${styles.columnOption}`}>Biografia here</div>
+            <div className={`${styles.bio} ${styles.columnOption}`}>{user.bio}</div>
 
             <div className={`${styles.userCreatedOn} ${styles.columnOption}`}>Usuário desde {user.created_on}</div>
           </div>
@@ -219,6 +223,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (user) {
     const { data } = await api(context).get(`/user/profile/${params.userID}/${user.id}`);
+
+    console.log("profile: ", data)
 
     if (data.userExists) {
       return {

@@ -2,15 +2,20 @@ import Link from "next/link";
 import { MdOutlineClose, MdExitToApp } from "react-icons/md";
 import { AiOutlineHome, AiOutlineMessage } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
-import Image from "next/image";
 import { GiTank } from "react-icons/gi";
 import { useAuth } from "../../../hooks/useAuth";
 
 import styles from "./MobileMenu.module.scss";
 
-export function MobileMenu(props) {
+
+interface MobileMenuProps {
+  setMenuMobileIsOpen: (newArgs: boolean) => void;
+  menuMobileIsOpen: boolean;
+}
+
+export function MobileMenu({ setMenuMobileIsOpen, menuMobileIsOpen }: MobileMenuProps) {
   const { user, logOut } = useAuth();
-  const { setMenuMobileIsOpen } = props;
+
 
   return (
     <section className={styles.section} onClick={() => setMenuMobileIsOpen(false)}>

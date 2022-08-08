@@ -1,22 +1,22 @@
 import ReactModal from "react-modal";
-import { CgColorBucket } from "react-icons/cg";
-import { User } from "../[userID]";
 import { IoClose } from "react-icons/io5";
-import { MdAddPhotoAlternate, MdOutlineColorLens } from "react-icons/md";
-import { useAuth } from "../../../hooks/useAuth";
+import { MdAddPhotoAlternate } from "react-icons/md";
 import { BiRightArrowAlt } from "react-icons/bi";
-import { useEffect, useRef, useState } from "react";
-import { v4 as uuid } from "uuid";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { ImSpinner10 } from "react-icons/im";
+import { toast } from "react-toastify";
+import { BsPatchCheckFill } from "react-icons/bs";
+import { User } from "../[userID]";
+import { useAuth } from "../../../hooks/useAuth";
+import { api } from "../../../services/api";
 
 
 import styles from "./styles.module.scss";
-import { FaCheckCircle } from "react-icons/fa";
-import { BsPatchCheck, BsPatchCheckFill } from "react-icons/bs";
 
 
 interface EditProps {
   user: User;
+  setUser: (newState: User) => void;
   useModalIsOpen: {
     modalIsOpen: boolean;
     setModalIsOpen: (args: boolean) => void;
@@ -30,9 +30,10 @@ interface FinishChangesProps {
   cover_color: string | null;
   currentPassword: string;
   newPassword: string;
+  id: string;
 }
 
-export function Edit({ user, useModalIsOpen }: EditProps) {
+export function Edit({ user, setUser, useModalIsOpen }: EditProps) {
   const { modalIsOpen, setModalIsOpen } = useModalIsOpen;
   const { user: currentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -42,17 +43,89 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
     currentPassword: "",
     newPassword: "",
     name: user?.username,
-    picture: null as File
+    picture: null,
+    id: user?.id
   });
   const colors = ["#009688", "#607d8b", "#2F5BAC", "#795548", "#2196f3", "#9900ef", "#ff9800", "#ff5722", "#8bc34a", "#9c27b0", "#4db6ac"]
-  const [selectedColor, setSelectedColor] = useState(user?.cover_color);
+  const [haveChanges, setHaveChanges] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (
+      (changeUserInfo.bio !== user.bio || 
+      changeUserInfo.cover_color !== user.cover_color ||
+      changeUserInfo.name !== user.username ||
+      changeUserInfo.picture !== null ||
+      changeUserInfo.newPassword !== "" ||
+      changeUserInfo.currentPassword !== "") 
+      && !haveChanges
+    )
+      setHaveChanges(true);
+    else if (
+      (changeUserInfo.bio === user.bio && 
+        changeUserInfo.cover_color === user.cover_color &&
+        changeUserInfo.name === user.username &&
+        changeUserInfo.picture === null &&
+        changeUserInfo.newPassword === "" &&
+        changeUserInfo.currentPassword === "") 
+        && haveChanges
+    )
+        setHaveChanges(false);
+  }, [changeUserInfo]);
+
+
+  async function submitChanges() {
+    const dataForm = new FormData();
+
+    if (changeUserInfo.picture) {
+      dataForm.append("picture", changeUserInfo.picture);
+    }
+
+    dataForm.append("body", JSON.stringify({ ...changeUserInfo }));
+
+    setIsLoading(true);
+
+    const { data } = await api().post("/user/update-info", 
+    dataForm, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    setIsLoading(false);
+
+    if (data.success) {
+      toast.success("Alteração salva.");
+      setUser({
+        ...user,
+        bio: changeUserInfo.bio,
+        cover_color: changeUserInfo.cover_color,
+        image_url: changeUserInfo.picture ? URL.createObjectURL(changeUserInfo.picture) : user.image_url,
+        username: changeUserInfo.name
+      });
+      setChangesUserInfo({
+        ...changeUserInfo,
+        newPassword: "",
+        currentPassword: ""
+      })
+      setModalIsOpen(false);
+    } else {
+      toast.warn(data.message);
+    }
+  }
+
+  useEffect(() => {
+    if (modalIsOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+  }, [modalIsOpen]);
 
   return (
     <ReactModal
       isOpen={modalIsOpen}
-      onAfterOpen={() => document.body.style.overflow = "hidden"}
-      onRequestClose={() => {setModalIsOpen(false); document.body.style.overflow = "auto"}}
+      onRequestClose={() => setModalIsOpen(false)}
       overlayClassName={"modalOverlay"}
       className={"modal-content"}
     >
@@ -137,10 +210,10 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
                 > 
                   <div 
                     style={{ background: item }} 
-                    className={`${styles.optionColor} ${selectedColor == item ? styles.selected : null}`}
-                    onClick={() => setSelectedColor(item)}
+                    className={`${styles.optionColor} ${changeUserInfo.cover_color == item ? styles.selected : null}`}
+                    onClick={() => setChangesUserInfo({ ...changeUserInfo, cover_color: item })}
                   >
-                    {selectedColor == item ? <BsPatchCheckFill /> : null}
+                    {changeUserInfo.cover_color == item ? <BsPatchCheckFill /> : null}
                   </div>
                   <div className={styles.colorName}>{item}</div>
                 </div>
@@ -158,15 +231,18 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
           <div className={styles.formControl}>
             <label>Nome</label>
             <input
+              onChange={({target}) => setChangesUserInfo({ ...changeUserInfo, name: target.value })}
+              value={changeUserInfo.name}
               placeholder={"Seu novo nome"}
-              defaultValue={user?.username}
             />
           </div>
 
           <div className={styles.formControl}>
             <label>Bio (biográfia)</label>
             <input
-              defaultValue={user?.bio}
+              onChange={({target}) => setChangesUserInfo({ ...changeUserInfo, bio: target.value })}
+              value={changeUserInfo.bio}
+              placeholder={"Sua bio"}
             />
           </div>
 
@@ -179,18 +255,26 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
             <div>Alteração de senha <span className={styles.obs}>(Deixe em branco se não deseja alterar)</span></div>
             <hr />
           </h3>          
-
-          <div className={styles.formControl}>
-            <label>Senha atual</label>
-            <input
-              placeholder={"Sem alterações"}
-              type={showPassword ? "text" : "password"}
-            />
-          </div>
+          
+          {
+            user.havePassword
+            ? <div className={styles.formControl}>
+              <label>Senha atual</label>
+              <input
+                onChange={({target}) => setChangesUserInfo({ ...changeUserInfo, currentPassword: target.value })}
+                value={changeUserInfo.currentPassword}
+                placeholder={"Sem alterações"}
+                type={showPassword ? "text" : "password"}
+              />
+            </div>
+            : <></>
+          }
 
           <div className={styles.formControl}>
             <label>Nova senha</label>
             <input
+              onChange={({target}) => setChangesUserInfo({ ...changeUserInfo, newPassword: target.value })}
+              value={changeUserInfo.newPassword}
               placeholder={"Sem alterações"}
               type={showPassword ? "text" : "password"}
             />
@@ -200,15 +284,42 @@ export function Edit({ user, useModalIsOpen }: EditProps) {
             <input
               id={"show-password"}
               type={"checkbox"}
-              defaultValue={currentUser?.name}
               onChange={({target}) => setShowPassword(target.checked)}
             />
             <label htmlFor="show-password">Mostrar senha</label>
           </div>  
-
+          
+          {
+            isLoading
+            ? <div className={`${styles.loading} loadingContainer`}>
+              <ImSpinner10 />
+            </div>
+            : <></>
+          }
+            
           <div className={styles.actionBtnsContainer}>
-            <button className={styles.cancel}>Cancelar</button>
-            <button type={"submit"} className={styles.submit}>Alterar Senha</button>          
+            <button 
+              className={styles.cancel}
+              onClick={() => {
+                setChangesUserInfo({
+                  bio: user?.bio,
+                  cover_color: user?.cover_color,
+                  currentPassword: "",
+                  newPassword: "",
+                  name: user?.username,
+                  picture: null,
+                  id: user?.id                 
+                });
+                setModalIsOpen(false);
+              }}
+            >Cancelar</button>
+            <button 
+              type={"submit"} 
+              className={styles.submit} 
+              onClick={submitChanges}
+              disabled={!haveChanges || isLoading}
+            >
+              Salvar alterações</button>          
           </div>
 
         </section>

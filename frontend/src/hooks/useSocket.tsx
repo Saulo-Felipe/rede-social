@@ -49,7 +49,7 @@ export function SocketProvider({ children }) {
           if (initialValue[i] === newUsers[j].id) {
             newUsers[j].isOnline = true;
 
-            setAllUsers([ ...newUsers ]);
+            setAndOrganizeAllUsers([ ...newUsers ]);
 
             break;
           }
@@ -70,7 +70,7 @@ export function SocketProvider({ children }) {
       if (newUsers[i].id === googleID) {
         newUsers[i] = { ...newUsers[i], socketID, isOnline: true };
 
-        setAllUsers([ ...newUsers ]);
+        setAndOrganizeAllUsers([ ...newUsers ]);
         break;
       }
     }
@@ -86,7 +86,7 @@ export function SocketProvider({ children }) {
       if (newUsers[i].id === googleID) {
         newUsers[i].isOnline = false;
 
-        setAllUsers([ ...newUsers ]);
+        setAndOrganizeAllUsers([ ...newUsers ]);
         break;
       }
     }
@@ -115,11 +115,26 @@ export function SocketProvider({ children }) {
             createdOn: date[0]+" às "+fullHours,
             googleID,
             isMy: googleID === user?.id
-          }]);
+          }
+        ]);
       }
     }
   }
 
+
+  function setAndOrganizeAllUsers(users: User[]) {
+    let allUsers = [];
+
+    for (let c = 0; c < users.length; c++) {
+      if (users[c].isOnline) {
+        allUsers = [users[c], ...allUsers];
+      } else {
+        allUsers = [...allUsers, users[c]];
+      }
+    }
+
+    setAllUsers([ ...allUsers ]);
+  }
 
 
   useEffect(() => {
@@ -157,10 +172,6 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     allMessagesRef.current = allMessages;
   }, [allMessages]);
-
-  useEffect(() => {
-    console.log("Render")
-  }, [])
 
   return (
     <SocketContext.Provider value={{

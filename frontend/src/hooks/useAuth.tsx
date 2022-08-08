@@ -4,7 +4,7 @@ import { setCookie, destroyCookie } from "nookies"
 import { toast } from "react-toastify"
 import axios from "axios";
 import { OverridableTokenClientConfig, useGoogleLogin } from "@react-oauth/google";
-import { api } from "../services/api";
+import { api, createConnection } from "../services/api";
 import { LoginEmailInfo } from "../components/templates/auth/EmailSignIn";
 
 
@@ -59,11 +59,38 @@ const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState<User>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const isAuthenticated = !!user;
-
+  
+  useEffect(() => {
+    if (user) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [user]);
 
   useEffect(() => {
+    createConnection.interceptors.response.use(
+      response => {
+        return response
+      }, 
+      error => {
+        console.log("new error", error);
+        if (error.response.data?.logout) {
+          toast.warning("Autenticação expirada. Faça login para continuar.");
+          setUser(null);
+          window.location.pathname = "/auth/login";
+          Router.push("/auth/login"); // If the first redirect doest no work
+        } 
+        if (error.response.data?.error) {
+          toast.error(error.response.data.message);
+        }
+      }
+    );
+
+    console.log("Renderizou [useAuth]");
+
     api().post("/auth/recover-user-information").then(response => {
       if (!!response.data.user) { 
         setUser(response.data.user);
@@ -122,7 +149,7 @@ export function AuthProvider({ children }) {
 
   const signInGoogle = useGoogleLogin({
     onSuccess: async response => {
-      toast.loading("Aguargando solicitação...");
+      toast.loading("Aguardando solicitação...");
 
       const { data }: GoogleOAuthUserInfo = await axios.get(
         `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
@@ -160,7 +187,7 @@ export function AuthProvider({ children }) {
       path: "/"
     });
 
-    Router.push("/auth/login");
+    window.location.pathname = "/auth/login";
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Router from "next/router";
 import { IoMdExit } from "react-icons/io";
@@ -19,12 +19,20 @@ export function Header() {
   const [searchContent, setSearchContent] = useState("");
   const { isAuthenticated, user, logOut } = useAuth();
 
+  useEffect(() => {
+    if (menuMobileIsOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [menuMobileIsOpen]);
+
   function goToSearch() {
     if (searchContent.length > 0) {
       Router.push(`/search/${searchContent}`);
     }
   }
-  
+
   if (isAuthenticated)
     return (
       <header className={styles.Header}>

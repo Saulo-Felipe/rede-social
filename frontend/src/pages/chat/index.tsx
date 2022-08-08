@@ -5,6 +5,10 @@ import { isMobile } from "react-device-detect";
 import { IoMdClose, IoIosArrowForward } from "react-icons/io";
 
 import styles from "./chat.module.scss";
+import { HiStatusOnline } from "react-icons/hi";
+import { MdSensorsOff } from "react-icons/md";
+import { AiOutlineGlobal } from "react-icons/ai";
+import Link from "next/link";
 
 
 export interface Message {
@@ -44,30 +48,72 @@ export default function Chat() {
         style={{ left: menuMobileIsOpen ? "0" : "-100%"}}
       >
 
-        <h2>Usuários { isMobile ? <IoMdClose onClick={() => setMenuMobileIsOpen(false)} /> : null}</h2>
-        <hr />
-
+        <h2 className={styles.firstTitle}>
+          { isMobile ? <IoMdClose onClick={() => setMenuMobileIsOpen(false)} /> : null}
+        </h2>
+      
+        <div className={styles.containerTitle}>Onlines agora <HiStatusOnline /></div>
         <div className={styles.usersContainer}>
           {
-            allUsers.map(user =>
-            <div key={user.id} className={styles.aUser}>
-              <div className={styles.imageContainer}>
-                <img
-                  src={user.image_url}
-                  width={"100%"}
-                  height={"100%"}
-                />
+            allUsers.map(user => user.isOnline 
+              ? <div key={user.id} className={styles.aUser}>
+                <Link href={`/profile/${user.id}`}>
+                  <a>
+                    <div className={styles.imageContainer}>
+                      <img
+                        src={user.image_url}
+                        width={"100%"}
+                        height={"100%"}
+                      />
 
-                <span
-                  className={styles.isOnline}
-                  style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
-                ></span>
+                      <span
+                        className={styles.isOnline}
+                        style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
+                      ></span>
+                    </div>
+
+                    <div className={styles.name}>{user.username.split(" ")[0]}</div>
+                  </a>
+                </Link>
               </div>
-
-              <div className={styles.name}>{user.username.split(" ")[0]}</div>
-            </div>
+              : <></>
             )
           }
+        </div>
+
+        <div className={styles.containerTitle}>Outros usuários (Offline) <MdSensorsOff style={{color: "red"}} /></div>
+        <div className={styles.usersContainer}>
+          {
+            allUsers.map(user => !user.isOnline 
+              ? <div key={user.id} className={styles.aUser}>
+                <div className={styles.imageContainer}>
+                  <img
+                    src={user.image_url}
+                    width={"100%"}
+                    height={"100%"}
+                  />
+
+                  <span
+                    className={styles.isOnline}
+                    style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
+                  ></span>
+                </div>
+
+                <div className={styles.name}>{user.username.split(" ")[0]}</div>
+              </div>
+              : <></>
+            )
+          }
+        </div>
+
+        <div className={styles.optionGlobalChat}
+          onClick={() => document.querySelector("textarea").focus()}
+        >
+          <AiOutlineGlobal />
+          <div>
+            <span> Chat global</span>
+            <small>({allUsers.filter(aUser => aUser.isOnline).length} Online agora)</small>
+          </div>
         </div>
 
       </section>

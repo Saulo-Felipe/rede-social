@@ -60,7 +60,7 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
       for (let c = 0; c < images.length; c++) {
         preloadImages.push(
           <img 
-            src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/"+images[c]}
+            src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/post/"+images[c]}
             style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
           />
         );

@@ -4,7 +4,6 @@ import { HiOutlineStatusOnline } from "react-icons/hi";
 import { GiTank } from "react-icons/gi";
 import { useSocket } from '../../../hooks/useSocket';
 import { IoChatboxOutline } from "react-icons/io5";
-import Image from "next/image";
 import Link from 'next/link';
 import { useAuth } from "../../../hooks/useAuth";
 
