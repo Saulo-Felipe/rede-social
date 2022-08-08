@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
 import { isMobile } from "react-device-detect";
@@ -35,15 +34,15 @@ export default function Chat() {
   return (
     <main className={styles.chat}>
 
-      { 
-        isMobile 
-        ? <div 
-          className={styles.openMobileMenu} 
+      {
+        isMobile
+        ? <div
+          className={styles.openMobileMenu}
           onClick={() => setMenuMobileIsOpen(true)}
-        ><IoIosArrowForward /></div> 
-        : null 
+        ><IoIosArrowForward /></div>
+        : null
       }
-      <section 
+      <section
         className={styles.firstContainer}
         style={{ left: menuMobileIsOpen ? "0" : "-100%"}}
       >
@@ -51,11 +50,11 @@ export default function Chat() {
         <h2 className={styles.firstTitle}>
           { isMobile ? <IoMdClose onClick={() => setMenuMobileIsOpen(false)} /> : null}
         </h2>
-      
+
         <div className={styles.containerTitle}>Onlines agora <HiStatusOnline /></div>
         <div className={styles.usersContainer}>
           {
-            allUsers.map(user => user.isOnline 
+            allUsers.map(user => user.isOnline
               ? <div key={user.id} className={styles.aUser}>
                 <Link href={`/profile/${user.id}`}>
                   <a>
@@ -84,22 +83,26 @@ export default function Chat() {
         <div className={styles.containerTitle}>Outros usuários (Offline) <MdSensorsOff style={{color: "red"}} /></div>
         <div className={styles.usersContainer}>
           {
-            allUsers.map(user => !user.isOnline 
+            allUsers.map(user => !user.isOnline
               ? <div key={user.id} className={styles.aUser}>
-                <div className={styles.imageContainer}>
-                  <img
-                    src={user.image_url}
-                    width={"100%"}
-                    height={"100%"}
-                  />
+                <Link href={`/profile/${user.id}`}>
+                  <a>
+                    <div className={styles.imageContainer}>
+                      <img
+                        src={user.image_url}
+                        width={"100%"}
+                        height={"100%"}
+                      />
 
-                  <span
-                    className={styles.isOnline}
-                    style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
-                  ></span>
-                </div>
+                      <span
+                        className={styles.isOnline}
+                        style={{ backgroundColor: user.isOnline ? "var(--online)" : "var(--offline)" }}
+                      ></span>
+                    </div>
 
-                <div className={styles.name}>{user.username.split(" ")[0]}</div>
+                    <div className={styles.name}>{user.username.split(" ")[0]}</div>
+                  </a>
+                </Link>
               </div>
               : <></>
             )
@@ -118,10 +121,10 @@ export default function Chat() {
 
       </section>
 
-      { 
-        isMobile && menuMobileIsOpen 
-        ? <div className={styles.menuBg} onClick={() => setMenuMobileIsOpen(false)}></div> 
-        : null 
+      {
+        isMobile && menuMobileIsOpen
+        ? <div className={styles.menuBg} onClick={() => setMenuMobileIsOpen(false)}></div>
+        : null
       }
 
 
@@ -144,17 +147,17 @@ export default function Chat() {
         <div className={styles.messages}>
           {
             allMessages.map((message, index) =>
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={styles.aMessage}
                 style={message.isMy ? {alignSelf: "flex-end"} : null}
               >
-                <div 
+                <div
                   className={styles.info}
                   style={message.isMy ? {flexDirection: "row-reverse"} : null}
                 >
-                  <div 
-                    style={message.isMy ? {marginLeft: "0.5rem"} : {marginRight: "0.5rem"} } 
+                  <div
+                    style={message.isMy ? {marginLeft: "0.5rem"} : {marginRight: "0.5rem"} }
                     className={styles.imageContainer}
                   >
 
@@ -165,13 +168,13 @@ export default function Chat() {
                     />
                   </div>
 
-                  <div 
+                  <div
                     className={styles.content}
                     style={!message.isMy ? {background: "#e3e3e3", color: "black"} : null}
                   >{message.content}</div>
                 </div>
 
-                <div 
+                <div
                   className={styles.createdOn}
                   style={message.isMy ? {alignSelf: "flex-end", paddingRight: "2.5rem"} : {paddingLeft: "2.5rem"}}
                 >{message.createdOn}</div>

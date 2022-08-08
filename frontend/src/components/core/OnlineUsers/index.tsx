@@ -64,7 +64,7 @@ export function OnlineUsers() {
           <h2><GiTank /> Multiplayer Games</h2>
           <hr />
 
-          <a href={"https://multiplayer-game-saulo.herokuapp.com"} target={"_blank"}>
+          <a rel="noopener noreferrer" href={"https://multiplayer-game-saulo.herokuapp.com"} target={"_blank"}>
             <div className={styles.game}>
               <div className={styles.gameTitle}>Jogue com seus amigos :D</div>
             </div>

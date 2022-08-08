@@ -86,6 +86,9 @@ a {
 }
 
 #home_main_feed {
+  width: 70%;
+  height: fit-content;
+  
   @media (max-width: 991px) {
     width: 100%;
   }

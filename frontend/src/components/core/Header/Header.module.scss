@@ -101,6 +101,7 @@
 
       svg {
         font-size: 1.3rem;
+        color: var(--gray-4);
       }
     }
 
@@ -132,6 +133,7 @@
     background-color: white;
     border: solid 1px rgb(0, 0, 0, 0.2);
     z-index: 19;
+    max-width: 200px;
 
     right: 3rem;
     left: 0;

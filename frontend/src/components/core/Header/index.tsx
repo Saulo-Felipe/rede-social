@@ -127,7 +127,7 @@ export function Header() {
 
                   <div className={styles.userPicture}>
                     <img 
-                      alt={"user"}
+                      alt={user}
                       src={user?.picture} 
                       width={"100%"}
                       height={"100%"}

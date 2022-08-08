@@ -97,7 +97,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   useEffect(() => {
     console.log("selected: ", selectedImages);
 
-  }, [selectedImages])
+  }, [selectedImages]);
 
   return (
     <div className={styles.postContainer}>
@@ -199,6 +199,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
                   <div 
                     className={styles.aOption} 
                     onClick={() => setPreviewFile(item)}
+                    key={item.id}
                     style={
                       previewFile.id === item.id 
                       ? { transform: "scale(0.8)", border: "solid 1px var(--default-blue)" } 

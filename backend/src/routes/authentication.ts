@@ -196,6 +196,7 @@ authentication.post("/recover-user-information", (request, response) => {
       jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {  
         
         if (decoded) {
+
           let [user]: any = await sequelize.query(`
             SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, created_on FROM "User"
             WHERE email = '${decoded.email}'

@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { ImSpinner10 } from "react-icons/im";
 import { toast } from "react-toastify";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { User } from "../[userID]";
-import { useAuth } from "../../../hooks/useAuth";
-import { api } from "../../../services/api";
+import { User } from "../../../../pages/profile/[userID]";
+import { useAuth } from "../../../../hooks/useAuth";
+import { api } from "../../../../services/api";
 
 
 import styles from "./styles.module.scss";

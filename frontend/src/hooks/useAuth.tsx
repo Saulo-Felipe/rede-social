@@ -76,10 +76,9 @@ export function AuthProvider({ children }) {
         return response
       }, 
       error => {
-        console.log("new error", error);
         if (error.response.data?.logout) {
           toast.warning("Autenticação expirada. Faça login para continuar.");
-          setUser(null);
+          destroyCookie(null, "app-token", { path: "/" });
           window.location.pathname = "/auth/login";
           Router.push("/auth/login"); // If the first redirect doest no work
         } 
@@ -92,7 +91,7 @@ export function AuthProvider({ children }) {
     console.log("Renderizou [useAuth]");
 
     api().post("/auth/recover-user-information").then(response => {
-      if (!!response.data.user) { 
+      if (response.data.user) { 
         setUser(response.data.user);
       }
     });

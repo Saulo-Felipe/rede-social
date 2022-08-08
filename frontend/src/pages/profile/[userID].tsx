@@ -2,7 +2,7 @@ import { Post } from "../../components/utils/Post";
 import { api } from "../../services/api";
 import { useEffect, useState } from "react";
 import ReactModal from "react-modal";
-import { Edit } from "./edit";
+import { Edit } from "../../components/templates/Profile/Edit";
 
 import { RiAddFill } from "react-icons/ri";
 import { CgSpinnerTwoAlt } from "react-icons/cg";

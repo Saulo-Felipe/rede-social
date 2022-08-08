@@ -9,15 +9,25 @@ interface MiddlewareVerifyTokenBody {
 }
 
 async function verifyToken(token: string) {
-  const url = process.env.NEXT_PUBLIC_SERVER_URL+"/auth/verify-token";
+  try {
+    const url = process.env.NEXT_PUBLIC_SERVER_URL+"/auth/verify-token";
+  
+    let response: any = await fetch(url, {
+      headers: new Headers({
+        "app-token": token
+      })
+    });
+  
+    const text = await response.text();
+    const data = JSON.parse(text);
 
-  const response = await fetch(url, {
-    headers: new Headers({
-      "app-token": token
-    })
-  });
-
-  return await response.json();
+    console.log("data:" ,data);
+  
+    return data;
+    
+  } catch(e) {
+    return { logout: true };
+  }
 }
 
 export function middleware(req: NextRequest) {
