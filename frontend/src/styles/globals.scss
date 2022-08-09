@@ -5,7 +5,7 @@
   font-family: 'Ubuntu', sans-serif;
 }
 
-html, body, #__next, #main-container {
+html, body, #__next {
   @media (max-width: 991px) {
     height: -webkit-fill-available !important;
   }

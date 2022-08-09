@@ -13,7 +13,8 @@ interface AuthContextType {
   registerWithEmail: (args: PropsUserInfo) => Promise<void>;
   user: User;
   signInEmail: (args: LoginEmailInfo) => Promise<void>;
-  signInGoogle: (overrideConfig?: OverridableTokenClientConfig) => void;
+  signInGoogle: (overrideConfig?: OverridableTokenClientConfig) => Promise<void>;
+  signInGithub: (args: (arg: boolean) => void, token: string) => void;
   logOut: () => void;
 }
 
@@ -146,40 +147,93 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const signInGoogle = useGoogleLogin({
-    onSuccess: async response => {
-      toast.loading("Aguardando solicitação...");
+  
+  async function signInGoogle(response) {
+    const { data }: GoogleOAuthUserInfo = await axios.get(
+      `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
+    `);
 
-      const { data }: GoogleOAuthUserInfo = await axios.get(
-        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
-      `);
+    const res = await api().post("/auth/signin/Google", {
+      email: data.email,
+      name: data.name,
+      password: null,
+      id: data.sub,
+      image_url: data.picture
+    });
 
-      const res = await api().post("/auth/signin/Google", {
-        email: data.email,
-        name: data.name,
-        password: null,
-        id: data.sub,
-        image_url: data.picture
+    if (res.data.success) {
+      setCookie(null, "app-token", res.data.token, {
+        maxAge: 60 * 60 * 3, // 1 hour
+        path: "/"
       });
 
-      toast.dismiss();
+      toast.success("Conectado! redirecionando...", {
+        autoClose: 2000
+      });
 
-      if (res.data.success) {
-        setCookie(null, "app-token", res.data.token, {
+      setUser({ ...res.data.user });
+
+      setTimeout(() => Router.push("/") , 1500);
+    }
+  }
+
+
+  async function signInGithub(setLoading: (args: boolean) => void, token: string) {
+    setLoading(true);
+
+    try {
+      const {data} = await axios({
+        method: "GET",
+        url: "https://api.github.com/user/emails",
+        headers: {
+          "Authorization": `token ${token}`,
+        },
+      });
+
+      const {data: userInfo} = await axios({
+        method: "GET",
+        url: "https://api.github.com/user",
+        headers: {
+          "Authorization": `token ${token}`,
+        },
+      });
+
+      console.log("Userinfo: ", userInfo);
+
+      const {data: response} = await api().post("/auth/signin/Github", {
+        email: data[0].email,
+        name: userInfo.login,
+        password: null,
+        id: userInfo.id,
+        image_url: userInfo.avatar_url,
+        bio: userInfo.bio
+      });
+
+      console.log(response);
+
+      if (response.success) {
+        setCookie(null, "app-token", response.token, {
           maxAge: 60 * 60 * 3, // 1 hour
           path: "/"
         });
-
+  
         toast.success("Conectado! redirecionando...", {
-          autoClose: 2000
+          autoClose: 1500
         });
-
-        setUser({ ...res.data.user });
-
+  
+        setUser({ ...response.user });
+  
         setTimeout(() => Router.push("/") , 1500);
       }
+      
+    } catch(e) {
+      console.log("Err: ", e?.response?.data?.message);
+      console.log(e);
+      toast.error(e?.response?.data?.message);
     }
-  });
+
+    setLoading(false);
+  }
 
   function logOut() {
     destroyCookie(null, "app-token", {
@@ -196,6 +250,7 @@ export function AuthProvider({ children }) {
       registerWithEmail,
       signInEmail,
       signInGoogle,
+      signInGithub,
       logOut
     }}>
       { children }

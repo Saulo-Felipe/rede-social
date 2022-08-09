@@ -22,6 +22,7 @@ interface ReturnValue {
   allMessages: Message[];
   getIndexOfMessage: (args?: User[]) => void;
   isLoadingMessages: boolean;
+  waitNewMessage: boolean;
 }
 
 interface serverUserObj {
@@ -36,6 +37,7 @@ export function SocketProvider({ children }) {
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [paginationIndex, setPaginationIndex] = useState(0);
   const { user } = useAuth();
+  const [waitNewMessage, setWaitNewMessage] = useState(false);
 
   const allUsersRef = useRef(allUsers);
   const socketRef = useRef(null);
@@ -104,8 +106,11 @@ export function SocketProvider({ children }) {
 
   function sendMessage(content: string) {
     console.log("[sending] :", content);
-
-    socketRef.current.emit("new-message", user?.id, content);
+    setWaitNewMessage(true);
+    
+    socketRef.current.emit("new-message", user?.id, content, (response) => {
+      setWaitNewMessage(false);
+    });
   }
 
   function receivedMessage(googleID: string, message: string, createdOn: string) {
@@ -221,7 +226,8 @@ export function SocketProvider({ children }) {
       sendMessage,
       allMessages,
       getIndexOfMessage,
-      isLoadingMessages
+      isLoadingMessages,
+      waitNewMessage
     }}>
       { children }
 

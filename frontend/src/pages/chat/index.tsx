@@ -21,7 +21,7 @@ export interface Message {
 }
 
 export default function Chat() {
-  const { allUsers, sendMessage, allMessages, getIndexOfMessage, isLoadingMessages } = useSocket();
+  const { allUsers, sendMessage, allMessages, getIndexOfMessage, isLoadingMessages, waitNewMessage } = useSocket();
   const [newMessage, setNewMessage] = useState("");
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
   const messagesContainerRef = useRef(null);
@@ -39,12 +39,14 @@ export default function Chat() {
   // }, []);
 
   useEffect(() => {
-    if (menuMobileIsOpen) {
-      window.scrollTo(0, 0);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    } 
+    if (typeof document !== "undefined") {
+      if (menuMobileIsOpen) {
+        window.scrollTo(0, 0);
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      } 
+    }
   }, [menuMobileIsOpen]);
 
   return (
@@ -146,19 +148,22 @@ export default function Chat() {
 
       <section className={styles.secondContainer}>
         <div className={styles.newMessageContainer}>
-          <div className={styles.sendMessageAction}>
+          <div className={`${styles.sendMessageAction} ${waitNewMessage ? styles.disabled : null}`}>
             <textarea
               value={newMessage}
               onChange={({target}) => setNewMessage(target.value)}
               placeholder={"Envie uma mensagem"}
               onKeyDown={e => e.key === "Enter" ? (verifyMessage(), e.preventDefault()) : null}
+              disabled={waitNewMessage}
             >
             </textarea>
 
             <button
               onClick={verifyMessage}
-              disabled={newMessage.length === 0}
-            ><BiSend /></button>
+              disabled={waitNewMessage || newMessage.length === 0}
+            >
+              {waitNewMessage ? <div className="loadingContainer"><BiSend /></div> : <BiSend />}
+            </button>
           </div>
         </div>
 

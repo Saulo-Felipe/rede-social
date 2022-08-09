@@ -38,11 +38,12 @@ export function useSocket(app: Express, httpServer: any) {
 
     // ---------------- Chat -----------
 
-    socket.on("new-message", (googleID, message) => {
+    socket.on("new-message", async (googleID, message, callback) => {
       let date = getCurrentDate();
-      io.sockets.emit("received-message", googleID, message, date);
+      await saveMessage({ user_id: googleID, message, created_on: date });
 
-      saveMessage({ user_id: googleID, message, created_on: date })
+      io.sockets.emit("received-message", googleID, message, date);
+      callback(true);
     });
     
   });
@@ -63,5 +64,7 @@ export function useSocket(app: Express, httpServer: any) {
       INSERT INTO global_messages (user_id, message, created_on)
       VALUES ('${data.user_id}', '${data.message}', '${data.created_on}')
     `);
+
+    console.log("[saved message]");
   }
 }

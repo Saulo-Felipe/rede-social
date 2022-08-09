@@ -79,11 +79,12 @@ interface RegisterGoogleBody {
   email: string;
   image_url: string;
   id: string;
+  bio?: string
 }
 
 authentication.post("/signin/:authType", async (request, response) => {
   try {
-    const { email, id, image_url, name }: RegisterGoogleBody = request.body;
+    const { email, id, image_url, name, bio }: RegisterGoogleBody = request.body;
     const { authType } = request.params;
 
     const [result]: any = await sequelize.query(`
@@ -97,9 +98,16 @@ authentication.post("/signin/:authType", async (request, response) => {
       console.log("[creating user]");
 
       await sequelize.query(`
-        INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
+        INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on, bio)
         VALUES (
-          '${id}', '${name}', '${email}', '${image_url}', ${null}, '${authType}', '${currentDate}'
+          '${id}', 
+          '${name}', 
+          '${email}', 
+          '${image_url}', 
+          ${null}, 
+          '${authType}', 
+          '${currentDate}',
+          ${bio ? `${bio}` : null}
         );
       `);
     }
@@ -117,7 +125,7 @@ authentication.post("/signin/:authType", async (request, response) => {
       token: token,
       message: "Login realizado com sucesso!",
       user: {
-        id,
+        id: result[0] ? result[0].id : id,
         name: result[0] ? result[0].username : name, 
         email, 
         picture: result[0] ? result[0].image_url : image_url,
