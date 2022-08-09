@@ -201,8 +201,6 @@
       width: max-content;
       height: max-content;
 
-      border: solid 1px red;
-      
       display: flex;
       align-items: center;
       justify-content: center;
@@ -222,7 +220,7 @@
       .aOption {
         width: 5rem;
         height: 5rem;
-        border: solid 1px gray;
+        border: solid 1px var(--gray-4);
         margin-right: 0.5rem;
 
         display: flex;

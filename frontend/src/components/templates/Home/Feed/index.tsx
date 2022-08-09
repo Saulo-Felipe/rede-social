@@ -1,12 +1,11 @@
 import { Post, PostBody } from "../../../utils/Post";
 import { useEffect } from "react"; 
 import { BsSignpostSplitFill } from "react-icons/bs";
-import { TbFidgetSpinner } from "react-icons/tb";
-import { FaSpinner } from "react-icons/fa";
-
-import styles from "./Feed.module.scss";
 import { MdWallpaper } from "react-icons/md";
 import { useAuth } from "../../../../hooks/useAuth";
+import { ImSpinner2 } from "react-icons/im";
+
+import styles from "./Feed.module.scss";
 
 
 interface FeedProps {
@@ -29,7 +28,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedP
 
       {
         isLoading
-        ? <div className={"loadingContainer"}><FaSpinner className={styles.spin} /></div>
+        ? <div className={"loadingContainer"}><ImSpinner2 className={styles.spin} /></div>
         : <></>
       }
 
@@ -66,7 +65,7 @@ export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedP
               onClick={() => !isLoading ? getRecentPosts(false) : null}
               disabled={isLoading}
             >
-              Carregar mais posts {isLoading ? <TbFidgetSpinner /> : <></>}
+              Carregar mais posts {isLoading ? <ImSpinner2 /> : <></>}
             </button>
 
           ) : (

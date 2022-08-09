@@ -57,9 +57,7 @@
 
   .firstTitle {
     font-size: 1.2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: right;
 
     svg {
       font-size: 1.5rem;
@@ -170,6 +168,8 @@
 .secondContainer {
   background-color: white;
   width: 69%;
+  box-shadow: inset 0px 40px 15px -40px  rgb(0, 0, 0, 0.3);
+  z-index: 1;
 
   display: flex;
   flex-direction: column-reverse;
@@ -191,48 +191,53 @@
   }
 
   .newMessageContainer {
-    display: flex;
-    flex-direction: column;
-    border: solid 1px var(--gray-2);
     padding: 0.5rem;
     height: 25%;
+    min-height: 120px;
+    
 
-    textarea {
-      resize: none;
-      position: relative;
-      padding: 0.75rem;
-      font-size: 1rem;
-      transition: 300ms;
-      height: -webkit-fill-available;
-  
-      border: none;
-      
-      &:focus {
-        outline: none;
-      }
-  
-      &::-webkit-scrollbar-track {
-        background-color: #F4F4F4;
-      }
-      &::-webkit-scrollbar {
-        width: 6px;
-        background: #F4F4F4;
-      }
-      &::-webkit-scrollbar-thumb {
-        background: #dad7d7;
-      }    
+    @media (max-width: 991px) {
+      min-height: 100px;
     }
 
-    button {
-      width: max-content;
-      align-self: flex-end;
-      background-color: var(--default-blue);
-      padding: 0.5rem 2rem;
-      color: white;
-      border: none;
-      border-radius: 0.2rem;
-      font-size: 1rem;
-    }    
+    .sendMessageAction {
+      background-color: white;
+      height: 100%;
+      position: relative;
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        padding: 0.7rem;
+      }
+
+      button {
+        position: absolute;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        background-color: var(--default-blue);
+        color: white;
+        border-radius: 50%;
+        border: none;
+        width: 2rem;
+        height: 2rem;
+
+        box-shadow: 0 0 10px rgb(0, 0, 0, 0.5);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          font-size: 1.2rem;
+        }
+
+        @media (max-width: 991px) {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+      }
+    }
   }
 
   .messages {
@@ -240,23 +245,45 @@
     display: flex;
     flex-direction: column;
 
+    .loadMoreMessages {
+      text-align: center;
+      font-weight: 400;
+      color: var(--gray-2);
+      font-size: 0.9rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+
+      svg {
+        font-size: 1.4rem;
+        margin-left: 0.3rem;
+      }
+    }
+
     .aMessage {
       margin-bottom: 1rem;
       display: flex;
-      flex-direction: column;
       max-width: 80%;
-      
+      border-radius: 0.4rem;
+      width: 100%;
+      justify-content: flex-end;
+
+      .imageContainer {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        overflow: hidden;
+        align-self: center;
+      }
 
       .info {
         display: flex;
         align-items: flex-end;
-
-        .imageContainer {
-          width: 2rem;
-          height: 2rem;
-          border-radius: 50%;
-          overflow: hidden;
-        }
+        flex-direction: column;
 
         .content {
           background-color: var(--default-blue);
@@ -264,14 +291,61 @@
           border-radius: 0.5rem;
           color: white;
           line-break: anywhere;
+          position: relative;
+
+          .detail {
+            width: 0;
+            height: 0;
+            border-left: 0.4rem solid transparent;
+            border-right: 0.4rem solid transparent;
+            border-bottom: 0.8rem solid var(--default-blue);
+            position: absolute;
+            bottom: 0;
+            right: calc(-0.4rem/1.5);
+          }
         }
       }
 
       .createdOn {
         opacity: 0.5;
-        font-size: 0.75rem;
-        align-self: flex-start;
+        font-size: 0.65rem;
+        align-self: flex-end;
         margin-top: 0.2rem;
+      }
+    }
+
+    .isMy {
+      align-self: flex-end;
+      
+      .imageContainer {
+        margin-left: 0.5rem;
+      }
+    }
+
+    .notIsMy {
+      flex-direction: row-reverse;
+
+      .info {
+        align-items: flex-start;
+
+        .content {
+          background: #e3e3e3;
+          color: black;
+
+          .detail {
+            bottom: 0;
+            left: calc(-0.4rem/1.5);
+            border-bottom-color: #e3e3e3;
+          }
+        }
+
+        .createdOn {
+          align-self: flex-start;
+        }
+      }
+      
+      .imageContainer {
+        margin-right: 0.5rem;
       }
     }
   }

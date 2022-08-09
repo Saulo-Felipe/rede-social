@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
 import { isMobile } from "react-device-detect";
 import { IoMdClose, IoIosArrowForward } from "react-icons/io";
-
-import styles from "./chat.module.scss";
 import { HiStatusOnline } from "react-icons/hi";
-import { MdSensorsOff } from "react-icons/md";
+import { MdSensorsOff, MdUpdate } from "react-icons/md";
 import { AiOutlineGlobal } from "react-icons/ai";
 import Link from "next/link";
+import { BiSend } from "react-icons/bi";
+import { ImSpinner2 } from "react-icons/im";
+import Head from "next/head";
 
+import styles from "./chat.module.scss";
 
 export interface Message {
   googleID: string;
@@ -19,9 +21,10 @@ export interface Message {
 }
 
 export default function Chat() {
-  const { allUsers, sendMessage, allMessages } = useSocket();
+  const { allUsers, sendMessage, allMessages, getIndexOfMessage, isLoadingMessages } = useSocket();
   const [newMessage, setNewMessage] = useState("");
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
+  const messagesContainerRef = useRef(null);
 
   function verifyMessage() {
     if (newMessage.length > 0) {
@@ -31,9 +34,22 @@ export default function Chat() {
     }
   }
 
+  // useEffect(() => {
+  //   messagesContainerRef.current.scrollTo(0, 999);
+  // }, []);
+
+  useEffect(() => {
+    if (menuMobileIsOpen) {
+      window.scrollTo(0, 0);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    } 
+  }, [menuMobileIsOpen]);
+
   return (
     <main className={styles.chat}>
-
+      <Head><title>Chat global</title></Head>
       {
         isMobile
         ? <div
@@ -54,8 +70,8 @@ export default function Chat() {
         <div className={styles.containerTitle}>Onlines agora <HiStatusOnline /></div>
         <div className={styles.usersContainer}>
           {
-            allUsers.map(user => user.isOnline
-              ? <div key={user.id} className={styles.aUser}>
+            allUsers.map((user, index) => user.isOnline
+              ? <div key={index} className={styles.aUser}>
                 <Link href={`/profile/${user.id}`}>
                   <a>
                     <div className={styles.imageContainer}>
@@ -75,7 +91,7 @@ export default function Chat() {
                   </a>
                 </Link>
               </div>
-              : <></>
+              : ""
             )
           }
         </div>
@@ -83,8 +99,8 @@ export default function Chat() {
         <div className={styles.containerTitle}>Outros usuários (Offline) <MdSensorsOff style={{color: "red"}} /></div>
         <div className={styles.usersContainer}>
           {
-            allUsers.map(user => !user.isOnline
-              ? <div key={user.id} className={styles.aUser}>
+            allUsers.map((user, index) => !user.isOnline
+              ? <div key={index} className={styles.aUser}>
                 <Link href={`/profile/${user.id}`}>
                   <a>
                     <div className={styles.imageContainer}>
@@ -104,7 +120,7 @@ export default function Chat() {
                   </a>
                 </Link>
               </div>
-              : <></>
+              : ""
             )
           }
         </div>
@@ -130,54 +146,53 @@ export default function Chat() {
 
       <section className={styles.secondContainer}>
         <div className={styles.newMessageContainer}>
-          <textarea
-            value={newMessage}
-            onChange={({target}) => setNewMessage(target.value)}
-            placeholder={"Envie uma mensagem"}
-            onKeyDown={e => e.key === "Enter" ? (verifyMessage(), e.preventDefault()) : null}
-          >
-          </textarea>
+          <div className={styles.sendMessageAction}>
+            <textarea
+              value={newMessage}
+              onChange={({target}) => setNewMessage(target.value)}
+              placeholder={"Envie uma mensagem"}
+              onKeyDown={e => e.key === "Enter" ? (verifyMessage(), e.preventDefault()) : null}
+            >
+            </textarea>
 
-          <button
-            onClick={verifyMessage}
-            disabled={newMessage.length === 0}
-          >Enviar</button>
+            <button
+              onClick={verifyMessage}
+              disabled={newMessage.length === 0}
+            ><BiSend /></button>
+          </div>
         </div>
 
-        <div className={styles.messages}>
+        <div className={styles.messages} ref={messagesContainerRef}>
+          {
+            allMessages.length > 0
+            ? <div onClick={() => getIndexOfMessage()} className={styles.loadMoreMessages}>Carregar mais messages <MdUpdate /></div>
+            : <></>
+          }
+          { isLoadingMessages ? <div className={`loadingContainer`}><ImSpinner2 /></div> : "" }
+
           {
             allMessages.map((message, index) =>
               <div
                 key={index}
-                className={styles.aMessage}
-                style={message.isMy ? {alignSelf: "flex-end"} : null}
+                className={`${styles.aMessage} ${message.isMy ? styles.isMy : styles.notIsMy}`}
               >
-                <div
-                  className={styles.info}
-                  style={message.isMy ? {flexDirection: "row-reverse"} : null}
-                >
-                  <div
-                    style={message.isMy ? {marginLeft: "0.5rem"} : {marginRight: "0.5rem"} }
-                    className={styles.imageContainer}
-                  >
+                <div className={`${styles.info}`}>
 
-                    <img
-                      src={message.image}
-                      width={"100%"}
-                      height={"100%"}
-                    />
+                  <div className={styles.content}>
+                    {message.content}
+                    <div className={styles.detail}></div>
                   </div>
 
-                  <div
-                    className={styles.content}
-                    style={!message.isMy ? {background: "#e3e3e3", color: "black"} : null}
-                  >{message.content}</div>
+                  <div className={styles.createdOn}>
+                    {message.createdOn}
+                  </div>
+
                 </div>
 
-                <div
-                  className={styles.createdOn}
-                  style={message.isMy ? {alignSelf: "flex-end", paddingRight: "2.5rem"} : {paddingLeft: "2.5rem"}}
-                >{message.createdOn}</div>
+                <div className={styles.imageContainer}>
+                  <img src={message.image} width={"100%"} height={"100%"} />
+                </div>
+
               </div>
             )
           }

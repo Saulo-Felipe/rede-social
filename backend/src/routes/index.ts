@@ -70,4 +70,26 @@ index.get("/images/post/:image", (request, response) => {
   }
 });
 
+
+interface AllMessagesBody {
+  index: boolean;
+}
+
+index.post("/all-messages", async (request, response) => {
+  try {
+    const { index }: AllMessagesBody = request.body;
+
+    const [messages] = await sequelize.query(`
+      SELECT * FROM global_messages
+      LIMIT 20 OFFSET 20*${index}
+    `);
+
+    return response.json({ success: true, messages });
+    
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Eror ao buscar mensagens." });
+  }
+});
+
 export { index }

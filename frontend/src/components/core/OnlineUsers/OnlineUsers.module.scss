@@ -11,6 +11,7 @@
 
   height: max-content;
   width: 30%;
+  max-height: 100vh;
 
   h2 {
     font-size: 1.2rem;
@@ -85,8 +86,9 @@
 }
 
 .users {
-  height: 40%;
-  overflow-y: auto;
+  min-height: 40%;
+  max-height: 40vh;
+  overflow-y: scroll;
   margin-bottom: 1.5rem;
 
   &::-webkit-scrollbar-track {

@@ -42,7 +42,7 @@ export function Header() {
             <a>
               <div className={styles.logoContainer}>
                 <img
-                  src={"/images/temporary-logo.svg"}
+                  src={"/images/logo.png"}
                   className={styles.logotipoImg}
                   alt={"profile"}
                   width={"100%"}
@@ -127,7 +127,7 @@ export function Header() {
 
                   <div className={styles.userPicture}>
                     <img 
-                      alt={user}
+                      alt={"user: "+user}
                       src={user?.picture} 
                       width={"100%"}
                       height={"100%"}

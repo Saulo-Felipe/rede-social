@@ -3,14 +3,14 @@ import { api } from "../../services/api";
 import { useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { Edit } from "../../components/templates/Profile/Edit";
-
 import { RiAddFill } from "react-icons/ri";
 import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { TbEdit } from "react-icons/tb";
-
-import styles from "./profile.module.scss";
 import { useAuth } from "../../hooks/useAuth";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
+
+import styles from "./profile.module.scss";
 
 ReactModal.setAppElement("#__next")
 
@@ -43,7 +43,6 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
   const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
   
   
-
   useEffect(() => {
     (async() => {
       setLoading(true);
@@ -105,6 +104,8 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
 
   return (
     <div className={styles.profileContainer}>
+      <Head><title>{user.username} - Perfil</title></Head>
+
       {
         isMyProfile
         ? <Edit 
@@ -125,6 +126,10 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
             ><TbEdit /></div>
             : <></>
           }
+
+          <h2 className={styles.username}>
+            { user.username }
+          </h2>
         </div>
 
         <div className={styles.profileInfo}>
@@ -138,9 +143,6 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
                 </div>  
               </div>
 
-              <h1 className={styles.username}>
-                { user.username }
-              </h1>
             </div>
 
             <div className={`${styles.action} ${styles.columnOption}`}>
@@ -184,7 +186,7 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
         <h2>
         {
           isMyProfile 
-          ? 'Minhas publicações'
+          ? `Minhas publicações (${posts.length})`
           : `Publicações de ${user.username.split(" ")[0]}`
         }
         </h2>

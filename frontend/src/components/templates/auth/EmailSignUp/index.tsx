@@ -1,7 +1,7 @@
 import { MdAlternateEmail } from "react-icons/md";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useState } from "react";
-import { ImSpinner9 } from "react-icons/im";
+import { ImSpinner2 } from "react-icons/im";
 import { useAuth } from "../../../../hooks/useAuth";
 import { useForm } from "react-hook-form";
 
@@ -108,7 +108,7 @@ export function EmailSignUp({ setIsEmailAuth }: EmailSignUpProps) {
           isLoading
           ? 
             <div className={`loadingContainer ${styles.loading}`}>
-              <ImSpinner9 />
+              <ImSpinner2 />
             </div>
           : <></>
         }

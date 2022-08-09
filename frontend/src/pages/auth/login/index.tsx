@@ -1,6 +1,7 @@
 import { BsGithub } from "react-icons/bs";
 import { GoogleSignIn } from "../../../components/templates/auth/GoogleSignIn";
 import { EmailSignIn } from "../../../components/templates/auth/EmailSignIn";
+import Head from "next/head";
 
 import styles from './login.module.scss';
 
@@ -9,6 +10,7 @@ export default function Login() {
 
   return (
     <main className={styles.Main}>
+      <Head><title>Entrar</title></Head>
 
       <div className={styles.loginContainer}>
         <h2>Entrar</h2>

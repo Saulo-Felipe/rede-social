@@ -134,6 +134,7 @@
     border: solid 1px rgb(0, 0, 0, 0.2);
     z-index: 19;
     max-width: 200px;
+    min-width: max-content;
 
     right: 3rem;
     left: 0;

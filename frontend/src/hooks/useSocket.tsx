@@ -3,6 +3,7 @@ import { api } from "../services/api";
 import { io } from "socket.io-client";
 import { Message } from "../pages/chat";
 import { useAuth } from "./useAuth";
+import { getCurrentDate } from "../components/templates/Home/NewPost";
 
 export const SocketContext = createContext<ReturnValue>({} as ReturnValue);
 
@@ -19,6 +20,8 @@ interface ReturnValue {
   setAllUsers: (users: User[]) => void;
   sendMessage: (content: string) => void;
   allMessages: Message[];
+  getIndexOfMessage: (args?: User[]) => void;
+  isLoadingMessages: boolean;
 }
 
 interface serverUserObj {
@@ -31,11 +34,13 @@ interface serverUserObj {
 export function SocketProvider({ children }) {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [allMessages, setAllMessages] = useState<Message[]>([]);
+  const [paginationIndex, setPaginationIndex] = useState(0);
   const { user } = useAuth();
 
   const allUsersRef = useRef(allUsers);
   const socketRef = useRef(null);
   const allMessagesRef = useRef(allMessages);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
 
   async function initialState(initialValue: any) {
@@ -50,6 +55,7 @@ export function SocketProvider({ children }) {
             newUsers[j].isOnline = true;
 
             setAndOrganizeAllUsers([ ...newUsers ]);
+            getIndexOfMessage(newUsers);
 
             break;
           }
@@ -102,25 +108,23 @@ export function SocketProvider({ children }) {
     socketRef.current.emit("new-message", user?.id, content);
   }
 
-  function receivedMessage(googleID: string, message: string) {
+  function receivedMessage(googleID: string, message: string, createdOn: string) {
     for (let c = 0; c < allUsersRef.current.length; c++) {
       if (allUsersRef.current[c].id === googleID) {
-        let date = new Date().toLocaleString().split(" ")
-        let fullHours = date[1].substring(0, 5);
 
-        setAllMessages([
-          ...allMessagesRef.current, {
-            content: message,
-            image: allUsersRef.current[c].image_url,
-            createdOn: date[0]+" às "+fullHours,
-            googleID,
-            isMy: googleID === user?.id
-          }
-        ]);
+        let newMessageData: Message = {
+          content: message,
+          image: allUsersRef.current[c].image_url,
+          createdOn,
+          googleID,
+          isMy: googleID === user?.id
+        }
+
+
+        setAllMessages([ ...allMessagesRef.current, { ...newMessageData } ]);
       }
     }
   }
-
 
   function setAndOrganizeAllUsers(users: User[]) {
     let allUsers = [];
@@ -136,6 +140,41 @@ export function SocketProvider({ children }) {
     setAllUsers([ ...allUsers ]);
   }
 
+  async function getIndexOfMessage(users?: User[]) {
+    if (!isLoadingMessages) {
+      setIsLoadingMessages(true);
+
+      const { data } = await api().post("/all-messages", { 
+        index: paginationIndex
+      });
+
+      if (data.success) {
+        let newMessages: Message[] = [];
+        let theUsers = users ? users : allUsers;
+
+        for (let c = 0; c < data.messages.length; c++) {
+          let currentMsg = data.messages[c];
+
+          for (let i = 0; i < theUsers.length; i++) {
+            if (currentMsg.user_id === theUsers[i].id) {
+              newMessages.push({
+                content: currentMsg.message,
+                createdOn: currentMsg.created_on,
+                googleID: currentMsg.user_id,
+                isMy: currentMsg.user_id === user.id,
+                image: theUsers[i].image_url
+              });
+              break;
+            }
+          }
+        }
+
+        setAllMessages([  ...newMessages, ...allMessages ]);
+        setPaginationIndex(paginationIndex+1);
+        setIsLoadingMessages(false);
+      }
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -158,8 +197,9 @@ export function SocketProvider({ children }) {
 
       // --------| Messages |----------
 
-      socket.on("received-message", (googleID, message) => {
-        receivedMessage(googleID, message);
+      socket.on("received-message", (googleID, message, createdOn) => {
+        console.log("[reiceved message]: ", message);
+        receivedMessage(googleID, message, createdOn);
       });
 
     }
@@ -173,12 +213,15 @@ export function SocketProvider({ children }) {
     allMessagesRef.current = allMessages;
   }, [allMessages]);
 
+
   return (
     <SocketContext.Provider value={{
       allUsers,
       setAllUsers,
       sendMessage,
-      allMessages
+      allMessages,
+      getIndexOfMessage,
+      isLoadingMessages
     }}>
       { children }
 

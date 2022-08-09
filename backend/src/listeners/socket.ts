@@ -1,8 +1,16 @@
 import { Express } from "express";
 import { Server } from "socket.io";
+import { sequelize } from "../services/databse";
+import { getCurrentDate } from "../utils/date";
 
 interface allUsers {
   [key: string]: string;
+}
+
+interface Message {
+  message: string;
+  created_on: string;
+  user_id: string;
 }
 
 export function useSocket(app: Express, httpServer: any) {
@@ -17,9 +25,7 @@ export function useSocket(app: Express, httpServer: any) {
 
       socket.broadcast.emit("new-user", socket.id, googleID);
 
-      callback({
-        allUsers
-      });
+      callback({ allUsers });
     });
 
     socket.on("disconnect", () => {
@@ -28,10 +34,17 @@ export function useSocket(app: Express, httpServer: any) {
       deleteUser(socket.id);
     });
 
-    // Chat
+
+
+    // ---------------- Chat -----------
+
     socket.on("new-message", (googleID, message) => {
-      io.sockets.emit("received-message", googleID, message);
+      let date = getCurrentDate();
+      io.sockets.emit("received-message", googleID, message, date);
+
+      saveMessage({ user_id: googleID, message, created_on: date })
     });
+    
   });
 
   function newUser(googleID: string, socketID: string) {
@@ -43,5 +56,12 @@ export function useSocket(app: Express, httpServer: any) {
   function deleteUser(socketID: string) {
     console.log("[delete user]: ", allUsers[socketID]);
     delete allUsers[socketID];
+  }
+
+  async function saveMessage(data: Message) {
+    await sequelize.query(`
+      INSERT INTO global_messages (user_id, message, created_on)
+      VALUES ('${data.user_id}', '${data.message}', '${data.created_on}')
+    `);
   }
 }

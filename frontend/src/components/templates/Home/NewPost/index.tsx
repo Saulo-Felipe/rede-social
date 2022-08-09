@@ -14,6 +14,13 @@ interface SelectedImages {
   file: File;
 }
 
+export function getCurrentDate() {
+  let date = new Date().toLocaleString().split(" ")
+  let fullHours = date[1].substring(0, 5);
+  
+  return date[0]+" às "+fullHours;
+}
+
 export function NewPost({ setIsLoading, getRecentPosts }) {
   const [inputIsOpen, setInputIsOpen] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -21,14 +28,6 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   const inputImagesRef = useRef(null);
   const [previewFile, setPreviewFile] = useState(null);
   const { user } = useAuth();
-
-
-  function getCurrentDate() {
-    let date = new Date().toLocaleString().split(" ")
-    let fullHours = date[1].substring(0, 5);
-    
-    return date[0]+" às "+fullHours;
-  }
 
   async function handlerNewPost() {
     if (postContent.length > 0 || selectedImages.length > 0) {
@@ -95,9 +94,13 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
   }
 
   useEffect(() => {
-    console.log("selected: ", selectedImages);
-
-  }, [selectedImages]);
+    if (typeof document !== "undefined") {
+      if (previewFile)
+        document.body.style.overflow = "hidden";
+      else 
+        document.body.style.overflow = "auto";
+    }
+  }, [previewFile]);
 
   return (
     <div className={styles.postContainer}>
@@ -164,10 +167,6 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
 
             <RiImageAddFill />
           </label>
-
-          <div className={styles.iconContainer}>
-            <BiVideoPlus />
-          </div>
         </div>
 
         <button

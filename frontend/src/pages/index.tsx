@@ -2,8 +2,10 @@ import { useState } from "react";
 import { NewPost } from "../components/templates/Home/NewPost";
 import { Feed } from "../components/templates/Home/Feed";
 import { api } from "../services/api";
-
+import Head from "next/head";
 import { PostBody } from "../components/utils/Post/index";
+
+
 
 export default function Home() {
   const [allPosts, setAllPosts] = useState<PostBody[]>([]);
@@ -46,6 +48,7 @@ export default function Home() {
 
   return (
     <main id={"home_main_feed"}>
+      <Head><title>Página Inicial</title></Head>
 
       <NewPost 
         setIsLoading={setIsLoading}
