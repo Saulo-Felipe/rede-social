@@ -9,6 +9,10 @@ interface searchParams {
   searchQuery: string;
 }
 
+index.get("/404", (request, response) => {
+  return response.status(404).json({ error: true });
+});
+
 index.get("/test", async (request, response) => {
   try {
     const [result] = await sequelize.query(`
@@ -81,6 +85,7 @@ index.post("/all-messages", async (request, response) => {
 
     const [messages] = await sequelize.query(`
       SELECT * FROM global_messages
+      ORDER BY id DESC
       LIMIT 20 OFFSET 20*${index}
     `);
 

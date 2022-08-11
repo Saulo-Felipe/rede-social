@@ -40,9 +40,14 @@ export function useSocket(app: Express, httpServer: any) {
 
     socket.on("new-message", async (googleID, message, callback) => {
       let date = getCurrentDate();
-      await saveMessage({ user_id: googleID, message, created_on: date });
+      const id = await saveMessage({ user_id: googleID, message, created_on: date });
 
-      io.sockets.emit("received-message", googleID, message, date);
+      io.sockets.emit("received-message", {
+        googleID, 
+        message, 
+        createdOn: date,
+        messageID: id
+      });
       callback(true);
     });
     
@@ -60,11 +65,13 @@ export function useSocket(app: Express, httpServer: any) {
   }
 
   async function saveMessage(data: Message) {
-    await sequelize.query(`
+    const [result]: any = await sequelize.query(`
       INSERT INTO global_messages (user_id, message, created_on)
       VALUES ('${data.user_id}', '${data.message}', '${data.created_on}')
+      RETURNING id
     `);
 
     console.log("[saved message]");
+    return result[0].id;
   }
 }

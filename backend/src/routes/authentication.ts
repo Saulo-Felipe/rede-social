@@ -88,7 +88,7 @@ authentication.post("/signin/:authType", async (request, response) => {
     const { authType } = request.params;
 
     const [result]: any = await sequelize.query(`
-      SELECT id, username, image_url, created_on FROM "User"
+      SELECT id, username,  image_url, created_on FROM "User"
       WHERE email = '${email}'
     `);
     

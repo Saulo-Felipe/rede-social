@@ -13,6 +13,122 @@ const posts = Router();
 posts.use(verifyToken);
 
 
+posts.delete("/like/:userID/:postID", async (request, response) => {
+  try {
+    const { postID, userID } = request.params;
+
+    await sequelize.query(`
+      DELETE FROM likes
+      WHERE user_id = '${userID}'
+      AND post_id = ${postID}
+    `);
+
+    return response.json({ success: true });
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro ao deletar like." });
+  }
+});
+
+posts.put("/like/:userID/:postID", async (request, response) => {
+  try {
+    const { postID, userID } = request.params;
+
+    await sequelize.query(`
+      DELETE FROM dislikes WHERE
+      user_id = '${userID}' and post_id = ${postID}
+    `);
+
+    await sequelize.query(`
+      INSERT INTO likes (user_id, post_id)
+      VALUES ('${userID}', ${postID})
+    `);
+
+    return response.json({ success: true });
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro ao criar like." });
+  }
+});
+
+posts.delete("/dislike/:userID/:postID", async (request, response) => {
+  try {
+    const { postID, userID } = request.params;
+
+    await sequelize.query(`
+      DELETE FROM dislikes
+      WHERE user_id = '${userID}'
+      AND post_id = ${postID}
+    `);
+
+    return response.json({ success: true });
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro deletar dislike." });
+  }
+});
+
+posts.put("/dislike/:userID/:postID", async (request, response) => {
+  try {
+    const { postID, userID } = request.params;
+
+    await sequelize.query(`
+      DELETE FROM likes WHERE
+      user_id = '${userID}' and post_id = ${postID}
+    `);
+
+    await sequelize.query(`
+      INSERT INTO dislikes (user_id, post_id)
+      VALUES ('${userID}', ${postID})
+    `);
+
+    return response.json({ success: true });
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro criar dislike." });
+  }
+});
+
+
+
+
+interface GetActionsBody {
+  postID: number;
+}
+
+posts.post("/actions", async (request, response) => {
+  try {
+    const { postID }: GetActionsBody = request.body;
+
+    const [likes] = await sequelize.query(`
+      SELECT post_id, user_id, "User".username, COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url  
+      FROM likes 
+      INNER JOIN "User" on "User".id = likes.user_id
+      WHERE post_id = ${postID}
+    `);
+
+    const [dislikes] = await sequelize.query(`
+      SELECT post_id, user_id, "User".username, COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url  
+      FROM dislikes 
+      INNER JOIN "User" on "User".id = dislikes.user_id
+      WHERE post_id = ${postID}
+    `);
+
+
+    return response.json({ success: true, likes, dislikes });
+
+
+  } catch(e) {
+    console.log('----| Error |-----: ', e);
+    return response.status(500).json({ error: true, message: "Erro ao buscar likes e dislikes." });
+  }
+})
+
+
 interface recentPostsParams {
   index: string;
 }
@@ -22,10 +138,19 @@ posts.get("/recent/:index", async (request, response) => {
     const { index }: recentPostsParams = request.params;
 
     const [posts] = await sequelize.query(`
-      SELECT "Post".id, "Post".images, content, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on FROM "Post"
-      INNER JOIN "User" ON "User".id = "Post".fk_user_id
+      SELECT 
+      "Post".id, 
+      "Post".fk_user_id,   
+      "Post".content,
+      "Post".images, 
+      "Post".created_on,
+      "User".username,
+      "User".username, 
+      COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url
+    FROM "Post"
+      INNER JOIN "User" ON "Post".fk_user_id = "User".id 
       ORDER BY "Post".id DESC
-      OFFSET 5*${Number(index)} LIMIT 5;
+      OFFSET 5*${index} LIMIT 5    
     `);
 
     return response.json({ success: true, posts });
@@ -135,139 +260,6 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
 });
 
 
-
-interface getPostsFromUser {
-  userID: string;
-}
-
-posts.get("/get-by-user/:userID", async (request, response) => {
-  try {
-    const { userID }: getPostsFromUser = request.params;
-
-    console.log("type: ", typeof userID);
-
-    const [posts] = await sequelize.query(`
-      SELECT content, fk_user_id, likes_amount, dislikes_amount, username, image_url, "Post".created_on, "Post".id FROM "Post"
-      INNER JOIN "User" ON "User".id = "Post".fk_user_id
-      WHERE "Post".fk_user_id = '${userID}'
-      ORDER BY "Post".id DESC;
-    `);
-
-    return response.json({ success: true, posts });
-
-  } catch(e) {
-    console.log('----| Error |-----: ', e);
-    return response.status(500).json({ error: true, message: "Erro ao buscar posts de usuário" });
-  }
-});
-
-
-interface userLikedPostParams {
-  postID: string;
-  userID: string;
-}
-
-posts.get("/user-liked-post/:postID/:userID", async (request, response) => {
-  try {
-    const { postID, userID }: userLikedPostParams = request.params;
-
-    const [result]: any = await sequelize.query(`
-      SELECT type FROM "LikeAndDislike"
-      WHERE fk_user_id = '${userID}' and fk_post_id = ${Number(postID)}
-    `);
-
-    if (result.length == 0)
-      return response.json({ success: true, type: "noAction" });
-
-    return response.json({ success: true, type: result[0].type == 0 ? "like" : "dislike" });
-
-  } catch(e) {
-    console.log('----| Error |-----: ', e);
-    return response.status(500).json({ error: true, message: "Erro ao verificar ação." });
-  }
-});
-
-
-interface deleteActionBody {
-  userID: string;
-  postID: number;
-  action: string | boolean;
-}
-
-posts.post("/delete-action", async (request, response) => {
-  try {
-    let {action, postID, userID}: deleteActionBody = request.body;
-
-    //Delete from table like and dislike
-    await sequelize.query(`
-      DELETE FROM "LikeAndDislike"
-      WHERE fk_user_id = '${userID}'
-      AND fk_post_id = ${postID}
-    `);
-
-    // Update count from post table
-    action = action == "like" ? "likes_amount" : "dislikes_amount";
-
-    await sequelize.query(`
-      UPDATE "Post"
-      SET ${action} = ((SELECT ${action} FROM "Post" WHERE id = ${postID}) - 1)
-      WHERE id = ${postID}
-    `);
-
-    return response.json({ success: true });
-
-  } catch(e) {
-    console.log('----| Error |-----: ', e);
-    return response.status(500).json({ error: true, message: "Erro ao deletar ação." });
-  }
-});
-
-
-interface newActionBody {
-  userID: string;
-  postID: number;
-  action: string;
-  deleteOthers: boolean;
-}
-
-posts.put("/new-action", async (request, response) => {
-  try {
-    let { action, deleteOthers, postID, userID }: newActionBody = request.body;
-    
-    if (deleteOthers) {
-      await axiosServer.post("/posts/delete-action", {
-        action: action == "Like" ? "dislike" : "like",
-        postID,
-        userID
-      });
-    }
-
-    await sequelize.query(`
-      INSERT INTO "LikeAndDislike" (fk_user_id, fk_post_id, type)
-      VALUES (
-        '${userID}',
-        ${postID},
-        ${action == "Like" ? 0 : 1}
-      );
-    `);
-    
-    action = action == "Like" ? "likes_amount" : "dislikes_amount";
-
-    await sequelize.query(`
-      UPDATE "Post"
-      SET ${action} = ((select ${action} from "Post" where id = ${postID}) + 1)
-      WHERE id = ${postID}
-    `);
-    
-    return response.json({ success: true });
-
-  } catch(e) {
-    console.log('----| Error |-----: ', e);
-    return response.status(500).json({ error: true, message: "Erro ao dar like ou dislike" });
-  }
-});
-
-
 interface getCommentsParams {
   postID: string;
 }
@@ -281,7 +273,7 @@ posts.get("/comments/:postID", async (request, response) => {
       "User".id as "userID", 
       "Comment".id as "commentID", 
       username, 
-      image_url, 
+      COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, 
       "Comment".content,
       "Comment".created_on
       FROM "Comment" 
