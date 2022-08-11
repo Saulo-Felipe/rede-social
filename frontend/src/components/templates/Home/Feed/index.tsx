@@ -49,7 +49,6 @@ export function Feed({ allPosts, isLoading, getRecentPosts, finishPosts }: FeedP
                 key={post.id}
                 data={post}
                 currentUserId={user?.id}
-                time={750*delayTime}
               />
             )
           })
