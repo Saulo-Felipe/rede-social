@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BiMessageAltX, BiSend } from "react-icons/bi";
+import { BiMessageAltX } from "react-icons/bi";
+import { MdAddCircle } from "react-icons/md";
 import { BsArrowReturnRight } from "react-icons/bs";
 import { ImSpinner } from "react-icons/im";
 import { api } from "../../../../services/api";
@@ -10,16 +11,14 @@ import { useAuth } from "../../../../hooks/useAuth";
 import styles from "./Comments.module.scss";
 
 
-export function Comments({ postID, setCommentsAmount }) {
+export function Comments({ postID }) {
 	const [allComments, setAllComments] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [newCommentLoading, setNewCommentLoading] = useState(false);
   const [newComment, setNewComment] = useState("");
 	const { user } = useAuth();
 
-
 	async function getComments() {
-		console.log("atualizando comentários");
 		setIsLoading(true);
 
 		const { data } = await api().get(`/posts/comments/${postID}`);
@@ -29,8 +28,8 @@ export function Comments({ postID, setCommentsAmount }) {
 		if (data.success) {
 			console.log("success")
 
-			setCommentsAmount(data.comments.length);
 			setAllComments(data.comments)
+
 		} else {
 			alert("Erro ao buscar comentários");
 		}
@@ -72,15 +71,25 @@ export function Comments({ postID, setCommentsAmount }) {
 	          type="text" 
 	          value={newComment}
 	          placeholder={"Diga algo sobre essa publicação"}
-	          onChange={({target}) => setNewComment(target.value)}
+	          onChange={({target}) => newComment.length < 200 ? setNewComment(target.value) : null}
 	        />
 
 	        <button 
 	        	disabled={newComment.length == 0}
 	        	onClick={handleAddComment}
 	        	className={newCommentLoading ? "loadingContainer" : ""}
-	        ><BiSend /></button>
+	        ><MdAddCircle /></button>
 	      </div>
+
+				<div 
+					className={`
+						${styles.commentLimit} 
+						${newComment.length < 100 ? styles.commentLimitOk : newComment.length < 200 ? styles.commentLimitWarning : styles.commentLimitFull}`
+					}
+				>
+					{newComment.length}/200
+				</div>
+
 				{
 					isLoading ? <div id={styles.loading} className="loadingContainer"><ImSpinner /></div> : <></>
 				}
@@ -112,8 +121,10 @@ export function Comments({ postID, setCommentsAmount }) {
 							</header>
 
 							<section>
+								<BsArrowReturnRight/>
+								
 								<div className={styles.data}>
-									<BsArrowReturnRight/>{ comment.content }							
+									{ comment.content }
 								</div>	
 							</section>
 

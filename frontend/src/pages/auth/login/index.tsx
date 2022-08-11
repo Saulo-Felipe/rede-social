@@ -1,35 +1,14 @@
-import { BsGithub } from "react-icons/bs";
 import { GoogleSignIn } from "../../../components/templates/auth/GoogleSignIn";
 import { EmailSignIn } from "../../../components/templates/auth/EmailSignIn";
 import Head from "next/head";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { useAuth } from "../../../hooks/useAuth";
+import { GithubSignIn } from "../../../components/templates/auth/GithubSignIn";
 
 import styles from './login.module.scss';
-import { toast } from "react-toastify";
-import { api } from "../../../services/api";
 
 
 export default function Login({ token, error }) {
-  const { signInGithub } = useAuth();
-
-  const [loading, setLoading] = useState(false);
-  
-  useEffect(() => {
-    if (token) {
-      signInGithub(setLoading, token);
-    } else if (error) {
-      onFailureGithubSignIn();
-    }
-  }, []);
-
-  function onFailureGithubSignIn() {
-    toast.error(error);
-  }
-
 
   return (
     <main className={styles.Main}>
@@ -41,18 +20,11 @@ export default function Login({ token, error }) {
         <hr />
 
         <GoogleSignIn />
-        
 
-        <div className={`${styles.authContainer} ${loading ? styles.disabled : null}`}>
-          <div
-            className={styles.content}
-            onClick={() => 
-              window.location.href = "https://github.com/login/oauth/authorize?client_id=483b40e3d6add2f61d5c&scope=user"}
-          >
-            { loading ? <div className="loadingContainer"><BsGithub /></div> : <BsGithub /> }
-            Github 
-          </div>
-        </div>
+        <GithubSignIn 
+          token={token}
+          error={error}
+        />
 
         <p><strong>Ou</strong></p>
 

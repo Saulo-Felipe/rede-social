@@ -8,7 +8,9 @@
 
   @media (max-width: 991px) {
     background: white;
+    margin: -1rem;
     padding: 1rem;
+    align-items: flex-start;
   }
 
 }
@@ -17,7 +19,7 @@
   background-color: white;
   min-height: 75vh;
   min-width: 40vw;
-
+  
   border: solid 1px var(--gray-1);
 
   padding: 2rem;
@@ -32,46 +34,6 @@
     height: max-content;
     padding-bottom: 10rem;
     border: solid 1px rgb(0, 0, 0, 0.5);
-    margin-top: -8rem;
+    padding: 2rem 1rem;
   }
 } 
-
-
-// Lembrar de remvoer depois 
-
-.authContainer {
-  display: flex;
-  justify-content: center;
-  padding: 1rem 0;
-
-  .content {
-    display: flex;
-    align-items: center;
-
-    width: 100%;
-    border: solid 1px rgba(0, 0, 0, 0.5);
-    padding: 0.5rem;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.438);
-    cursor: pointer;
-    transition: all 150ms;
-
-    color: var(--gray-4);
-
-    svg {
-      font-size: 1.6rem;
-      margin-right: 0.45rem;
-      color: black;
-    }
-
-    &:hover {
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.438);
-    }
-  }
-}
-
-.disabled {
-  opacity: 0.5;
-  .content {
-    cursor: not-allowed;
-  }
-}

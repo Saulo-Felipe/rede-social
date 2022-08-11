@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { api } from './services/api';
 
 
 
@@ -20,8 +19,6 @@ async function verifyToken(token: string) {
   
     const text = await response.text();
     const data = JSON.parse(text);
-
-    console.log("data:" ,data);
   
     return data;
     
@@ -34,16 +31,22 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('app-token') || "";
 
   const action = verifyToken(token).then((response: MiddlewareVerifyTokenBody) => {
-    if (response.success) {
-      return NextResponse.next();
-    } else {
+    const haveToken = response.success;
+
+    if (haveToken && req.url.indexOf("/auth") !== -1) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (!haveToken && req.url.indexOf("/auth") == -1) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
+
+    return NextResponse.next();
   });
 
   return action;
 }
 
 export const config = {
-  matcher: ["/", "/chat", "/profile/:userID*", "/search/:UserName*"],
+  matcher: ["/", "/chat", "/profile/:userID*", "/search/:UserName*", "/auth/login", "/auth/register"],
 };

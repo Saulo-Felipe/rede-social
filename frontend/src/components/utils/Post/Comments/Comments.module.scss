@@ -29,8 +29,12 @@
 				border-radius: 50%;
 				padding: 0.25rem;
 				transition: all 300ms;
-			}
+				margin-left: 0.5rem;
 
+				svg {
+					color: white;
+				}
+			}
 
 
 
@@ -44,6 +48,23 @@
 					outline: none;
 				}
 			}
+
+		}
+
+		.commentLimit {
+			font-size: 0.9rem;
+		}
+
+		.commentLimitOk {
+			color: green;
+		}
+
+		.commentLimitWarning {
+			color: gold;
+		}
+
+		.commentLimitFull {
+			color: red;
 		}
 
 		.notHaveComments {
@@ -55,7 +76,7 @@
 			justify-content: center;
 
 			svg {
-				font-size: 1.5rem
+				font-size: 1.5rem;
 			}
 		}
 
@@ -103,17 +124,20 @@
 			}
 
 			section {
-				.data {
-					//margin-left: calc(1.75rem + 0.5rem);
-					margin-left: calc(0.7rem);
-					display: flex;
-					line-break: anywhere;
+				margin-left: calc(0.7rem);
+				display: flex;
+				
+				svg {
+					opacity: 0.2;
+					margin-right: 0.5rem;
+					font-size: 1rem;
+				}
 
-					svg {
-						opacity: 0.2;
-						margin-right: 0.5rem;
-						font-size: 1rem;
-					}
+				.data {
+					line-break: anywhere;
+					max-width: calc(95% - 0.7rem);
+					overflow-y: hidden;
+					position: relative;
 				}				
 			}
 

@@ -57,8 +57,11 @@
 
   .firstTitle {
     font-size: 1.2rem;
-    text-align: right;
-
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    
     svg {
       font-size: 1.5rem;
     }
@@ -174,7 +177,6 @@
   display: flex;
   flex-direction: column-reverse;
 
-  border: solid 1px red;
 
   overflow-y: auto;
   &::-webkit-scrollbar-track {
@@ -251,7 +253,7 @@
   .messages {
     padding: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 
     .loadMoreMessages {
       text-align: center;

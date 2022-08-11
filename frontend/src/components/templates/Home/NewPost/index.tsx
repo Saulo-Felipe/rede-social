@@ -4,7 +4,6 @@ import { v4 as uuid } from "uuid";
 
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { RiImageAddFill } from "react-icons/ri";
-import { BiVideoPlus } from "react-icons/bi";
 
 import styles from "./NewPost.module.scss";
 import { useAuth } from "../../../../hooks/useAuth";
@@ -120,7 +119,7 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
         : <input 
           onFocus={() => setInputIsOpen(true)} 
           type={"text"} 
-          placeholder={"Digite alguma coisa..."} 
+          placeholder={"Escreva algo ou publique uma imagem..."} 
         />
       }
 
@@ -180,35 +179,39 @@ export function NewPost({ setIsLoading, getRecentPosts }) {
         ? 
           <div className={styles.previewContainer}>
             <div className={styles.bg} onClick={() => setPreviewFile(null)}>
-              <div className={styles.closeIconContainer}>
+            </div>
+
+            <div className={styles.content}>
+              <div className={styles.closeIconContainer} onClick={() => setPreviewFile(null)}>
                 <IoCloseCircleSharp />
               </div>
-            </div>
+              
+              <div className={styles.imageContainer}>
+                <img 
+                  alt={"preview"} 
+                  src={URL.createObjectURL(previewFile.file)}
+                />
+              </div>
 
-            <div className={styles.imageContainer}>
-              <img 
-                alt={"preview"} 
-                src={URL.createObjectURL(previewFile.file)}
-              />
-            </div>
+              <div className={styles.options}>
+                {
+                  selectedImages.map((item) => 
+                    <div 
+                      className={styles.aOption} 
+                      onClick={() => setPreviewFile(item)}
+                      key={item.id}
+                      style={
+                        previewFile.id === item.id 
+                        ? { transform: "scale(0.8)", border: "solid 1px var(--default-blue)" } 
+                        : {}
+                      }
+                    >
+                      <img src={URL.createObjectURL(item.file)} alt={"select option to view"} />
+                    </div>
+                  )
+                }
+              </div>
 
-            <div className={styles.options}>
-              {
-                selectedImages.map((item) => 
-                  <div 
-                    className={styles.aOption} 
-                    onClick={() => setPreviewFile(item)}
-                    key={item.id}
-                    style={
-                      previewFile.id === item.id 
-                      ? { transform: "scale(0.8)", border: "solid 1px var(--default-blue)" } 
-                      : {}
-                    }
-                  >
-                    <img src={URL.createObjectURL(item.file)} alt={"select option to view"} />
-                  </div>
-                )
-              }
             </div>
           </div>
         : <></>

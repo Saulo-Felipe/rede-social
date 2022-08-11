@@ -1,10 +1,12 @@
 import { MdOutlineMailOutline } from "react-icons/md";
-import { BsGithub } from "react-icons/bs";
 import { useState } from "react";
+import axios from "axios";
 import Link from "next/link";
+import Head from "next/head";
+import { GetServerSideProps } from "next";
 import { GoogleSignIn } from "../../../components/templates/auth/GoogleSignIn";
 import { EmailSignUp } from '../../../components/templates/auth/EmailSignUp';
-import Head from "next/head";
+import { GithubSignIn } from "../../../components/templates/auth/GithubSignIn";
 
 import styles from './register.module.scss';
 
@@ -27,13 +29,7 @@ export default function Register() {
 
               <GoogleSignIn />
 
-              <div className={styles.authContainer}>
-                <div
-                  className={styles.content}
-                >
-                  <BsGithub /> Github
-                </div>
-              </div>
+              <GithubSignIn />
 
               <div className={styles.authContainer}>
                 <div

@@ -8,7 +8,10 @@
 
   @media (max-width: 991px) {
     background: white;
-    padding: 1rem;
+    padding: 2rem 1rem;
+    border: solid 1px red;
+    margin: -1rem;
+    align-items: flex-start;
   }
 
 }
@@ -18,19 +21,17 @@
   min-width: 40vw;
   border: solid 1px var(--gray-1);
 
-
-  padding: 2rem 2rem;
+  padding: 2rem;
 
   hr {
     margin: 0.5rem 0 1rem 0;
   }
 
-  @media (max-width: 901px) {
+  @media (max-width: 991px) {
     width: 100%;
     height: max-content;
     padding-bottom: 10rem;
     border: solid 1px rgb(0, 0, 0, 0.5);
-    margin-top: -8rem;
   }
 
   footer {

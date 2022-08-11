@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../services/api";
 import { Comments } from "./Comments";
-import { AiOutlineLike, AiOutlineComment, AiOutlineDislike, AiFillLike, AiFillDislike } from "react-icons/ai";
+import { AiOutlineComment, AiOutlineDislike, AiOutlineLike, AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import Link from "next/link";
 import NextImage from "next/image";
@@ -11,6 +11,8 @@ import { isMobile } from "react-device-detect";
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import { BiDotsHorizontal } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
+import { IoClose } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 export interface PostBody {
   id: number;
@@ -18,40 +20,116 @@ export interface PostBody {
   created_on: string;
   fk_user_id: string;
   image_url: string;
-  dislikes_amount: number;
-  likes_amount: number;
+  dislikes: number;
+  likes: number;
   username: string;
   images: string;
 }
 
 interface PostProps {
   data: PostBody;
-  time: number | undefined;
   currentUserId: string;
 }
 
+interface LikeOrDislike {
+  image_url: string;
+  post_id: number;
+  user_id: string;
+  username: string;
+  like?: boolean;
+  dislike: boolean;
+}
 
-export function Post({ data: postInfo, time, currentUserId }: PostProps) {
-  const [loadingLike, setLoadingLike] = useState(true);
+
+export function Post({ data: postInfo, currentUserId }: PostProps) {
   const [showComments, setShowComments] = useState(false);
-  const [commentsAmount, setCommentsAmount] = useState(null);
-
-  const postWidthRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [allImages, setAllImages] = useState([]);
   const [currentCarouselImage, setCurrentCarouselImage] = useState(0);
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
   const [postIsDeleted, setPostIsDeleted] = useState<number>(0);
   const [deleteLoading, setDeleteLoading] = useState(false);
-
-  const [action, setAction] = useState({
-    isLike: false,
-    isDislike: false,
-    userAction: 0,
-    likeAmount: Number(postInfo.likes_amount),
-    dislikeAmount: Number(postInfo.dislikes_amount)
+  const [isLoading, setIsloading] = useState({
+    like: false,
+    dislike: false
+  });
+  const [isActionType, setIsActionType] = useState({
+    like: false,
+    dislike: false
   });
 
+  const [likes, setLikes] = useState<LikeOrDislike[]>([]);
+  const [dislikes, setDislikes] = useState<LikeOrDislike[]>([]);
+
+  const postWidthRef = useRef(null);
+  const previewActions = organizePreviews();
+
+
+  useEffect(() => { // preload post wimages
+    renderPreloadImages();
+    getActions();
+  }, []);
+
   useEffect(() => {
+    verifyUserAction();
+  }, [likes, dislikes]);
+
+  useEffect(() => { // Disable overflow to page body
+    if (previewImage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [previewImage]);
+
+  
+  function organizePreviews() {
+    let arr: LikeOrDislike[] = [];
+
+    for (let c = 0; c < likes.length && c < 2; c++) {
+      arr.push({ ...likes[c], like: true });
+    }
+
+    for (let c = 0; c < 2 && c < dislikes.length; c++) {
+      arr.push({ ...dislikes[c], dislike: true });
+    }
+
+    return arr;
+  }
+
+
+  function verifyUserAction() {
+    let type = 0;
+
+    for (let c = 0; c < likes.length; c++) {
+      if (likes[c].user_id == currentUserId) {
+        type = 1;
+        break;
+      }
+    }
+
+    for (let c = 0; c < dislikes.length; c++) {
+      if (dislikes[c].user_id == currentUserId) {
+        type = 2;
+        break;
+      }
+    }
+
+    return setIsActionType({ like: type == 1, dislike: type == 2 });
+  }
+
+  async function getActions() {
+    setIsloading({ like: true, dislike: true });
+    var { data } = await api().post("/posts/actions", { postID: postInfo.id });
+    setIsloading({ like: false, dislike: false });
+    
+    if (data.success) {
+      setLikes([ ...data.likes ]);
+      setDislikes([ ...data.dislikes ]);
+    }
+  }
+
+  function renderPreloadImages() {
     let images = postInfo.images?.split(",") || [];
 
     if (images.length > 0) {
@@ -62,30 +140,14 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
           <img 
             src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/post/"+images[c]}
             style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
+            onClick={() => setPreviewImage(process.env.NEXT_PUBLIC_SERVER_URL+"/images/post/"+images[c])}
           />
         );
       }
   
       setAllImages([ ...preloadImages ]);
     }
-  }, []);
-
-  useEffect(() => {
-    setLoadingLike(true);
-
-    setTimeout(async () => {
-      const {data} = await api().get(`/posts/user-liked-post/${postInfo.id}/${currentUserId}`);
-
-      setLoadingLike(false);
-
-      if (data.type === "like") {
-        setAction({ ...action, isLike: true, userAction: 1 });
-      } else if (data.type === "dislike") {
-        setAction({ ...action, isDislike: true, userAction: 2 });
-      }
-
-    }, time);
-  }, []);
+  }
 
   function nextCarousel() {
     if (currentCarouselImage < allImages.length-1) {
@@ -96,164 +158,6 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
   function backCarousel() {
     if (currentCarouselImage > 0) {
       setCurrentCarouselImage(currentCarouselImage-1);
-    }
-  }
-
-  function handleLike(type: string) {
-    if (!loadingLike) {
-      if (type === "mouseEnter") {
-        setAction({ ...action, isLike: true });
-      }
-      else if (action.userAction !== 1) {
-        setAction({ ...action, isLike: false });
-      }
-    }
-  }
-
-  function handleDislike(type: string) {
-    if (!loadingLike) {
-
-      if (type === "mouseEnter") {
-        setAction({ ...action, isDislike: true });
-      }
-      else if (action.userAction != 2) {
-        setAction({ ...action, isDislike: false });
-      }
-    }
-  }
-
-  async function handleNewLike() {
-    if (!loadingLike) {
-      console.log("New like")
-      const oldUserAction = action.userAction;
-
-      if (action.userAction == 1) { // Remove like
-        setAction({
-          isLike: false,
-          isDislike: false,
-          userAction: 0,
-          likeAmount: action.likeAmount-1,
-          dislikeAmount: action.dislikeAmount
-        });
-
-        const { data } = await api().post(`/posts/delete-action`, {
-          userID: currentUserId,
-          postID: postInfo.id,
-          action: "Like"
-        });
-
-        console.log("remove Like aprovado")
-
-        if (!data.success) {
-          setAction({
-            isLike: true,
-            isDislike: false,
-            userAction: oldUserAction,
-            likeAmount: action.likeAmount+1,
-            dislikeAmount: action.dislikeAmount
-          });
-
-          alert("Ocorreu um erro ao remover curtida")
-        }
-
-      } else { // Add like
-        setAction({
-          isLike: true,
-          isDislike: false,
-          userAction: 1,
-          likeAmount: action.likeAmount+1,
-          dislikeAmount: oldUserAction == 2 ? action.dislikeAmount-1 : action.dislikeAmount
-        });
-
-        const { data } = await api().put("/posts/new-action", {
-          userID: currentUserId,
-          postID: postInfo.id,
-          action: "Like",
-          deleteOthers: oldUserAction == 2
-        });
-
-        console.log("Like aprovado");
-
-        if (!data.success) { // Error
-          setAction({
-            isLike: false,
-            isDislike: oldUserAction == 2,
-            userAction: oldUserAction,
-            likeAmount: action.likeAmount-1,
-            dislikeAmount: oldUserAction == 2 ? action.dislikeAmount+1 : action.dislikeAmount
-          });
-
-          alert("Erro ao adicionar curtida");
-        }
-      }
-    }
-  }
-
-  async function handleNewDislike() {
-    if (!loadingLike) {
-      console.log("New dislike");
-      const oldUserAction = action.userAction;
-
-      if (action.userAction == 2) { // Remove dislike
-        setAction({
-          isLike: false,
-          isDislike: false,
-          userAction: 0,
-          likeAmount: action.likeAmount,
-          dislikeAmount: action.dislikeAmount-1
-        });
-
-        const { data } = await api().post(`/posts/delete-action`, {
-          userID: currentUserId,
-          postID: postInfo.id,
-          action: "Dislike"
-        });
-
-        console.log("remove Dislike aprovado")
-
-        if (!data.success) { // error
-          setAction({
-            isLike: false,
-            isDislike: true,
-            userAction: oldUserAction,
-            likeAmount: action.likeAmount,
-            dislikeAmount: action.dislikeAmount+1
-          });
-
-          alert("Ocorreu um erro ao remover curtida")
-        }
-
-      } else { // Add dislike
-        setAction({
-          isLike: false,
-          isDislike: true,
-          userAction: 2,
-          likeAmount: oldUserAction == 1 ? action.likeAmount-1 : action.likeAmount,
-          dislikeAmount: action.dislikeAmount+1
-        })
-
-        const { data } = await api().put("/posts/new-action", {
-          userID: currentUserId,
-          postID: postInfo.id,
-          action: "Dislike",
-          deleteOthers: oldUserAction == 1
-        });
-
-        console.log("Dislike aprovado")
-
-        if (!data.success) {
-          setAction({
-            isLike: oldUserAction == 1,
-            isDislike: false,
-            userAction: oldUserAction,
-            likeAmount: oldUserAction == 1 ? action.likeAmount+1 : action.likeAmount,
-            dislikeAmount: action.dislikeAmount-1
-          })
-
-          alert("Erro ao adicionar curtida")
-        }
-      }
-
     }
   }
 
@@ -280,9 +184,45 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
         setPostIsDeleted(2);
       }, 3000)
     } else {
-      alert("Erro ao deletar post");
+      toast.error("Erro ao deletar post");
     }
   }
+
+
+  async function handleNewLike() {
+    if (!isLoading.like && !isLoading.dislike) {
+      if (isActionType.like) { // remove live
+        setIsloading({ ...isLoading, like: true });
+        await api().delete(`/posts/like/${currentUserId}/${postInfo.id}`);
+        setIsloading({ ...isLoading, like: false });
+
+      } else { // new like
+        setIsloading({ ...isLoading, like: true });
+        await api().put(`/posts/like/${currentUserId}/${postInfo.id}`);
+        setIsloading({ ...isLoading, like: false });
+
+      }
+      getActions();
+    }
+  }
+
+  async function handleNewDislike() {
+    if (!isLoading.dislike && !isLoading.like) {
+      if (isActionType.dislike) { // remove dislike
+        setIsloading({ ...isLoading, dislike: true });
+        await api().delete(`/posts/dislike/${currentUserId}/${postInfo.id}`);
+        setIsloading({ ...isLoading, dislike: false });
+
+      } else { // new dislike
+        setIsloading({ ...isLoading, dislike: true });
+        await api().put(`/posts/dislike/${currentUserId}/${postInfo.id}`);
+        setIsloading({ ...isLoading, dislike: false });
+
+      }
+      getActions();
+    }
+  }
+
 
   if (postIsDeleted === 0)
     return (
@@ -291,6 +231,15 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
         className={styles.post} 
         onClick={(e) => onClickOutsideDropdown(e.target, e)}
       >
+        {
+          previewImage 
+          ? 
+            <div className={styles.previewContainer} onClick={() => setPreviewImage(null)}>
+              <img src={previewImage} />
+              <IoClose />
+            </div>
+          : <></>
+        }
         <header>
           <div className={styles.profileInfo}>
             <Link href={`/profile/${postInfo.fk_user_id}`}>
@@ -348,32 +297,30 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
             {
               allImages.length > 0
               ? (
-                  <>
-                    <div className={styles.imageContainer}>
-                      {
-                        allImages.length > 1 && currentCarouselImage < allImages.length-1
-                        ? <div 
-                          className={`${styles.arrowRight} ${styles.arrow}`}
-                          onClick={nextCarousel}
-                        >
-                          <MdOutlineArrowForwardIos /></div>
-                        : <></>
-                      }
+                  <div className={styles.imageContainer}>
+                    {
+                      allImages.length > 1 && currentCarouselImage < allImages.length-1
+                      ? <div 
+                        className={`${styles.arrowRight} ${styles.arrow}`}
+                        onClick={nextCarousel}
+                      >
+                        <MdOutlineArrowForwardIos /></div>
+                      : <></>
+                    }
 
-                      {
-                        allImages.length > 1 && currentCarouselImage > 0
-                        ? 
-                          <div 
-                            className={`${styles.arrowLeft} ${styles.arrow}`}
-                            onClick={backCarousel}
-                          ><MdOutlineArrowBackIos /></div>
-                        : <></>
-                      }
-          
-                      { allImages[currentCarouselImage] }
+                    {
+                      allImages.length > 1 && currentCarouselImage > 0
+                      ? 
+                        <div 
+                          className={`${styles.arrowLeft} ${styles.arrow}`}
+                          onClick={backCarousel}
+                        ><MdOutlineArrowBackIos /></div>
+                      : <></>
+                    }
+        
+                    { allImages[currentCarouselImage] }
 
-                    </div>
-                  </>
+                  </div>
                 )
               : <></>
             }
@@ -393,67 +340,61 @@ export function Post({ data: postInfo, time, currentUserId }: PostProps) {
 
         <footer>
           <div>
-            <div className={styles.like}
-              onMouseEnter={() => handleLike("mouseEnter")}
-              onMouseLeave={() => handleLike("mouseLeave")}
-              onClick={handleNewLike}
-            >
-              {
-                loadingLike
-                ? (
-                  <div style={{ color: "gray" }}>
-                    <AiOutlineLike style={{ color: "gray" }} /> 0
-                  </div>
-                ) : (
-                  <>
-                    { action.isLike ? <AiFillLike  /> : <AiOutlineLike /> }
-                    { action.likeAmount }
-                  </>
-                )
-              }
+            <div className={`${styles.like} ${isLoading.like ? styles.disabled : ""}`} onClick={handleNewLike}>
+              { isActionType.like ? <AiFillLike /> : <AiOutlineLike /> } { likes.length }
             </div>
 
-            <div
-              className={styles.dislike}
-              onMouseEnter={() => handleDislike("mouseEnter")}
-              onMouseLeave={() => handleDislike("mouseLeave")}
+            <div 
+              className={`${styles.dislike} ${isLoading.dislike ? styles.disabled : ""}`} 
               onClick={handleNewDislike}
             >
-              {
-                loadingLike
-                ? (
-                  <div style={{ color: "gray" }}>
-                    <AiFillDislike style={{ color: "gray" }} /> 0
-                  </div>
-                ) : (
-                  <>
-                    { action.isDislike ? <AiFillDislike  /> : <AiOutlineDislike /> }
-                    { action.dislikeAmount }
-                  </>
-                )
-              }
+              { isActionType.dislike ? <AiFillDislike /> : <AiOutlineDislike /> } { dislikes.length }
             </div>
 
             <div className={styles.comments} onClick={() => setShowComments(showComments == false)}>
-              <AiOutlineComment /> Comentários { commentsAmount == null ? "" : "("+commentsAmount+")" }
+              <AiOutlineComment /> Comentários 
             </div>
           </div>
 
           <div className={styles.publicationDate}>
-            {
-              postInfo.created_on.replace(",", "/").replace(",", "/").replace(",", " às " )
-            }
+            { postInfo.created_on }
           </div>
         </footer>
+        <div className={styles.previewActions}>
+          <div className={styles.userImages}>
+            {
+              previewActions.map((action) => 
+                <div key={action.user_id} style={{borderColor: action.like ? "blue" : "red" }} className={styles.previewImage}><img src={action.image_url}/></div>
+              )
+            }
+          </div>
 
-        {
-          showComments
-          ? <Comments
-              setCommentsAmount={setCommentsAmount}
-              postID={postInfo.id}
-            />
-          : <></>
-        }
+          <div className={styles.usernamesPreview}>
+            { previewActions.length > 0 ? (
+                <>
+                  {previewActions.map(
+                    (action, index) =>
+                      <span key={action.user_id}>
+                        <Link href={`/profile/${action.user_id}`}>
+                        { action.username?.split(" ")[0] + (index+1 < previewActions.length ? ", " : "") } 
+                        </Link>
+                      </span>
+                  )}
+                  { previewActions.length > 1 ? 
+                    likes.length+dislikes.length > 4 ? "e outras "+(likes.length+dislikes.length-4)+" reagiram" : " reagiram" 
+                  : " reagiu" }
+                </>
+              )
+              : ""
+            }
+          </div>
+        </div>
+
+        { showComments ? (
+         <Comments
+            postID={postInfo.id}
+          />
+        ) : ("")}
 
       </div>
     );

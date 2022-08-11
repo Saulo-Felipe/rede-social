@@ -12,13 +12,6 @@ import Head from "next/head";
 
 import styles from "./chat.module.scss";
 
-export interface Message {
-  googleID: string;
-  image: string;
-  content: string;
-  createdOn: string;
-  isMy: boolean;
-}
 
 export default function Chat() {
   const { allUsers, sendMessage, allMessages, getIndexOfMessage, isLoadingMessages, waitNewMessage } = useSocket();
@@ -33,10 +26,6 @@ export default function Chat() {
       setNewMessage("");
     }
   }
-
-  // useEffect(() => {
-  //   messagesContainerRef.current.scrollTo(0, 999);
-  // }, []);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -66,6 +55,7 @@ export default function Chat() {
       >
 
         <h2 className={styles.firstTitle}>
+          Chat em tempo real
           { isMobile ? <IoMdClose onClick={() => setMenuMobileIsOpen(false)} /> : null}
         </h2>
 
@@ -169,13 +159,6 @@ export default function Chat() {
 
         <div className={styles.messages} ref={messagesContainerRef}>
           {
-            allMessages.length > 0
-            ? <div onClick={() => getIndexOfMessage()} className={styles.loadMoreMessages}>Carregar mais messages <MdUpdate /></div>
-            : <></>
-          }
-          { isLoadingMessages ? <div className={`loadingContainer`}><ImSpinner2 /></div> : "" }
-
-          {
             allMessages.map((message, index) =>
               <div
                 key={index}
@@ -201,6 +184,15 @@ export default function Chat() {
               </div>
             )
           }
+
+          { isLoadingMessages ? <div className={`loadingContainer`}><ImSpinner2 /></div> : "" }          
+
+          {
+            allMessages.length > 0
+            ? <div onClick={() => getIndexOfMessage()} className={styles.loadMoreMessages}>Carregar mais messages <MdUpdate /></div>
+            : <></>
+          }
+          
         </div>
       </section>
     </main>

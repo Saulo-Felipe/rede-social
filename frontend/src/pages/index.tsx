@@ -13,7 +13,7 @@ export default function Home() {
   const [pageIndex, setPageIndex] = useState(0);
   const [finishPosts, setFinishPosts] = useState(false);
 
-  async function getRecentPosts(reset: boolean) {
+  async function getRecentPosts(reset: boolean) { // if reset all posts after new post;
     setIsLoading(true);
 
     let { data } = await api().get(`/posts/recent/${reset ? 0 : pageIndex}`);

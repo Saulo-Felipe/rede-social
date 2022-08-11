@@ -209,7 +209,6 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
                 key={post.id}
                 data={post}
                 currentUserId={myUser?.id}
-                time={100}
               />
             )
           )

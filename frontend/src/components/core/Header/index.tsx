@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Router from "next/router";
 import { IoMdExit } from "react-icons/io";
@@ -18,6 +18,7 @@ export function Header() {
   const [menuMobileIsOpen, setMenuMobileIsOpen] = useState(false);
   const [searchContent, setSearchContent] = useState("");
   const { isAuthenticated, user, logOut } = useAuth();
+  const inputSearchRef = useRef(null);
 
   useEffect(() => {
     if (menuMobileIsOpen) {
@@ -26,6 +27,11 @@ export function Header() {
       document.body.style.overflow = "auto";
     }
   }, [menuMobileIsOpen]);
+
+  useEffect(() => {
+    if (inputSearchRef.current && typeof document !== "undefined")
+      inputSearchRef.current.value = "";
+  }, [Router.pathname]);
 
   function goToSearch() {
     if (searchContent.length > 0) {
@@ -59,6 +65,7 @@ export function Header() {
 
             <input 
               id="search_user" 
+              ref={inputSearchRef}
               value={searchContent}
               type={"text"} 
               placeholder={"Pesquise um usuário..."} 

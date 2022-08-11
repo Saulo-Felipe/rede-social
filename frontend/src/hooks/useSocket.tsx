@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { api } from "../services/api";
 import { io } from "socket.io-client";
-import { Message } from "../pages/chat";
 import { useAuth } from "./useAuth";
 import { getCurrentDate } from "../components/templates/Home/NewPost";
 
-export const SocketContext = createContext<ReturnValue>({} as ReturnValue);
+
 
 export interface User {
   id: string;
@@ -31,6 +30,18 @@ interface serverUserObj {
   }
 }
 
+interface Message {
+  googleID: string;
+  image: string;
+  content: string;
+  createdOn: string;
+  isMy: boolean;
+  id: number;
+}
+
+
+
+export const SocketContext = createContext<ReturnValue>({} as ReturnValue);
 
 export function SocketProvider({ children }) {
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -108,12 +119,12 @@ export function SocketProvider({ children }) {
     console.log("[sending] :", content);
     setWaitNewMessage(true);
     
-    socketRef.current.emit("new-message", user?.id, content, (response) => {
+    socketRef.current.emit("new-message", user?.id, content, (response: boolean) => {
       setWaitNewMessage(false);
     });
   }
 
-  function receivedMessage(googleID: string, message: string, createdOn: string) {
+  function receivedMessage(googleID: string, message: string, createdOn: string, messageID: number) {
     for (let c = 0; c < allUsersRef.current.length; c++) {
       if (allUsersRef.current[c].id === googleID) {
 
@@ -122,11 +133,12 @@ export function SocketProvider({ children }) {
           image: allUsersRef.current[c].image_url,
           createdOn,
           googleID,
-          isMy: googleID === user?.id
+          isMy: googleID === user?.id,
+          id: messageID
         }
 
 
-        setAllMessages([ ...allMessagesRef.current, { ...newMessageData } ]);
+        setAllMessages([ { ...newMessageData }, ...allMessagesRef.current ]);
       }
     }
   }
@@ -156,9 +168,15 @@ export function SocketProvider({ children }) {
       if (data.success) {
         let newMessages: Message[] = [];
         let theUsers = users ? users : allUsers;
-
+        
+        principalLoop:
         for (let c = 0; c < data.messages.length; c++) {
           let currentMsg = data.messages[c];
+  
+          for (let j = 0; j < allMessages.length; j++) {
+            if (allMessages[j].id === currentMsg.id)
+              continue principalLoop;
+          }
 
           for (let i = 0; i < theUsers.length; i++) {
             if (currentMsg.user_id === theUsers[i].id) {
@@ -167,14 +185,15 @@ export function SocketProvider({ children }) {
                 createdOn: currentMsg.created_on,
                 googleID: currentMsg.user_id,
                 isMy: currentMsg.user_id === user.id,
-                image: theUsers[i].image_url
+                image: theUsers[i].image_url,
+                id: currentMsg.id
               });
               break;
             }
           }
         }
 
-        setAllMessages([  ...newMessages, ...allMessages ]);
+        setAllMessages([ ...allMessages, ...newMessages ]);
         setPaginationIndex(paginationIndex+1);
         setIsLoadingMessages(false);
       }
@@ -202,9 +221,10 @@ export function SocketProvider({ children }) {
 
       // --------| Messages |----------
 
-      socket.on("received-message", (googleID, message, createdOn) => {
+      socket.on("received-message", ({ googleID, message, createdOn, messageID }) => {
         console.log("[reiceved message]: ", message);
-        receivedMessage(googleID, message, createdOn);
+
+        receivedMessage(googleID, message, createdOn, messageID);
       });
 
     }

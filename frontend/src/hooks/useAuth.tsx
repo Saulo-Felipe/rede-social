@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState<User>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  
+
   useEffect(() => {
     if (user) {
       setIsAuthenticated(true);
@@ -75,14 +75,14 @@ export function AuthProvider({ children }) {
     createConnection.interceptors.response.use(
       response => {
         return response
-      }, 
+      },
       error => {
         if (error.response.data?.logout) {
           toast.warning("Autenticação expirada. Faça login para continuar.");
           destroyCookie(null, "app-token", { path: "/" });
           window.location.pathname = "/auth/login";
           Router.push("/auth/login"); // If the first redirect doest no work
-        } 
+        }
         if (error.response.data?.error) {
           toast.error(error.response.data.message);
         }
@@ -92,8 +92,8 @@ export function AuthProvider({ children }) {
     console.log("Renderizou [useAuth]");
 
     api().post("/auth/recover-user-information").then(response => {
-      if (response.data.user) { 
-        setUser(response.data.user);
+      if (response.data.user) {
+        setUser(response?.data?.user);
       }
     });
   }, []);
@@ -114,14 +114,14 @@ export function AuthProvider({ children }) {
       });
 
       setUser(data.user);
-      
+
       setTimeout(() => Router.push("/"), 1500);
     }
   }
 
   async function signInEmail({ email, password }: LoginEmailInfo) {
     toast.loading("Carregando", { autoClose: false });
-    
+
     const { data } = await api().post("/auth/login", {
       email, password
     });
@@ -143,11 +143,11 @@ export function AuthProvider({ children }) {
 
       toast.success("Login realizado com sucesso! Redirecionando...");
 
-      setTimeout(() => Router.push("/"), 1500);
+      Router.push("/");
     }
   }
 
-  
+
   async function signInGoogle(response) {
     const { data }: GoogleOAuthUserInfo = await axios.get(
       `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
@@ -198,8 +198,6 @@ export function AuthProvider({ children }) {
         },
       });
 
-      console.log("Userinfo: ", userInfo);
-
       const {data: response} = await api().post("/auth/signin/Github", {
         email: data[0].email,
         name: userInfo.login,
@@ -209,23 +207,21 @@ export function AuthProvider({ children }) {
         bio: userInfo.bio
       });
 
-      console.log(response);
-
       if (response.success) {
         setCookie(null, "app-token", response.token, {
           maxAge: 60 * 60 * 3, // 1 hour
           path: "/"
         });
-  
+
         toast.success("Conectado! redirecionando...", {
           autoClose: 1500
         });
-  
+
         setUser({ ...response.user });
-  
+
         setTimeout(() => Router.push("/") , 1500);
       }
-      
+
     } catch(e) {
       console.log("Err: ", e?.response?.data?.message);
       console.log(e);
@@ -244,8 +240,8 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
+    <AuthContext.Provider value={{
+      isAuthenticated,
       user,
       registerWithEmail,
       signInEmail,
