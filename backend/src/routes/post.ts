@@ -230,11 +230,18 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
         WHERE id = ${Number(postID)}
       `);
       
+      // Delete actions
       await sequelize.query(`
-        DELETE FROM "LikeAndDislike" 
-        WHERE fk_post_id = ${Number(postID)} 
+        DELETE FROM likes 
+        WHERE post_id = ${Number(postID)}
       `);
-  
+
+      await sequelize.query(`
+        DELETE FROM dislikes 
+        WHERE post_id = ${Number(postID)}
+      `);    
+      
+      // delete post
       await sequelize.query(`
         DELETE FROM "Post" 
         WHERE id = ${Number(postID)}

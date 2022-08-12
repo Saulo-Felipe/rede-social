@@ -88,6 +88,12 @@
               
               position: relative;
               top: -3.5rem;
+
+              img {
+                width: 6rem;
+                height: 6rem;
+                object-fit: cover;
+              }
             }
           }
         }

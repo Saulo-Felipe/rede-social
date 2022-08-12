@@ -139,7 +139,7 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
             <div className={styles.containInfo}>
               <div className={styles.userPicture}>
                 <div className={styles.profileImageContainer}>
-                  <img width={"110%"} height={"110%"} src={user.image_url} />
+                  <img src={user.image_url} alt={"profile"} />
                 </div>  
               </div>
 

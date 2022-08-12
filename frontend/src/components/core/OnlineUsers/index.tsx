@@ -43,8 +43,6 @@ export function OnlineUsers() {
                       <img
                         alt={"user profile"}
                         src={aUser.image_url}
-                        width={"100%"}
-                        height={"100%"}
                       />
                     </div>
 

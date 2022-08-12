@@ -105,9 +105,8 @@ export function Comments({ postID }) {
 									<a>
 										<div className={styles.imageContainer}>
 											<img 
-												width={"100%"} 
-												height={"100%"} 
 												src={comment.image_url}
+												alt={"comment user"}
 											/>
 										</div>
 

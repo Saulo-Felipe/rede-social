@@ -69,8 +69,7 @@ export default function Chat() {
                     <div className={styles.imageContainer}>
                       <img
                         src={user.image_url}
-                        width={"100%"}
-                        height={"100%"}
+                        alt={"user profile chat"}
                       />
 
                       <span
@@ -98,8 +97,7 @@ export default function Chat() {
                     <div className={styles.imageContainer}>
                       <img
                         src={user.image_url}
-                        width={"100%"}
-                        height={"100%"}
+                        alt={"chat user"}
                       />
 
                       <span
@@ -178,7 +176,7 @@ export default function Chat() {
                 </div>
 
                 <div className={styles.imageContainer}>
-                  <img src={message.image} width={"100%"} height={"100%"} />
+                  <img src={message.image} alt={"messages user profile"} />
                 </div>
 
               </div>

@@ -51,9 +51,7 @@ export function Header() {
                   src={"/images/logo.png"}
                   className={styles.logotipoImg}
                   alt={"profile"}
-                  width={"100%"}
-                  height={"100%"}
-                />                
+                />
               </div>
             </a>
           </Link>
@@ -63,19 +61,19 @@ export function Header() {
               <BiSearch />
             </label>
 
-            <input 
-              id="search_user" 
+            <input
+              id="search_user"
               ref={inputSearchRef}
               value={searchContent}
-              type={"text"} 
-              placeholder={"Pesquise um usuário..."} 
+              type={"text"}
+              placeholder={"Pesquise um usuário..."}
               onChange={({target}) => setSearchContent(target.value)}
               onKeyPress={event => event.key === "Enter" ? goToSearch() : null}
             />
 
             <div className={styles.searchIconContainer}>
-              <button 
-                disabled={searchContent.length === 0} 
+              <button
+                disabled={searchContent.length === 0}
                 onClick={goToSearch}
               >Pesquisar</button>
             </div>
@@ -105,7 +103,7 @@ export function Header() {
               </>
             ) : ( // Desktop version
               <>
-                <div 
+                <div
                   className={styles.userData}
                 >
                   <div
@@ -127,17 +125,15 @@ export function Header() {
                         </div>
                       </div>
                       :<></>
-                    }                    
+                    }
                   </div>
 
                   <div className={styles.username}>{user?.name}</div>
 
                   <div className={styles.userPicture}>
-                    <img 
-                      alt={"user: "+user}
-                      src={user?.picture} 
-                      width={"100%"}
-                      height={"100%"}
+                    <img
+                      alt={"user: "+user.name}
+                      src={user?.picture}
                     />
                   </div>
                 </div>

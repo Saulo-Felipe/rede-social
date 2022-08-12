@@ -26,8 +26,6 @@ export function MobileMenu({ setMenuMobileIsOpen, menuMobileIsOpen }: MobileMenu
               <img 
                 alt={"user profile"}
                 src={user?.picture} 
-                width={"100%"}
-                height={"100%"}
               />
             </div>
 

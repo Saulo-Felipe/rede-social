@@ -2,17 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../services/api";
 import { Comments } from "./Comments";
 import { AiOutlineComment, AiOutlineDislike, AiOutlineLike, AiFillLike, AiFillDislike } from "react-icons/ai";
-
 import Link from "next/link";
-import NextImage from "next/image";
-
-import styles from "./Post.module.scss";
 import { isMobile } from "react-device-detect";
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import { BiDotsHorizontal } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
+
+import styles from "./Post.module.scss";
+import { ActionModal } from "./ActionModal";
 
 export interface PostBody {
   id: number;
@@ -31,7 +30,7 @@ interface PostProps {
   currentUserId: string;
 }
 
-interface LikeOrDislike {
+export interface LikeOrDislike {
   image_url: string;
   post_id: number;
   user_id: string;
@@ -62,7 +61,8 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
   const [dislikes, setDislikes] = useState<LikeOrDislike[]>([]);
 
   const postWidthRef = useRef(null);
-  const previewActions = organizePreviews();
+  const previewActions = organizeActionsPreview();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
 
   useEffect(() => { // preload post wimages
@@ -83,15 +83,27 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
   }, [previewImage]);
 
   
-  function organizePreviews() {
+  function organizeActionsPreview() {
     let arr: LikeOrDislike[] = [];
 
-    for (let c = 0; c < likes.length && c < 2; c++) {
-      arr.push({ ...likes[c], like: true });
-    }
-
-    for (let c = 0; c < 2 && c < dislikes.length; c++) {
-      arr.push({ ...dislikes[c], dislike: true });
+    if (likes.length > dislikes.length) {
+      for (let c = 0; c < likes.length && arr.length < 4; c++) {
+        arr.push({ ...likes[c], like: true });
+  
+        for (let i = c; c < dislikes.length && arr.length < 4; i++) {
+          arr.push({ ...dislikes[i], dislike: true });
+          break;
+        }
+      }
+    } else {
+      for (let c = 0; c < dislikes.length && arr.length < 4; c++) {
+        arr.push({ ...dislikes[c], dislike: true });
+  
+        for (let i = c; i < likes.length && arr.length < 4; i++) {
+          arr.push({ ...likes[i], like: true });
+          break;
+        }
+      }
     }
 
     return arr;
@@ -231,6 +243,13 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
         className={styles.post} 
         onClick={(e) => onClickOutsideDropdown(e.target, e)}
       >
+
+        <ActionModal
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={setModalIsOpen}
+          postId={postInfo.id}
+        />
+
         {
           previewImage 
           ? 
@@ -245,11 +264,9 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
             <Link href={`/profile/${postInfo.fk_user_id}`}>
               <a>
                 <div className={styles.profilePictureContainer}>
-                  <NextImage
+                  <img
                     alt={"user profile"}
                     src={postInfo.image_url}
-                    width={"100%"}
-                    height={"100%"}
                   />
                 </div>
 
@@ -364,7 +381,9 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
           <div className={styles.userImages}>
             {
               previewActions.map((action) => 
-                <div key={action.user_id} style={{borderColor: action.like ? "blue" : "red" }} className={styles.previewImage}><img src={action.image_url}/></div>
+                <div key={action.user_id} style={{borderColor: action.like ? "blue" : "red" }} className={styles.previewImage}>
+                  <img src={action.image_url}/>
+                </div>
               )
             }
           </div>
@@ -381,8 +400,13 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
                       </span>
                   )}
                   { previewActions.length > 1 ? 
-                    likes.length+dislikes.length > 4 ? "e outras "+(likes.length+dislikes.length-4)+" reagiram" : " reagiram" 
-                  : " reagiu" }
+                    likes.length+dislikes.length > 4 ? " e outras "+(likes.length+dislikes.length-4)+" reagiram." : " reagiram" 
+                    : " reagiu." 
+                  }
+                  <span 
+                    className={styles.seeAll}
+                    onClick={() => setModalIsOpen(true)}
+                  >ver todos</span>
                 </>
               )
               : ""

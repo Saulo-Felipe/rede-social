@@ -66,13 +66,12 @@ section.customization {
         margin: 0.6rem  1rem 0.5rem 1rem;
         width: 6rem;
         height: 6rem;
-        display: flex;
         overflow: hidden;
 
         img {
-          border-radius: 50%;
-          width: 100%;
-          height: 100%;
+          width: 6rem;
+          height: 6rem;  
+          object-fit: cover;
         }
       }
     }

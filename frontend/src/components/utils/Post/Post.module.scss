@@ -1,5 +1,5 @@
 .title {
-  margin: 3rem 0 1rem;  
+  margin: 3rem 0 1rem;
 
 }
 
@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     z-index: 99;
-    
+
     img {
       max-width: 90vw;
       max-height: 90vh;
@@ -43,7 +43,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
     .profileInfo {
       width: 100%;
 
@@ -56,22 +56,24 @@
 
       .profilePictureContainer {
         border-radius: 50%;
-    
+
         height: 2rem;
         width: 2rem;
-    
+
         display: flex;
         align-items: center;
         justify-content: center;
-    
+
         overflow: hidden;
         margin-right: 0.75rem;
-    
+
         img {
-          border-radius: 50%;
+          height: 2rem;
+          width: 2rem;
+          object-fit: cover;
         }
       }
-    
+
       .username {
         font-size: 1rem;
         font-weight: 400;
@@ -120,7 +122,7 @@
     }
 
   }
-  
+
   > hr {
     margin: 1rem 0;
   }
@@ -139,7 +141,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       .imageContainer {
         height: max-content;
         width: max-content;
@@ -159,14 +161,14 @@
           position: absolute;
 
           box-shadow: 0 0 10px rgb(0, 0, 0, 0.5);
-  
+
           width: 2rem;
           height: 2rem;
-  
+
           display: flex;
           align-items: center;
           justify-content: center;
-  
+
           font-size: 1rem;
           transition: all 200ms;
 
@@ -217,7 +219,7 @@
     background-color: #f2f7ff;
     padding: 0.75rem;
     border-radius: 0.5rem;
-    
+
     > div:nth-child(1) {
       display: flex;
       align-items: center;
@@ -229,19 +231,19 @@
       font-size: 0.85rem;
       text-align: right;
     }
-    
+
     .like, .dislike {
       transition: all 400ms;
       opacity: 0.8;
       cursor: pointer;
       margin-right: 1rem;
-      
+
       display: flex;
-      align-items: center;  
+      align-items: center;
 
       > div {
         display: flex;
-        align-items: center;        
+        align-items: center;
       }
 
       &:hover {
@@ -295,7 +297,7 @@
     }
 
   }
-  
+
   .previewActions {
     padding-left: 0.5rem;
     display: flex;
@@ -316,20 +318,29 @@
         border: solid 2px;
         border-radius: 50%;
         margin-right: -0.6rem;
-        
+        overflow: hidden;
+
         img {
-          max-width: 100%;
-          max-height: 100%;
-          border-radius: 50%;
+          width: 1.5rem;
+          height: 1.5rem;
+          object-fit: cover;
         }
       }
     }
 
     .usernamesPreview {
       margin-left: 0.5rem;
-      
+
       span {
         font-weight: 500;
+      }
+
+      .seeAll {
+        font-weight: 400;
+        color: var(--default-blue);
+        margin-left: 0.3rem;
+        text-decoration: underline;
+        cursor: pointer;
       }
     }
   }

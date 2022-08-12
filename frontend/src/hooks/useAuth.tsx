@@ -77,14 +77,14 @@ export function AuthProvider({ children }) {
         return response
       },
       error => {
-        if (error.response.data?.logout) {
+        if (error.response?.data?.logout) {
           toast.warning("Autenticação expirada. Faça login para continuar.");
           destroyCookie(null, "app-token", { path: "/" });
           window.location.pathname = "/auth/login";
           Router.push("/auth/login"); // If the first redirect doest no work
         }
-        if (error.response.data?.error) {
-          toast.error(error.response.data.message);
+        if (error.response?.data?.error) {
+          toast.error(error.response?.data?.message);
         }
       }
     );
@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
     console.log("Renderizou [useAuth]");
 
     api().post("/auth/recover-user-information").then(response => {
-      if (response.data.user) {
+      if (response.data?.user) {
         setUser(response?.data?.user);
       }
     });
@@ -161,7 +161,7 @@ export function AuthProvider({ children }) {
       image_url: data.picture
     });
 
-    if (res.data.success) {
+    if (res.data?.success) {
       setCookie(null, "app-token", res.data.token, {
         maxAge: 60 * 60 * 3, // 1 hour
         path: "/"

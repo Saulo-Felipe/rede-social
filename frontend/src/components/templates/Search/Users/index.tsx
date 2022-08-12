@@ -54,8 +54,6 @@ export function Users({ searchQuery }) {
                     <div className={styles.imgContainer}>
                       <img 
                         src={aUser.image_url}
-                        width={"100%"}
-                        height={"100%"}
                       />
                     </div>
 
