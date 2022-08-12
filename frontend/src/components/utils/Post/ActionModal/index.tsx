@@ -38,35 +38,39 @@ export function ActionModal({ modalIsOpen, setModalIsOpen, postId }: ActionModal
   });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      if (selectedOption.index == 0 || selectedOption.index == 1) {
-        setLoading(true);
-        const { data }: any = await api().post("/posts/actions", { postID: postId });
-        setLoading(false);
 
-        setSelectedOption({ ...selectedOption, 
-          data: selectedOption.index == 0 
-          ? [...data.likes]
-          : [...data.dislikes]
-        });
-        
-      } else {
-        setLoading(true);
-        const { data } = await api().get(`/posts/comments/${postId}`);
-        setLoading(false);
 
-        if (data.success) {
-          setSelectedOption({ ...selectedOption, data: data.comments });
-        }
+  async function updateActions() {
+    if (selectedOption.index == 0 || selectedOption.index == 1) {
+      setLoading(true);
+      const { data }: any = await api().post("/posts/actions", { postID: postId });
+      setLoading(false);
+
+      setSelectedOption({ ...selectedOption, 
+        data: selectedOption.index == 0 
+        ? [...data.likes]
+        : [...data.dislikes]
+      });
+      
+    } else {
+      setLoading(true);
+      const { data } = await api().get(`/posts/comments/${postId}`);
+      setLoading(false);
+
+      if (data.success) {
+        setSelectedOption({ ...selectedOption, data: data.comments });
       }
+    }    
+  }
 
-    })();
+  useEffect(() => {
+    updateActions();
   }, [selectedOption.index]);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
       if (modalIsOpen) {
+        updateActions();
         document.body.style.overflow = "hidden";
       } else {
         document.body.style.overflow = "auto";
