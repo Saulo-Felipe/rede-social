@@ -17,7 +17,7 @@ export interface User {
 interface ReturnValue {
   allUsers: User[];
   setAllUsers: (users: User[]) => void;
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, ref: any) => void;
   allMessages: Message[];
   getIndexOfMessage: (args?: User[]) => void;
   isLoadingMessages: boolean;
@@ -115,12 +115,13 @@ export function SocketProvider({ children }) {
 
   // ------------| Reiceved Message |-------------
 
-  function sendMessage(content: string) {
+  function sendMessage(content: string, ref) {
     console.log("[sending] :", content);
     setWaitNewMessage(true);
     
     socketRef.current.emit("new-message", user?.id, content, (response: boolean) => {
       setWaitNewMessage(false);
+      ref.current.scrollTo(0, 0);
     });
   }
 

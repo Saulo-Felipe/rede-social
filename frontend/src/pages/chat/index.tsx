@@ -21,16 +21,22 @@ export default function Chat() {
 
   function verifyMessage() {
     if (newMessage.length > 0) {
-      sendMessage(newMessage);
+      sendMessage(newMessage, messagesContainerRef);
 
       setNewMessage("");
     }
   }
 
+  function scrollChat(ref) {
+    document.body.scrollTo(0, 999);
+    ref.current.scrollTo(0, 0);
+  }
+
   useEffect(() => {
     if (typeof document !== "undefined") {
+      scrollChat(messagesContainerRef);
+
       if (menuMobileIsOpen) {
-        window.scrollTo(0, 0);
         document.body.style.overflow = "hidden";
       } else {
         document.body.style.overflow = "auto";
@@ -134,7 +140,7 @@ export default function Chat() {
       }
 
 
-      <section className={styles.secondContainer}>
+      <section className={styles.secondContainer} ref={messagesContainerRef}>
         <div className={styles.newMessageContainer}>
           <div className={`${styles.sendMessageAction} ${waitNewMessage ? styles.disabled : null}`}>
             <textarea
@@ -155,9 +161,8 @@ export default function Chat() {
           </div>
         </div>
 
-        <div className={styles.messages} ref={messagesContainerRef}>
-          {
-            allMessages.map((message, index) =>
+        <div className={styles.messages}>
+          {allMessages.map((message, index) =>
               <div
                 key={index}
                 className={`${styles.aMessage} ${message.isMy ? styles.isMy : styles.notIsMy}`}
@@ -176,12 +181,15 @@ export default function Chat() {
                 </div>
 
                 <div className={styles.imageContainer}>
-                  <img src={message.image} alt={"messages user profile"} />
+                  <Link href={`/profile/${message.googleID}`}>
+                    <a>
+                      <img src={message.image} alt={"messages user profile"} />
+                    </a>
+                  </Link>
                 </div>
 
               </div>
-            )
-          }
+            )}
 
           { isLoadingMessages ? <div className={`loadingContainer`}><ImSpinner2 /></div> : "" }          
 

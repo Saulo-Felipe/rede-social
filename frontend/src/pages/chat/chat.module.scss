@@ -107,9 +107,12 @@
         border-radius: 50%;
         position: relative;
         margin: auto;
+        overflow: hidden;
 
         img {
-          border-radius: 50%;
+          width: 2rem;
+          height: 2rem;
+          object-fit: cover;
         }
 
         .isOnline {
@@ -176,6 +179,7 @@
 
   display: flex;
   flex-direction: column-reverse;
+  scroll-behavior: smooth;
 
 
   overflow-y: auto;
@@ -288,6 +292,12 @@
         border-radius: 50%;
         overflow: hidden;
         align-self: center;
+
+        img {
+          width: 2rem;
+          height: 2rem;
+          object-fit: cover;
+        }
       }
 
       .info {

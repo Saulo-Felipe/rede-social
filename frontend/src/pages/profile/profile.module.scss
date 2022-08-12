@@ -136,10 +136,6 @@
         align-items: center;
         justify-content: center;
 
-          @media (max-width: 991px) {
-            align-items: flex-end;
-          }
-
         .actionBtn {
           color: white;
           border: none;
