@@ -9,6 +9,7 @@ import { TbEdit } from "react-icons/tb";
 import { useAuth } from "../../hooks/useAuth";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import Router, { useRouter } from "next/router";
 
 import styles from "./profile.module.scss";
 
@@ -41,7 +42,11 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
   const { user: myUser } = useAuth();
   const [user, setUser] = useState({ ...serverUSer });
   const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
+  const router  = useRouter();
   
+  useEffect(() => {
+    setUser({ ...serverUSer });
+  }, [serverUSer])
   
   useEffect(() => {
     (async() => {
@@ -56,7 +61,7 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
       }
 
     })();
-  }, [user]);
+  }, [user.id]);
 
   async function follow() {
     if (!loadingAction) {

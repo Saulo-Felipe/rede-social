@@ -16,6 +16,7 @@ interface AuthContextType {
   signInGoogle: (overrideConfig?: OverridableTokenClientConfig) => Promise<void>;
   signInGithub: (args: (arg: boolean) => void, token: string) => void;
   logOut: () => void;
+  updateUser: () => void;
 }
 
 interface PropsUserInfo {
@@ -89,14 +90,16 @@ export function AuthProvider({ children }) {
       }
     );
 
-    console.log("Renderizou [useAuth]");
-
-    api().post("/auth/recover-user-information").then(response => {
-      if (response.data?.user) {
-        setUser(response?.data?.user);
-      }
-    });
+    updateUser();
   }, []);
+
+  async function updateUser() {
+    const { data } = await api().post("/auth/recover-user-information");
+
+    if (data?.user) {
+      setUser(data?.user);
+    }
+  }
 
   async function registerWithEmail({email, username, password, passwordConfirm}: PropsUserInfo) {
     const { data }= await api().put<ApiEmailSignUpData>("/auth/register/email", {
@@ -247,7 +250,8 @@ export function AuthProvider({ children }) {
       signInEmail,
       signInGoogle,
       signInGithub,
-      logOut
+      logOut,
+      updateUser
     }}>
       { children }
     </AuthContext.Provider>

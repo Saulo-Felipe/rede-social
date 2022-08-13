@@ -49,6 +49,7 @@ export function Edit({ user, setUser, useModalIsOpen }: EditProps) {
   const colors = ["#009688", "#607d8b", "#2F5BAC", "#795548", "#2196f3", "#9900ef", "#ff9800", "#ff5722", "#8bc34a", "#9c27b0", "#4db6ac"]
   const [haveChanges, setHaveChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { updateUser } = useAuth();
 
   useEffect(() => {
     if (
@@ -96,6 +97,7 @@ export function Edit({ user, setUser, useModalIsOpen }: EditProps) {
 
     if (data.success) {
       toast.success("Alteração salva.");
+
       setUser({
         ...user,
         bio: changeUserInfo.bio,
@@ -103,11 +105,16 @@ export function Edit({ user, setUser, useModalIsOpen }: EditProps) {
         image_url: changeUserInfo.picture ? URL.createObjectURL(changeUserInfo.picture) : user.image_url,
         username: changeUserInfo.name
       });
+      
       setChangesUserInfo({
         ...changeUserInfo,
         newPassword: "",
-        currentPassword: ""
-      })
+        currentPassword: "",
+        picture: null
+      });
+
+      updateUser();
+
       setModalIsOpen(false);
     } else {
       toast.warn(data.message);

@@ -1,12 +1,11 @@
-import { response, Router } from "express";
+import { Router } from "express";
 import { sequelize } from "../services/databse";
-import { axiosServer } from "../services/api";
 import { v4 as uuid } from "uuid";
-import fsPromisses from "fs/promises";
 
 import multer from "multer";
 import path from "path";
 import { verifyToken } from "../utils/authorization";
+import { cloudinary } from "../utils/cloudinary";
 
 const posts = Router();
 
@@ -180,14 +179,16 @@ const upload = multer({ storage: storage }).array("picture");
 posts.put("/create", upload, async (request, response) => {
   try {
     const { createdOn, postContent, userID } : createPostBody = JSON.parse(request.body.body);    
-    let databaseImagesName = "";
+    let cloudinaryIds = ""
     const fileAmount: any = request.files;
 
     for (let c = 0; c < fileAmount.length; c++) {
+      let result = await cloudinary.uploader.upload(fileAmount[c].path);
+
       if (c < fileAmount.length-1) {
-        databaseImagesName += fileAmount[c].filename+",";
+        cloudinaryIds += result.public_id+",";
       } else {
-        databaseImagesName += fileAmount[c].filename;
+        cloudinaryIds += result.public_id;
       }
     }
     
@@ -199,7 +200,7 @@ posts.put("/create", upload, async (request, response) => {
           '${postContent}',
           '${userID}',
           '${createdOn}',
-          ${databaseImagesName.length == 0 ? null : `'${databaseImagesName}'`}
+          ${cloudinaryIds.length == 0 ? null : `'${cloudinaryIds}'`}
         );
       `);
 
@@ -250,7 +251,14 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
       images = images[0]?.images?.split(",") || [];
 
       for (let c = 0; c < images.length; c++) {
-        fsPromisses.unlink((path.join(__dirname, `../public/images/posts/${images[c]}`)));
+        await cloudinary.uploader.destroy(images[c]);
+
+        // Development mode
+        // try {
+        //   fsPromisses.unlink(path.join(__dirname, `../public/images/posts/${images[c]}`));
+        // } catch(e) {
+        //   console.log("File não existe")
+        // }
       }
 
 

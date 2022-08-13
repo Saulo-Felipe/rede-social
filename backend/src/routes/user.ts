@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import { v4 as uuid } from "uuid";
 import bcrypt from "bcrypt";
+import { cloudinary } from "../utils/cloudinary";
 
 const user = Router();
 
@@ -219,29 +220,39 @@ user.post("/update-info", upload, async (request, response) => {
   try {
     const email: any = request.header("current-user-email");
     const {bio, cover_color, id, name, picture, currentPassword, newPassword}: UpdateUserInfoBody = JSON.parse(request.body.body);
-    const file: any = request.files
+    const file: any = request.files;
+
+    let [user]: any = await sequelize.query(`
+      SELECT cloudinary_id, password FROM "User" WHERE email = '${email}'
+    `);
+
+    console.log(user, picture);
+
+    if (picture && user[0].cloudinary_id) {
+      console.log("entrei")
+      await cloudinary.uploader.destroy(user[0].cloudinary_id);
+    }
 
     if (currentPassword === '' && newPassword === '') {
+      let cloudinaryId: any = picture ? await cloudinary.uploader.upload(file[0].path) : ""
+
       await sequelize.query(`
         UPDATE "User"
         SET bio = '${bio}',
         cover_color = '${cover_color}',
         username = '${name}'
-        ${picture ? `, image_url = '${process.env.SERVER_URL}/images/user/${file[0].filename}'` : ""}
+        ${picture ? `, image_url = '${cloudinaryId.secure_url}'` : ""}
+        ${picture ? `, cloudinary_id = '${cloudinaryId.public_id}'` : ""}
         WHERE email = '${email}' AND id = '${id}'
       `);
 
       return response.json({ success: true });
     } else { // change password
-      const [user]: any = await sequelize.query(`
-        SELECT password FROM "User"
-        WHERE email = '${email}' AND id = '${id}'
-      `);
-
       if (user.length > 0) {
         const match = user[0].password ? await bcrypt.compare(currentPassword, user[0].password) : true;
 
         if (match) {
+          let cloudinaryId: any = picture ? await cloudinary.uploader.upload(file[0].path) : "";
           const salt = await bcrypt.genSalt(5);
           const hash = await bcrypt.hash(newPassword, salt);
 
@@ -251,8 +262,9 @@ user.post("/update-info", upload, async (request, response) => {
             bio = '${bio}',
             cover_color = '${cover_color}',
             username = '${name}'
-            ${picture ? `, image_url = '${process.env.SERVER_URL}/images/user/${file[0].filename}'` : ""},
-            password = '${hash}'
+            ${picture ? `, image_url = '${cloudinaryId.secure_url}'` : ""}
+            password = '${hash}',
+            ${picture ? `, cloudinary_id = '${cloudinaryId.public_id}'` : ""}
             WHERE email = '${email}' AND id = '${id}'
           `);
 

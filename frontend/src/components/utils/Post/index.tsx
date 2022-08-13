@@ -146,13 +146,13 @@ export function Post({ data: postInfo, currentUserId }: PostProps) {
 
     if (images.length > 0) {
       let preloadImages = [];
-      
+      console.log("teste: ", process.env.NEXT_PUBLIC_CLOUDINARY_API_URL)
       for (let c = 0; c < images.length; c++) {
         preloadImages.push(
           <img 
-            src={process.env.NEXT_PUBLIC_SERVER_URL+"/images/post/"+images[c]}
+            src={process.env.NEXT_PUBLIC_CLOUDINARY_API_URL+"/"+images[c]}
             style={{ maxHeight: (isMobile ? 100/100 : 60/100)*postWidthRef.current?.clientWidth }}
-            onClick={() => setPreviewImage(process.env.NEXT_PUBLIC_SERVER_URL+"/images/post/"+images[c])}
+            onClick={() => setPreviewImage(process.env.NEXT_PUBLIC_CLOUDINARY_API_URL+"/"+images[c])}
           />
         );
       }
