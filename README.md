@@ -1,34 +1,107 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+    <img src="Github/logo.png" width=45%>
+</p>
 
-## Getting Started
+------------------------------------
+## Índice
 
-First, run the development server:
+* [Preview](#preview)
+* [Sobre](#sobre)
+* [Funcionalidades](#funcionalidades)
+* [Layout](#layout)
+* [Como Executar](#como-executar)
+* [Tecnologias](#tecnologias)
+* [Autor](#autor)
+* [Licença](#licenca)
 
-```bash
-npm run dev
-# or
-yarn dev
+
+------------------------------------
+
+## 💻 Sobre <a id="sobre"></a>
+Uma simples rede social :).
+<br>
+
+------------------------------------
+
+## 🚀 Preview <a id="preview"></a>
+
+-> https://rede-social-saulo-felipe.vercel.app/chat
+
+------------------------------------
+
+## ⚙️ Funcionalidades <a id="funcionalidades"></a>
+1. ✅ Responsivo
+2. ✅ Postagens
+3. ✅ Likes, dislikes e comentários
+4. ✅ Perfis de usuário dinâmico
+5. ✅ Sistema de autenticação com Google, Github e Email
+6. ✅ Chat em tempo real
+7. ✅ Seguir usuários e ser seguido 
+
+------------------------------------
+
+## 🎨 Layout <a id="layout"></a>
+
+<a href="https://rede-social-saulo-felipe.vercel.app"><img src="https://img.shields.io/badge/Site-Rede Social-blue"/></a>
+<img src="https://img.shields.io/badge/Backend-NodeJs-green">
+<img src="https://img.shields.io/badge/Frontend-ReactJS-green">
+<p>*O Layout completo do site está disponível <a href="https://rede-social-saulo-felipe.vercel.app">aqui</a>.</p>
+
+<img src="Github/layout-1.png">
+<img src="Github/layout-2.png">
+<img src="Github/layout-3.png">
+<img src="Github/layout-4.png">
+<img src="Github/layout-5.png">
+<img src="Github/layout-6.png">
+<p align="center">
+    <img width="49%" src="Github/layout-7.png">
+    <img width="49%" src="Github/layout-8.png">
+</p>
+<p align="center">
+    <img width="49%" src="Github/layout-9.png">
+    <img width="49%" src="Github/layout-10.png">
+</p>
+
+
+
+------------------------------------
+
+## 🧩 Como Executar <a id="como-executar"></a>
+
+Para executar o projeto na sua máquina, basta seguir a sequencia de passos:
+
+```
+# Clone o repositório
+$ git clone https://github.com/Saulo-Felipe/rede-social
+
+rede-social/frontend $ yarn install && yarn dev
+rede-social/backend $ yarn install && yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+------------------------------------
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## 🤖 Tecnologias <a id="tecnologias"></a>
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Nesta rede social, foram utilizadas as seguintes stacks: 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+* HTML5 <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" />
+* CSS3 <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" />
+* Sass <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" />
+* Javascript <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" />
+* Typescript <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" />
+* Nodejs <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" />
+* Nextjs <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" />
+* PostgreSQL <img width="16px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" />
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+------------------------------------
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 👨 Autor <a id="autor"></a>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<p align="center">➡️ Criado e desenvolvido por <strong>eu</strong> mesmo 🧑‍💻.</p>
 
-## Deploy on Vercel
+------------------------------------
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📜 Licença <a id="licenca"></a>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<p align="center">Todos os direitos reservados ©Copyright - Saulo Felipe</p>
