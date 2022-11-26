@@ -25,7 +25,7 @@ Uma simples rede social :).
 
 ## 🚀 Preview <a id="preview"></a>
 
--> https://rede-social-saulo-felipe.vercel.app/
+-> https://todolist-frontend-liart.vercel.app/categories
 
 ------------------------------------
 
