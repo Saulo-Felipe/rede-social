@@ -25,7 +25,7 @@ Uma simples rede social :).
 
 ## 🚀 Preview <a id="preview"></a>
 
--> https://calculadora-com-react-81de.vercel.app/
+-> https://rede-social-saulo-felipe.vercel.app/
 
 ------------------------------------
 
