@@ -25,7 +25,7 @@ Uma simples rede social :).
 
 ## 🚀 Preview <a id="preview"></a>
 
--> https://rede-social-saulo-felipe.vercel.app/
+-> https://calculadora-com-react-81de.vercel.app/
 
 ------------------------------------
 
@@ -98,7 +98,7 @@ Nesta rede social, foram utilizadas as seguintes stacks:
 
 ## 👨 Autor <a id="autor"></a>
 
-<p align="center">➡️ Criado e desenvolvido por <strong>eu</strong> mesmo 🧑‍💻.</p>
+<p align="center">➡️ Desenvolvido por <strong>eu</strong> mesmo 🧑‍💻.</p>
 
 ------------------------------------
 
