@@ -5,6 +5,12 @@ export default function Document() {
   return (
     <Html lang="pt-br">
       <Head>
+        {/* Load */}
+        <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js" async></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css" />        
+        {/* Load */}
+
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin={"true"} />
