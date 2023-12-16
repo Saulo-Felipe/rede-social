@@ -94,29 +94,29 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function updateUser() {
-    const { data } = await api().post("/auth/recover-user-information");
+    const response = await api().post("/auth/recover-user-information");
 
-    if (data?.user) {
-      setUser(data?.user);
+    if (response && response?.data?.user) {
+      setUser(response.data.user);
     }
   }
 
   async function registerWithEmail({email, username, password, passwordConfirm}: PropsUserInfo) {
-    const { data }= await api().put<ApiEmailSignUpData>("/auth/register/email", {
+    const data = await api().put<ApiEmailSignUpData>("/auth/register/email", {
       email, name: username, password, passwordConfirm
     });
 
-    if (data.message) toast(data.message, { type: "warning" });
+    if (data?.data?.message) toast(data.data.message, { type: "warning" });
 
     else {
       toast.success("Usuário registrado com sucesso! Redirecionando...");
 
-      setCookie(null, "app-token", data.token, {
+      setCookie(null, "app-token", data?.data?.token, {
         maxAge: 60 * 60 * 1, // 1 hour
         path: "/"
       });
 
-      setUser(data.user);
+      setUser(data?.data?.user);
 
       setTimeout(() => Router.push("/"), 1500);
     }
@@ -125,24 +125,24 @@ export function AuthProvider({ children }) {
   async function signInEmail({ email, password }: LoginEmailInfo) {
     toast.loading("Carregando", { autoClose: false });
 
-    const { data } = await api().post("/auth/login", {
+    const response = await api().post("/auth/login", {
       email, password
     });
 
     toast.dismiss();
 
-    if (data.message) {
-      toast(data.message, {
+    if (response?.data?.message) {
+      toast(response?.data?.message, {
         type: "warning",
         autoClose: 6000
       });
     } else {
-      setCookie(null, "app-token", data.token, {
+      setCookie(null, "app-token", response?.data?.token, {
         maxAge: 60 * 60 * 1, // 1 hour
         path: "/"
       });
 
-      setUser(data.user);
+      setUser(response?.data?.user);
 
       toast.success("Login realizado com sucesso! Redirecionando...");
 
@@ -152,19 +152,19 @@ export function AuthProvider({ children }) {
 
 
   async function signInGoogle(response) {
-    const { data }: GoogleOAuthUserInfo = await axios.get(
+    const resp: GoogleOAuthUserInfo = await axios.get(
       `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${response.access_token}
     `);
 
     const res = await api().post("/auth/signin/Google", {
-      email: data.email,
-      name: data.name,
+      email: resp?.data?.email,
+      name: resp?.data?.name,
       password: null,
-      id: data.sub,
-      image_url: data.picture
+      id: resp?.data?.sub,
+      image_url: resp?.data?.picture
     });
 
-    if (res.data?.success) {
+    if (res?.data?.success) {
       setCookie(null, "app-token", res.data.token, {
         maxAge: 60 * 60 * 3, // 1 hour
         path: "/"
@@ -174,7 +174,7 @@ export function AuthProvider({ children }) {
         autoClose: 2000
       });
 
-      setUser({ ...res.data.user });
+      setUser({ ...res?.data?.user });
 
       setTimeout(() => Router.push("/") , 1500);
     }
@@ -185,7 +185,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
 
     try {
-      const {data} = await axios({
+      const resp = await axios({
         method: "GET",
         url: "https://api.github.com/user/emails",
         headers: {
@@ -193,7 +193,7 @@ export function AuthProvider({ children }) {
         },
       });
 
-      const {data: userInfo} = await axios({
+      const { data: userInfo } = await axios({
         method: "GET",
         url: "https://api.github.com/user",
         headers: {
@@ -201,8 +201,8 @@ export function AuthProvider({ children }) {
         },
       });
 
-      const {data: response} = await api().post("/auth/signin/Github", {
-        email: data[0].email,
+      const { data: response } = await api().post("/auth/signin/Github", {
+        email: resp?.data[0]?.email,
         name: userInfo.login,
         password: null,
         id: userInfo.id,
@@ -210,7 +210,7 @@ export function AuthProvider({ children }) {
         bio: userInfo.bio
       });
 
-      if (response.success) {
+      if (response?.success) {
         setCookie(null, "app-token", response.token, {
           maxAge: 60 * 60 * 3, // 1 hour
           path: "/"

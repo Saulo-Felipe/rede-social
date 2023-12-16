@@ -41,9 +41,10 @@ export default function Profile({ user: serverUSer, isMyProfile, isFollowing }: 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { user: myUser } = useAuth();
   const [user, setUser] = useState({ ...serverUSer });
-  const [followerAmount, setFollowerAmount] = useState(Number(user.followers));
-  const router  = useRouter();
-  
+  const [followerAmount, setFollowerAmount] = useState(Number(serverUSer.followers));
+
+  console.log("following: ", following);
+
   useEffect(() => {
     setUser({ ...serverUSer });
   }, [serverUSer])
@@ -230,11 +231,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (user) {
     const { data } = await api(context).get(`/user/profile/${params.userID}/${user.id}`);
 
-    console.log("profile: ", data)
+    console.log("following: ", data.isFollowing)
 
     if (data.userExists) {
       return {
         props: {
+          key: params.userID,
           user: data.user,
           isMyProfile: user.id === data.user.id,
           isFollowing: data.isFollowing
