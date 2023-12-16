@@ -12,10 +12,10 @@ model Comment {
   content    String
   created_on String @db.VarChar(100)
 
-  user       User   @relation(fields: [fk_user_id], references: [id])
+  user       User   @relation(fields: [fk_user_id], references: [id], onDelete: Cascade)
   fk_user_id String @db.VarChar(255)
 
-  post       Post @relation(fields: [fk_post_id], references: [id])
+  post       Post @relation(fields: [fk_post_id], references: [id], onDelete: Cascade)
   fk_post_id Int
 }
 
@@ -33,7 +33,7 @@ model Post {
   images     String?   @db.VarChar(65000)
   Comment    Comment[]
 
-  user       User       @relation(fields: [fk_user_id], references: [id])
+  user       User       @relation(fields: [fk_user_id], references: [id], onDelete: Cascade)
   fk_user_id String     @db.VarChar(255)
   dislikes   dislikes[]
   likes      likes[]
@@ -60,10 +60,10 @@ model User {
 model dislikes {
   id Int @id @default(autoincrement())
 
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String @db.VarChar(255)
 
-  post    Post @relation(fields: [post_id], references: [id])
+  post    Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   post_id Int
 }
 
@@ -73,15 +73,15 @@ model global_messages {
   created_on String @db.VarChar(255)
 
   user_id String @db.VarChar(255)
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model likes {
   id Int @id @default(autoincrement())
 
   user_id String @db.VarChar(255)
-  user    User   @relation(fields: [user_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   post_id Int
-  post    Post @relation(fields: [post_id], references: [id])
+  post    Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
 }

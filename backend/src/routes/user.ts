@@ -50,8 +50,8 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
         where fk_follower_id = '${user.id}';
       `);
 
-      user.following = following[0].following;
-      user.followers = followers[0].followers;
+      user.following = parseInt(following[0].following);
+      user.followers = parseInt(followers[0].followers);
 
       // Is follower?
       const isFollowing: any = await prisma.$queryRawUnsafe(`
@@ -177,7 +177,7 @@ user.get("/current", async (request, response) => {
     jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
 
       if (decoded) {
-        const user = await prisma.$queryRawUnsafe(`
+        const [user]: any = await prisma.$queryRawUnsafe(`
           SELECT id FROM "User"
           WHERE email = '${decoded.email}'
         `);

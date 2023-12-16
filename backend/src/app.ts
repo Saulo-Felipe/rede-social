@@ -29,4 +29,4 @@ app.get("/", (request, response) => {
 });
 
 
-httpServer.listen(process.env.PORT || "8081", () => console.log("Server is running"));
+httpServer.listen(process.env.PORT || 8081, () => console.log("Server is running"));

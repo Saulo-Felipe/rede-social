@@ -306,6 +306,7 @@ posts.get("/comments/:postID", async (request, response) => {
       ORDER BY "commentID" DESC
     `);
 
+
     return response.json({ success: true, comments });
 
   } catch(e) {

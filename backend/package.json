@@ -30,7 +30,7 @@
   },
   "scripts": {
     "dev": "nodemon src/app.ts",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "build": "tsc"
   }
 }

@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  node-app:
+    build: .
+    ports:
+      - 3002:3002
+    env_file:
+      - .env

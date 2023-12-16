@@ -95,12 +95,12 @@ interface AllMessagesBody {
 
 index.post("/all-messages", async (request, response) => {
   try {
-    const { index }: AllMessagesBody = request.body;
+    let { index }: AllMessagesBody = request.body;
 
     const messagesLimitPerPage = 5;
 
     const messages = await prisma.global_messages.findMany({
-      skip: messagesLimitPerPage*(index - 1),
+      skip: messagesLimitPerPage*index,
       take: messagesLimitPerPage,
       orderBy: {
         id: "desc"
