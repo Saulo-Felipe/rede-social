@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { sequelize } from "../services/databse";
 import { v4 as uuid } from "uuid";
 
 import multer from "multer";
 import path from "path";
 import { verifyToken } from "../utils/authorization";
 import { cloudinary } from "../utils/cloudinary";
+import { prisma } from "../../prisma/prismaClient";
+import { Prisma } from "@prisma/client";
 
 const posts = Router();
 
@@ -16,11 +17,12 @@ posts.delete("/like/:userID/:postID", async (request, response) => {
   try {
     const { postID, userID } = request.params;
 
-    await sequelize.query(`
-      DELETE FROM likes
-      WHERE user_id = '${userID}'
-      AND post_id = ${postID}
-    `);
+    await prisma.likes.deleteMany({
+      where: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    })
 
     return response.json({ success: true });
 
@@ -34,15 +36,20 @@ posts.put("/like/:userID/:postID", async (request, response) => {
   try {
     const { postID, userID } = request.params;
 
-    await sequelize.query(`
-      DELETE FROM dislikes WHERE
-      user_id = '${userID}' and post_id = ${postID}
-    `);
 
-    await sequelize.query(`
-      INSERT INTO likes (user_id, post_id)
-      VALUES ('${userID}', ${postID})
-    `);
+    await prisma.dislikes.deleteMany({
+      where: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    });
+
+    await prisma.likes.create({
+      data: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    });
 
     return response.json({ success: true });
 
@@ -56,11 +63,12 @@ posts.delete("/dislike/:userID/:postID", async (request, response) => {
   try {
     const { postID, userID } = request.params;
 
-    await sequelize.query(`
-      DELETE FROM dislikes
-      WHERE user_id = '${userID}'
-      AND post_id = ${postID}
-    `);
+    await prisma.dislikes.deleteMany({
+      where: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    })
 
     return response.json({ success: true });
 
@@ -74,15 +82,19 @@ posts.put("/dislike/:userID/:postID", async (request, response) => {
   try {
     const { postID, userID } = request.params;
 
-    await sequelize.query(`
-      DELETE FROM likes WHERE
-      user_id = '${userID}' and post_id = ${postID}
-    `);
+    await prisma.likes.deleteMany({
+      where: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    })
 
-    await sequelize.query(`
-      INSERT INTO dislikes (user_id, post_id)
-      VALUES ('${userID}', ${postID})
-    `);
+    await prisma.dislikes.create({
+      data: {
+        user_id: userID,
+        post_id: Number(postID)
+      }
+    })
 
     return response.json({ success: true });
 
@@ -94,7 +106,6 @@ posts.put("/dislike/:userID/:postID", async (request, response) => {
 
 
 
-
 interface GetActionsBody {
   postID: number;
 }
@@ -103,23 +114,22 @@ posts.post("/actions", async (request, response) => {
   try {
     const { postID }: GetActionsBody = request.body;
 
-    const [likes] = await sequelize.query(`
+
+    const likes = await prisma.$queryRawUnsafe(`
       SELECT post_id, user_id, "User".username, COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url  
       FROM likes 
       INNER JOIN "User" on "User".id = likes.user_id
       WHERE post_id = ${postID}
     `);
 
-    const [dislikes] = await sequelize.query(`
+    const dislikes = await prisma.$queryRawUnsafe(`
       SELECT post_id, user_id, "User".username, COALESCE("User".image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url  
       FROM dislikes 
       INNER JOIN "User" on "User".id = dislikes.user_id
       WHERE post_id = ${postID}
     `);
 
-
     return response.json({ success: true, likes, dislikes });
-
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -136,7 +146,7 @@ posts.get("/recent/:index", async (request, response) => {
   try {
     const { index }: recentPostsParams = request.params;
 
-    const [posts] = await sequelize.query(`
+    const posts = await prisma.$queryRawUnsafe(`
       SELECT 
       "Post".id, 
       "Post".fk_user_id,   
@@ -194,7 +204,7 @@ posts.put("/create", upload, async (request, response) => {
     
     if (createdOn && userID) {
 
-      await sequelize.query(`
+      await prisma.$queryRawUnsafe(`
         INSERT INTO "Post" (content, fk_user_id, created_on, images)
         VALUES (
           '${postContent}',
@@ -226,24 +236,24 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
     const { currentUserId, fk_user_id, postID }: deletePostParams = request.params;
 
     if (currentUserId === fk_user_id) {
-      let [images]: any = await sequelize.query(`
+      let images: any = await prisma.$queryRawUnsafe(`
         SELECT images FROM "Post"
         WHERE id = ${Number(postID)}
       `);
       
       // Delete actions
-      await sequelize.query(`
+      await prisma.$queryRawUnsafe(`
         DELETE FROM likes 
         WHERE post_id = ${Number(postID)}
       `);
 
-      await sequelize.query(`
+      await prisma.$queryRawUnsafe(`
         DELETE FROM dislikes 
         WHERE post_id = ${Number(postID)}
       `);    
       
       // delete post
-      await sequelize.query(`
+      await prisma.$queryRawUnsafe(`
         DELETE FROM "Post" 
         WHERE id = ${Number(postID)}
       `);
@@ -260,7 +270,6 @@ posts.delete("/:currentUserId/:fk_user_id/:postID", async (request, response) =>
         //   console.log("File não existe")
         // }
       }
-
 
       return response.json({ success: true });
 
@@ -283,7 +292,7 @@ posts.get("/comments/:postID", async (request, response) => {
   try {
     const { postID }: getCommentsParams = request.params;
 
-    const [comments]: any = await sequelize.query(`
+    const comments: any = await prisma.$queryRawUnsafe(`
       SELECT
       "User".id as "userID", 
       "Comment".id as "commentID", 
@@ -319,7 +328,7 @@ posts.put("/new-comment", async (request, response) => {
     let date: string | string[] = String(new Date()).split(" ");
     date = date[2] + "," + date[1] + "," + date[3] + "," + date[4];
 
-    await sequelize.query(`
+    await prisma.$queryRawUnsafe(`
       INSERT INTO "Comment" (content, fk_user_id, fk_post_id, created_on)
       VALUES ('${content}', '${userID}', ${postID}, '${date}')
     `);

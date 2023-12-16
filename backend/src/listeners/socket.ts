@@ -1,7 +1,7 @@
 import { Express } from "express";
 import { Server } from "socket.io";
-import { sequelize } from "../services/databse";
 import { getCurrentDate } from "../utils/date";
+import { prisma } from "../../prisma/prismaClient";
 
 interface allUsers {
   [key: string]: string;
@@ -65,7 +65,7 @@ export function useSocket(app: Express, httpServer: any) {
   }
 
   async function saveMessage(data: Message) {
-    const [result]: any = await sequelize.query(`
+    const result: any = await prisma.$queryRawUnsafe(`
       INSERT INTO global_messages (user_id, message, created_on)
       VALUES ('${data.user_id}', '${data.message}', '${data.created_on}')
       RETURNING id

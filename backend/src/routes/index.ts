@@ -1,6 +1,6 @@
-import { response, Router } from "express";
-import { sequelize } from "../services/databse";
+import { Router } from "express";
 import path from "path";
+import { prisma } from "../../prisma/prismaClient";
 
 const index = Router();
 
@@ -15,11 +15,7 @@ index.get("/404", (request, response) => {
 
 index.get("/test", async (request, response) => {
   try {
-    const [result] = await sequelize.query(`
-      select * from "User"
-    `);
-
-    return response.json({ success: true, teste: result });
+    return response.json({ success: true });
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -31,12 +27,30 @@ index.get("/search/:searchQuery", async (request, response) => {
   try {
     const { searchQuery }: searchParams = request.params;
 
-    let [users] = await sequelize.query(`
-      SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url FROM "User" 
-      WHERE username ILIKE '%${searchQuery}%';
-    `);
+    console.log(searchQuery);
+    
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        image_url: true
+      },
+      where: {
+        username: {
+          contains: searchQuery,
+          mode: "insensitive"
+        }
+      }
+    });
 
-    return response.json({ success: true, users });
+    return response.json({ 
+      success: true, 
+      users: users.map(user => ({ 
+        ...user, 
+        image_url: user.image_url || process.env.SERVER_URL+"/images/user/profile-user.png" 
+      })
+    )});
 
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -76,18 +90,22 @@ index.get("/images/post/:image", (request, response) => {
 
 
 interface AllMessagesBody {
-  index: boolean;
+  index: number;
 }
 
 index.post("/all-messages", async (request, response) => {
   try {
     const { index }: AllMessagesBody = request.body;
 
-    const [messages] = await sequelize.query(`
-      SELECT * FROM global_messages
-      ORDER BY id DESC
-      LIMIT 20 OFFSET 20*${index}
-    `);
+    const messagesLimitPerPage = 5;
+
+    const messages = await prisma.global_messages.findMany({
+      skip: messagesLimitPerPage*(index - 1),
+      take: messagesLimitPerPage,
+      orderBy: {
+        id: "desc"
+      }
+    })
 
     return response.json({ success: true, messages });
     

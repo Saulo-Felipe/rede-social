@@ -1,13 +1,13 @@
-import { sequelize } from "../services/databse";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import { Router } from "express";
 import { getCurrentDate } from "../utils/date";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../utils/authorization";
+import { prisma } from "../../prisma/prismaClient";
+import { User } from "@prisma/client";
 
 const authentication = Router();
-
 
 interface RegisterEmailBody {
   name: string;
@@ -25,24 +25,32 @@ authentication.put("/register/email", async (request, response) => {
     const { email, name, password, passwordConfirm }: RegisterEmailBody = request.body;
 
     if (password === passwordConfirm) {
+      const user = await prisma.user.findFirst({
+        select: {
+          id: true,
+        },
+        where: {
+          email: email
+        }
+      });
 
-      const [result] = await sequelize.query(`
-        SELECT id FROM "User"
-        WHERE email = '${email}'
-      `);
-
-      if (result.length === 0) {
+      if (user === null) {
         const id = uuid();
         const createdOn = getCurrentDate()
 
         bcrypt.genSalt(5, (err, salt) => {
           bcrypt.hash(password, salt, async (error, hash) => {
-            await sequelize.query(`
-              INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on)
-              VALUES (
-                '${id}', '${name}', '${email}', ${null}, '${hash}', 'Email', '${createdOn}'
-              );
-            `);
+            await prisma.user.create({
+              data: {
+                id,
+                username: name,
+                email,
+                image_url: null,
+                password: hash,
+                auth_type: "Email",
+                created_on: createdOn
+              }
+            })
           });
         });
 
@@ -62,7 +70,6 @@ authentication.put("/register/email", async (request, response) => {
             picture: process.env.SERVER_URL+"/images/user/profile-user.png"
           }
         });
-        
       } else return response.json({ success: true, message: "Este email já está em uso" });
 
     } else return response.json({ success: true, message: "Senhas inválidas." });
@@ -85,50 +92,44 @@ interface RegisterGoogleBody {
 authentication.post("/signin/:authType", async (request, response) => {
   try {
     const { email, id, image_url, name, bio }: RegisterGoogleBody = request.body;
-    const { authType } = request.params;
+    const { authType } = request.params; // Google or Github
 
-    const [result]: any = await sequelize.query(`
-      SELECT id, username,  image_url, created_on FROM "User"
-      WHERE email = '${email}'
-    `);
-    
-    const currentDate = result.length == 0 ? getCurrentDate() : result[0].created_on;
+    const user: User | null = await prisma.user.findFirst({
+      where: {
+        email: email
+      }
+    });
 
-    if (result.length == 0) {
-      console.log("[creating user]");
+    const currentDate = user?.created_on || getCurrentDate();
 
-      await sequelize.query(`
-        INSERT INTO "User" (id, username, email, image_url, password, auth_type, created_on, bio)
-        VALUES (
-          '${id}', 
-          '${name}', 
-          '${email}', 
-          '${image_url}', 
-          ${null}, 
-          '${authType}', 
-          '${currentDate}',
-          ${bio ? `${bio}` : null}
-        );
-      `);
+    if (user === null) { //create user automatically if not exists
+      await prisma.user.create({
+        data: {
+          id, 
+          username: name, 
+          email, 
+          image_url, 
+          auth_type: authType, 
+          created_on: currentDate,
+          bio: bio
+        }
+      })
     }
 
-    // Automatic login
-
+    // login
     const token: string = jwt.sign({ email: email }, String(process.env.SECRET), {
       expiresIn: "1d"
     });
-
-    console.log("[Google] success");
 
     return response.json({
       success: true, 
       token: token,
       message: "Login realizado com sucesso!",
       user: {
-        id: result[0] ? result[0].id : id,
-        name: result[0] ? result[0].username : name, 
+        id: user?.id || id,
+        username: user?.username || name, 
         email, 
-        picture: result[0] ? result[0].image_url : image_url,
+        picture: user?.image_url || image_url,
         createdOn: currentDate,
       }
     });
@@ -149,44 +150,44 @@ authentication.post("/login", async (request, response) => {
   try {
     const { email, password }: LoginBody = request.body;
 
-    let [user]: any = await sequelize.query(`
-      SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, password, auth_type, email, created_on FROM "User" 
-      WHERE email = '${email}'
-    `);
+    const user: User | null = await prisma.user.findFirst({
+      where: {
+        email
+      }
+    });
 
-    if (user.length == 0) {
+    if (user === null) {
       return response.json({ success: true, message: "Essa conta não existe." });
     }
 
-    if (user[0].password === null)
+    if (user.password === null) {
       return response.json({ 
         success: true, 
-        message: `Esta conta foi registrada via ${user[0].auth_type}, tente "Entrar com ${user[0].auth_type}".` 
+        message: `Esta conta foi registrada via ${user.auth_type}, tente "Entrar com ${user.auth_type}".` 
+      });
+    }
+
+    const isEqual = bcrypt.compareSync(password, user.password);
+
+    if (isEqual) {
+      const token = jwt.sign({ email }, String(process.env.SECRET), {
+        expiresIn: "1d"
       });
 
+      return response.json({ 
+        success: true, 
+        user: {
+          id: user.id,
+          name: user.username,
+          email,
+          picture: user.image_url || process.env.SERVER_URL+"/images/user/profile-user.png",
+          createdOn: user.created_on
+        },
+        token
+      }); 
+    }
 
-    bcrypt.compare(password, user[0].password, (err, result) => {
-      if (result) {
-        
-        const token = jwt.sign({ email }, String(process.env.SECRET), {
-          expiresIn: "1d"
-        });
-
-        return response.json({ 
-          success: true, 
-          user: {
-            id: user[0].id,
-            name: user[0].username,
-            email,
-            picture: user[0].image_url,
-            createdOn: user[0].created_on
-          },
-          token
-        });      
-      }
-      else 
-        return response.json({ success: true, message: "Senha incorreta" });
-    });
+    return response.json({ success: true, message: "Senha incorreta" });
     
   } catch(e) {
     console.log('----| Error |-----: ', e);
@@ -195,38 +196,47 @@ authentication.post("/login", async (request, response) => {
 
 });
 
-authentication.post("/recover-user-information", (request, response) => {
+interface JwtVerify extends JwtPayload {
+  email: string;
+}
+
+authentication.post("/recover-user-information", async (request, response) => {
   try {
     const token = request.header("app-token") || "";
 
-    if (token && typeof token === "string" && token !== null) {
+    if (token) {
+      const { email }: JwtVerify = jwt.verify(token, String(process.env.SECRET)) as JwtVerify;
 
-      jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {  
-        
-        if (decoded) {
+      if (email) {
+        const user = await prisma.user.findFirst({
+          where: {
+            email
+          },
+          select: {
+            id: true, 
+            username: true,
+            email: true,
+            image_url: true,
+            created_on: true
+          }
+        });
 
-          let [user]: any = await sequelize.query(`
-            SELECT id, username, email, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url, created_on FROM "User"
-            WHERE email = '${decoded.email}'
-          `);
-          
-          return response.json({ 
-            success: true,
-            user: {
-              id: user[0].id,
-              name: user[0].username,
-              email: user[0].email,
-              picture: user[0].image_url,
-              createdOn: user[0].created_on
-            }
-          });
-  
+        return response.json({
+          success: true,
+          user: {
+            ...user,
+            name: user?.username,
+            picture: user?.image_url || process.env.SERVER_URL+"/images/user/profile-user.png",
+            createdOn: user?.created_on
+          }
+        });
+      }
 
-        } else return response.json({ message: "Usuário sem autenticação", user: null });
-      });
+      return response.json({ message: "Usuário sem autenticação", user: null })
       
-    } else return response.json({ message: "Usuário sem autenticação", user: null });
-
+    } 
+    
+    return response.json({ message: "Usuário sem autenticação", user: null });
     
   } catch(e) {
     console.log('----| Error |-----: ', e);

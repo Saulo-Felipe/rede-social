@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { sequelize } from "../services/databse";
 import { verifyToken } from "../utils/authorization";
 import jwt from "jsonwebtoken";
 import multer from "multer";
@@ -7,6 +6,7 @@ import path from "path";
 import { v4 as uuid } from "uuid";
 import bcrypt from "bcrypt";
 import { cloudinary } from "../utils/cloudinary";
+import { prisma } from "../../prisma/prismaClient";
 
 const user = Router();
 
@@ -21,7 +21,7 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
   try {
     const { currentUserID, userID }: getProfileParams = request.params;
 
-    let [user]: any = await sequelize.query(`
+    let user: any = await prisma.$queryRawUnsafe(`
       SELECT
         id,
         username,
@@ -40,12 +40,12 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
     if (user.length !== 0) { // Get followers and followings
       user = user[0];
 
-      const [following]: any = await sequelize.query(`
+      const following: any = await prisma.$queryRawUnsafe(`
         select count(*) as following from "Follower"
         where fk_user_id = '${user.id}';
       `);
 
-      const [followers]: any = await sequelize.query(`
+      const followers: any = await prisma.$queryRawUnsafe(`
         select count(*) as followers from "Follower"
         where fk_follower_id = '${user.id}';
       `);
@@ -54,7 +54,7 @@ user.get("/profile/:userID/:currentUserID", async (request, response) => {
       user.followers = followers[0].followers;
 
       // Is follower?
-      const [isFollowing]: any = await sequelize.query(`
+      const isFollowing: any = await prisma.$queryRawUnsafe(`
         SELECT id FROM "Follower"
         WHERE fk_user_id = '${currentUserID}'
         AND fk_follower_id = '${userID}'
@@ -84,7 +84,7 @@ user.get("/posts/:userID", async (request, response) => {
   try {
     const { userID }: postsParams = request.params;
 
-    const [posts]: any = await sequelize.query(`
+    const posts: any = await prisma.$queryRawUnsafe(`
       SELECT
         "Post".id,
         "Post".fk_user_id,
@@ -117,7 +117,7 @@ user.put("/new-follow", async (request, response) => {
   try {
     const { userID, followerID }: newFollowBody = request.body;
 
-    await sequelize.query(`
+    await prisma.$queryRawUnsafe(`
       INSERT INTO "Follower" (fk_user_id, fk_follower_id)
       VALUES ('${userID}', '${followerID}')
     `);
@@ -140,7 +140,7 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
   try {
     const { userID, followerID }: unfollowBody = request.params;
 
-		await sequelize.query(`
+		await prisma.$queryRawUnsafe(`
 			DELETE FROM "Follower"
 			WHERE fk_user_id = '${userID}'
 			AND fk_follower_id = '${followerID}'
@@ -157,7 +157,7 @@ user.delete("/unfollow/:userID/:followerID", async (request, response) => {
 user.get("/all", async (request, response) => {
   try {
 
-    let [users] = await sequelize.query(`
+    let users = await prisma.$queryRawUnsafe(`
       SELECT id, username, COALESCE(image_url, '${process.env.SERVER_URL}/images/user/profile-user.png') as image_url FROM "User"
     `);
 
@@ -177,12 +177,12 @@ user.get("/current", async (request, response) => {
     jwt.verify(token, String(process.env.SECRET), async (err, decoded: any) => {
 
       if (decoded) {
-        const [user] = await sequelize.query(`
+        const user = await prisma.$queryRawUnsafe(`
           SELECT id FROM "User"
           WHERE email = '${decoded.email}'
         `);
 
-        return response.json({ user: user[0] });
+        return response.json({ user: user });
 
       } else {
         return response.json({ logout: true });
@@ -222,21 +222,18 @@ user.post("/update-info", upload, async (request, response) => {
     const {bio, cover_color, id, name, picture, currentPassword, newPassword}: UpdateUserInfoBody = JSON.parse(request.body.body);
     const file: any = request.files;
 
-    let [user]: any = await sequelize.query(`
+    let user: any = await prisma.$queryRawUnsafe(`
       SELECT cloudinary_id, password FROM "User" WHERE email = '${email}'
     `);
 
-    console.log(user, picture);
-
     if (picture && user[0].cloudinary_id) {
-      console.log("entrei")
       await cloudinary.uploader.destroy(user[0].cloudinary_id);
     }
 
     if (currentPassword === '' && newPassword === '') {
       let cloudinaryId: any = picture ? await cloudinary.uploader.upload(file[0].path) : ""
 
-      await sequelize.query(`
+      await prisma.$queryRawUnsafe(`
         UPDATE "User"
         SET bio = '${bio}',
         cover_color = '${cover_color}',
@@ -247,6 +244,7 @@ user.post("/update-info", upload, async (request, response) => {
       `);
 
       return response.json({ success: true });
+
     } else { // change password
       if (user.length > 0) {
         const match = user[0].password ? await bcrypt.compare(currentPassword, user[0].password) : true;
@@ -256,7 +254,7 @@ user.post("/update-info", upload, async (request, response) => {
           const salt = await bcrypt.genSalt(5);
           const hash = await bcrypt.hash(newPassword, salt);
 
-          await sequelize.query(`
+          await prisma.$queryRawUnsafe(`
             UPDATE "User"
             SET
             bio = '${bio}',

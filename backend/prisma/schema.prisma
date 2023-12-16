@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Comment {
+  id         Int    @id @default(autoincrement())
+  content    String
+  created_on String @db.VarChar(100)
+
+  user       User   @relation(fields: [fk_user_id], references: [id])
+  fk_user_id String @db.VarChar(255)
+
+  post       Post @relation(fields: [fk_post_id], references: [id])
+  fk_post_id Int
+}
+
+model Follower {
+  id Int @id @default(autoincrement())
+
+  fk_user_id     String @db.VarChar(255)
+  fk_follower_id String @db.VarChar(255)
+}
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  content    String
+  created_on String?   @default(dbgenerated("CURRENT_TIMESTAMP")) @db.VarChar(300)
+  images     String?   @db.VarChar(65000)
+  Comment    Comment[]
+
+  user       User       @relation(fields: [fk_user_id], references: [id])
+  fk_user_id String     @db.VarChar(255)
+  dislikes   dislikes[]
+  likes      likes[]
+}
+
+model User {
+  id              String            @id(map: "users_pkey") @db.VarChar(255)
+  username        String            @db.VarChar(255)
+  email           String            @db.VarChar(255)
+  image_url       String?           @db.VarChar(555)
+  created_on      String            @db.VarChar(255)
+  password        String?           @db.VarChar(255)
+  auth_type       String            @db.VarChar(255)
+  bio             String?           @db.VarChar(255)
+  cover_color     String?           @db.VarChar(255)
+  cloudinary_id   String?           @db.VarChar(255)
+  Comment         Comment[]
+  Post            Post[]
+  dislikes        dislikes[]
+  global_messages global_messages[]
+  likes           likes[]
+}
+
+model dislikes {
+  id Int @id @default(autoincrement())
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String @db.VarChar(255)
+
+  post    Post @relation(fields: [post_id], references: [id])
+  post_id Int
+}
+
+model global_messages {
+  id         Int    @id @default(autoincrement())
+  message    String @db.VarChar(10485760)
+  created_on String @db.VarChar(255)
+
+  user_id String @db.VarChar(255)
+  user    User   @relation(fields: [user_id], references: [id])
+}
+
+model likes {
+  id Int @id @default(autoincrement())
+
+  user_id String @db.VarChar(255)
+  user    User   @relation(fields: [user_id], references: [id])
+
+  post_id Int
+  post    Post @relation(fields: [post_id], references: [id])
+}
