@@ -12,6 +12,8 @@ RUN npx prisma generate \
   && npx prisma migrate deploy \
   && npm run build
 
+COPY src/public dist/src
+
 EXPOSE 3002
 
 CMD [ "npm", "run", "start" ]

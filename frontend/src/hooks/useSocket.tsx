@@ -203,7 +203,9 @@ export function SocketProvider({ children }) {
 
   useEffect(() => {
     if (user) {
-      const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { transports: ["websocket"] })
+      const socket = io(process.env.NEXT_PUBLIC_SERVER_URL, { 
+        transports: ["websocket"] 
+      })
       socketRef.current = socket;
 
       socket.on("connect", () => {
