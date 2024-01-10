@@ -9,7 +9,6 @@
 * [Sobre](#sobre)
 * [Funcionalidades](#funcionalidades)
 * [Layout](#layout)
-* [Como Executar](#como-executar)
 * [Tecnologias](#tecnologias)
 * [Autor](#autor)
 * [Licença](#licenca)
@@ -63,20 +62,6 @@ Uma simples rede social :).
 </p>
 
 
-
-------------------------------------
-
-## 🧩 Como Executar <a id="como-executar"></a>
-
-Para executar o projeto na sua máquina, basta seguir a sequencia de passos:
-
-```
-# Clone o repositório
-$ git clone https://github.com/Saulo-Felipe/rede-social
-
-rede-social/frontend $ yarn install && yarn dev
-rede-social/backend $ yarn install && yarn dev
-```
 
 ------------------------------------
 
