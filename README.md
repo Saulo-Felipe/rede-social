@@ -1,8 +1,4 @@
-<p align="center">
-    <img width="30%" src="Github/logo.png" width=45%>
-</p>
 
-------------------------------------
 ## Índice
 
 * [Preview](#preview)
