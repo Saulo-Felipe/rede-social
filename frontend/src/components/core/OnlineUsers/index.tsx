@@ -62,9 +62,9 @@ export function OnlineUsers() {
           <h2><GiTank /> Multiplayer Games</h2>
           <hr />
 
-          <a rel="noopener noreferrer" href={"https://tanksfight-server.saulofelipe.tech"} target={"_blank"}>
+          <a rel="noopener noreferrer" href={"https://tanksfight-server.saulofelipe.com.br"} target={"_blank"}>
             <div className={styles.game}>
-              <div className={styles.gameTitle}>Jogue com seus amigos :D</div>
+              <div className={styles.gameTitle}>Jogue com seus amigos</div>
             </div>
           </a>
 
