@@ -14,6 +14,7 @@ RUN npx prisma generate \
   && npx prisma migrate deploy \
   && npm run build
 
+RUN mkdir -p dist/src/public/
 COPY src/public/* dist/src/public/
 
 EXPOSE 3002
