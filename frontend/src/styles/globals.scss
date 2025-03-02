@@ -5,7 +5,9 @@
   font-family: 'Ubuntu', sans-serif;
 }
 
-html, body, #__next {
+html,
+body,
+#__next {
   @media (max-width: 991px) {
     height: -webkit-fill-available !important;
   }
@@ -20,15 +22,15 @@ html, body, #__next {
 :root {
   --default-blue: #2F5BAC;
   --background: #F0F2F5;
-  
+
   --gray-1: #AEB7C3;
   --gray-2: #707070;
   --gray-3: #EAEAEA;
   --gray-4: #5A5A5A;
-  
+
   --online: #00AB26;
   --offline: #E90000;
-  
+
 }
 
 @media (max-width: 1080px) {
@@ -49,11 +51,21 @@ body {
   overflow-x: hidden;
 }
 
-body, input, textarea, select, button {
+body,
+input,
+textarea,
+select,
+button {
   font-weight: 400;
 }
 
-h1, h2, h3, h4, h5, h6, strong {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
   font-weight: 500;
 }
 
@@ -88,7 +100,7 @@ a {
 #home_main_feed {
   width: 70%;
   height: fit-content;
-  
+
   @media (max-width: 991px) {
     width: 100%;
   }
@@ -101,11 +113,25 @@ a {
   color: var(--default-blue);
 
   @keyframes loading {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(90deg); }
-    50% { transform: rotate(180deg); }
-    75% { transform: rotate(270deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(90deg);
+    }
+
+    50% {
+      transform: rotate(180deg);
+    }
+
+    75% {
+      transform: rotate(270deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   svg {
@@ -126,8 +152,10 @@ a {
 
 .modalOverlay {
   position: fixed;
-  top: 0; bottom: 0;
-  left: 0; right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: rgb(0, 0, 0, 0.6);
   z-index: 99;
 
@@ -155,14 +183,16 @@ a {
   &::-webkit-scrollbar-track {
     background-color: #F4F4F4;
   }
+
   &::-webkit-scrollbar {
     width: 6px;
     background: #F4F4F4;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #dad7d7;
   }
- 
+
   .close-modal-icon {
     font-size: 1.5rem;
     position: absolute;
@@ -170,6 +200,7 @@ a {
     top: 2rem;
     cursor: pointer;
   }
+
   @media (max-width: 720px) {
     padding: 1.5rem;
     width: 95%;
