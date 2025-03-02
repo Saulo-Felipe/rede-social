@@ -2,10 +2,12 @@ version: "3.8"
 
 services:
   redesocial:
-    build: .
+    build:
+      context: .
+      network: host
     ports:
       - 3002:3002
     env_file:
       - .env
-    network_mode: "host"
+    network_mode: host
 
